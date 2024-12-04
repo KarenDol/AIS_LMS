@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <link rel="stylesheet" href="{% static 'HR/css/404.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}">
+  </head>
+  <body>
+    <!-- Bubble elements -->
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+
+    <!-- Main content -->
+    <div class="main">
+      <h1>404</h1>
+      <p>Кажется вы забрели не туда...<br>{{ error_code }}</p>
+      <button type="button" onclick="window.location.href='/'">Домой</button>
+    </div>
+
+    <script>
+      if (window.location.pathname.startsWith('/404/')) {
+        window.history.replaceState(null, null, '/404/');
+      }
+    </script>
+  </body>
+</html>

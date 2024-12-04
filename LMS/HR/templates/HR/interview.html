@@ -1,0 +1,99 @@
+{% extends 'HR/index.html' %}
+{% block content %}
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'HR/css/apply.css' %}">
+    <link rel="icon" href="{% static 'HR/favicon.png' %}">
+    <title>Собеседование</title>
+</head>
+
+<body>
+    <div class="container">
+        <img src="{% static 'HR/interview.jpg' %}">
+        <form id="mainForm" method="POST" action="{% url 'report_int' iin=iin %}" novalidate enctype="multipart/form-data">
+            {% csrf_token %}
+            <h2>Собеседование</h2>
+            <div class="form-control">
+                <label>ФИО кандидата</label>
+                <input type="text" value="{{ applicant_name }}" disabled>
+            </div>
+
+            <div class="form-control">
+                <label>Дата и время</label>
+                <input type="text" value="{{ date_time }}" disabled>
+            </div>
+
+            <div class="form-control">
+                <label for="select-btn">Позиция</label>
+                    <div class="select-container">
+                        <div class="select-menu">
+                            <div class="select-btn">
+                                <span class="sBtn-text">{{ position }}</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <ul class="options">
+                                {% for option in Positions %}
+                                <li class="option">
+                                    <span class="option-text">{{ option }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <input type="hidden" name="position" id="selectedPosition" maxlength="20" value="{{ position }}" placeholder = 'Ex.: Тренер по йоге...'>
+                        <!-- <i class="icon"></i> -->
+                    </div>
+            </div>
+
+            <div class="form-control">
+                <label for="interviewers">Кто проводил собеседование</label>
+                <input type="text" id="interviewers" name="interviewers" placeholder="Ex. ДК, СП и Ерлан агай..." maxlength="200" autocomplete="off">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="comment">Комментарий к собеседованию</label>
+                <textarea id="comment" name="comment" rows="4" placeholder="Ex. Уверенные знания математики, IELTS 6.5..." maxlength="300"></textarea>
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="decision">Решение</label>
+                <div class="radio-options">
+                    <div class="radio-option">
+                        <input type="radio" id="neg" name="decision" value="False" checked>
+                        <label for="neg">Отказано</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="pos" name="decision" value="True">
+                        <label for="pos">Принят</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sal-cond hidden" id="salCond">
+                <div class="form-control">
+                    <label for="salary">Заработная Плата</label>
+                    <span class="currency-code">₸</span>
+                    <input type="text" id="salary" name="salary" autocomplete="off">
+                    <i class="icon"></i>
+                </div>
+
+                <div class="form-control">
+                    <label for="conditions">Условия трудоустройства</label>
+                    <textarea id="conditions" name="conditions" rows="4" placeholder="Ex. 18 часов в неделю..." maxlength="300"></textarea>
+                    <i class="icon"></i>
+                </div>
+            </div>
+
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
+
+    <script src="{% static 'HR/js/interview.js' %}"></script>
+    <script src="https://unpkg.com/imask"></script>
+</body>
+{% endblock content %}

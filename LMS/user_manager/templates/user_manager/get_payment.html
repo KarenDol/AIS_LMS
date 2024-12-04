@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles_student.css' %}">
+    <title>Принять Платеж</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <img src="{% static 'student_pic.png' %}">
+        <form id="mainForm" method="POST" action="{% url 'register_student' %}" novalidate>
+            {% csrf_token %}
+            <h2>Регистрация ученика</h2>
+            <div class="form-control">
+                <h3>Last name</h3>
+                <p> {{ student.Last_Name }}</p>
+            </div>
+
+            <div class="form-control">
+                <h3>First name</h3>
+                <p> {{ student.Last_Name }}</p>
+            </div>
+
+            <div class="form-control">
+                <h3>Class</h3>
+                <p> {{ student.Class }}</p>
+            </div>
+
+            <div class="form-control">
+                <h3>To be Paid</h3>
+                <p> {{ student.Payment }}</p>
+            </div>
+
+            <div class="select-menu" >
+                <div class="select-btn">
+                    <span class="sBtn-text">Выберите месяц</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <ul class="options">
+                    <li class="option">
+                        <span class="option-text">Сентябрь</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Октябрь</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Ноябрь</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Декабрь</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Январь</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Февраль</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Март</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Апрель</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Май</span>
+                    </li>
+                </ul>
+            </div>
+
+            <input type="hidden" name="month" id="selectedClassInput">
+
+            <div class="form-control" id="cost">
+                <label for="amount">Сумма</label>
+                    <span class="currency-code">₸</span>
+                    <input type="text" id="amount" name="amount" autocomplete="off">
+                    <i class="icon"></i>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const amount = document.getElementById('amount');
+
+                    amount.addEventListener('keypress', function (event) {
+                        const charCode = event.which ? event.which : event.keyCode;
+                        if (charCode < 48 || charCode > 57) {
+                            event.preventDefault();
+                        }
+                    });
+                });
+            </script>
+
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
+
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Success!</h2>
+            <p>Ваша форма была успешно отправлена.</p>
+        </div>
+    </div>
+
+    <script src="{% static 'js/script_student.js' %}"></script>
+    <script src="https://unpkg.com/imask"></script>
+</body>
+</html>

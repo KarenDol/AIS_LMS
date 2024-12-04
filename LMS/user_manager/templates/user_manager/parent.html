@@ -1,0 +1,105 @@
+{% extends 'user_manager/index.html' %}
+{% block content %}
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'user_manager/css/parent.css' %}">
+    <link rel="icon" href="{% static 'user_manager/favicon.png' %}">
+    <title>Родитель</title>
+</head>
+
+<body>
+    <div class="container">
+        <img src="{% static 'user_manager/parent_pic.jpg' %}">
+        <form method="POST" action="{% url 'register_parent' IIN=IIN %}" id="mainForm" novalidate>
+            {% csrf_token %}
+            <h2 class="edit">
+                Карточка родителя
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" class="pen">
+                    <path fill="currentColor" d="M22 7.24a1 1 0 0 0-.29-.71l-4.24-4.24a1 1 0 0 0-.71-.29a1 1 0 0 0-.71.29l-2.83 2.83L2.29 16.05a1 1 0 0 0-.29.71V21a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .76-.29l10.87-10.93L21.71 8a1.2 1.2 0 0 0 .22-.33a1 1 0 0 0 0-.24a.7.7 0 0 0 0-.14ZM6.83 20H4v-2.83l9.93-9.93l2.83 2.83ZM18.17 8.66l-2.83-2.83l1.42-1.41l2.82 2.82Z"/>
+                </svg>
+            </h2>
+
+            <div class="form-control">
+                <label for="name">Фамилия</label>
+                <input type="text" id="lastname" maxlength="40" name="lastname" placeholder="Ex: Долмагамбетов...">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="name">Имя</label>
+                <input type="text" id="firstname" name="firstname" maxlength="30" placeholder="Введите имя родителя" autocomplete="off">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="patronim">Отчество</label>
+                <input type="text" id="patronim" name="patronim" maxlength="40" placeholder="Заполните или оставьте пустым, если отсутствует" autocomplete="off">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="phone">Номер телефона</label>
+                <input type="tel" id="phone" name="phone" placeholder="+7(000)000-00-00" autocomplete="off">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="ID_date">Дата выдачи документа</label>
+                <input type="date" id="ID_date" name="ID_date">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="ID_numb">Номер удостоверения</label>
+                <input type="tel" id="ID_numb" name="ID_number" maxlength="9" inputmode="numeric" placeholder="Номер удостоверения (9 символов)" maxlength="9" autocomplete="off">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="mvd">Кем был выдан</label>
+                <input type="text" id="ID_org" name="ID_org" maxlength="30" value="МВД РК" autocomplete="off">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="workplace">Место работы</label>
+                <input type="text" id="workplace" name="workplace" maxlength="100" placeholder="Место работы родителя" autocomplete="off">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="position">Должность</label>
+                <input type="text" id="position" name="position" maxlength="100" placeholder="Занимаемая должность" autocomplete="off">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="position">Адрес Проживания</label>
+                <input type="text" id="address" name="address" maxlength="100" placeholder="ул. Ораза Татеулы 13А" autocomplete="off">
+                <i class="icon"></i>
+            </div>
+
+            <div class="button-group" id="buttons_edit">
+                <button id="button_cancel">Отменить</button>
+                <button id="button_save">Сохранить</button>
+            </div>
+            <button id="button_back" onclick="event.preventDefault(); window.location.href='/card_student/{{IIN}}'">Назад</button>
+        </form>
+    </div>
+
+    <script>
+        const IIN = "{{ IIN }}";
+        let parent = null;
+        if ('{{ parent|default:"null"|escapejs }}') {
+            parent = JSON.parse('{{ parent|default:"null"|escapejs }}');
+        }
+        console.log(parent);
+    </script>
+    <script src="{% static 'user_manager/js/parent.js' %}"></script>
+    <script src="https://unpkg.com/imask"></script>
+</body>
+{% endblock content %}

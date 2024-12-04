@@ -1,0 +1,90 @@
+{% extends 'user_manager/index.html' %}
+{% block content %}
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'user_manager/css/contract.css' %}">
+    <title>Договор</title>
+    <link rel="icon" href="{% static 'user_manager/favicon.png' %}">
+</head>
+
+<body>
+
+    <div class="container">
+        <img src="{% static 'user_manager/contract_pic.jpg' %}">
+        <form method="POST" action="{% url 'register_contract' IIN=IIN %}" id="mainForm" novalidate>
+            {% csrf_token %}
+            <h2 class="edit">
+                Карточка Договора
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" class="pen">
+                    <path fill="currentColor" d="M22 7.24a1 1 0 0 0-.29-.71l-4.24-4.24a1 1 0 0 0-.71-.29a1 1 0 0 0-.71.29l-2.83 2.83L2.29 16.05a1 1 0 0 0-.29.71V21a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .76-.29l10.87-10.93L21.71 8a1.2 1.2 0 0 0 .22-.33a1 1 0 0 0 0-.24a.7.7 0 0 0 0-.14ZM6.83 20H4v-2.83l9.93-9.93l2.83 2.83ZM18.17 8.66l-2.83-2.83l1.42-1.41l2.82 2.82Z"/>
+                </svg>
+            </h2>
+
+            <div class="form-control">
+                <label for="sign_date">День подписания</label>
+                <input type="date" id="sign_date" name="sign_date" value={{today}}>
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="first_date">Вступает в силу с</label>
+                <input type="date" id="first_date" name="first_date" value="2024-09-01">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="last_date">Действует до</label>
+                <input type="date" id="last_date" name="last_date" value="2025-05-25">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control" id="cost">
+                <label for="fullcost">Полная сумма</label>
+                    <span class="currency-code">₸</span>
+                    <input type="text" class="currency" id="total" name="total" value="1 665 000" inputmode="numeric">
+                    <i class="icon"></i>
+            </div>
+
+            <div class="form-control" id="cost">
+                <label for="fullcost">Сумма с учетом скидки</label>
+                    <span class="currency-code">₸</span>
+                    <input type="text" class="currency" id="discount" name="discount" inputmode="numeric">
+                    <i class="icon"></i>
+            </div>
+
+            <div class="form-control" id="cost">
+                <label for="fullcost">Оплата в месяц</label>
+                    <span class="currency-code">₸</span>
+                    <input type="text" class="currency" id="monthly" name="monthly" inputmode="numeric">
+                    <i class="icon"></i>
+            </div>
+
+            <div class="form-control" id="cost">
+                <label for="fullcost">Вступительный взнос</label>
+                    <span class="currency-code">₸</span>
+                    <input type="text" class="currency" id="join_fee" name="join_fee" value="150 000" inputmode="numeric">
+                    <i class="icon"></i>
+            </div>
+
+            <div class="button-group" id="buttons_edit">
+                <button id="button_cancel">Отменить</button>
+                <button id="button_save">Сохранить</button>
+            </div>
+            <button id="button_back" onclick="event.preventDefault(); window.location.href='/card_student/{{IIN}}'">Назад</button>
+        </form>
+    </div>
+    <script>
+        const IIN = "{{ IIN }}";
+        let contract = null;
+        if ('{{ contract|default:"null"|escapejs }}') {
+            contract = JSON.parse('{{ contract|default:"null"|escapejs }}');
+            console.log(contract);
+        }
+    </script>
+    <script src="{% static 'user_manager/js/contract.js' %}"></script>
+    <script src="https://unpkg.com/imask"></script>
+</body>
+{% endblock content %}

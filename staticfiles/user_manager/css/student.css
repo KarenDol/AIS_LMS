@@ -1,0 +1,263 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body{
+    background-color: #dcdcdc;
+    align-items: center;
+    justify-content: center;
+}
+
+.container{
+    margin: 20px auto;
+    display: flex;
+    gap: 45px;
+    background-color: #fff;
+    width: 100%;
+    max-width: 1060px;
+    padding: 45px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.container img{
+    width: 50%;
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+.container form{
+    width: 50%;
+}
+
+.form-control{
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.form-control label{
+    display: block;
+    margin-bottom: 5px;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.form-control input,
+.form-control textarea{
+    width: 100%;
+    padding: 10px;
+    padding-right: 40px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    outline: none;
+    transition: border 0.3s;
+}
+.form-control input:focus {
+    border: 2px solid #59007A;
+}
+
+.form-control .icon{
+    position: absolute;
+    right: 10px;
+    top: 71%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: transparent;
+    pointer-events: none;
+}
+
+.form-control.success input,
+.form-control.success textarea{
+    border-color: #2ecc71;
+}
+
+.form-control.success .icon{
+    color: #2ecc71;
+}
+
+.form-control.error input,
+.form-control.error textarea{
+    border-color: #e74c3c;
+}
+
+.form-control.error .icon,
+.form-control.error input::placeholder,
+.form-control.error textarea::placeholder{
+    color: #e74c3c;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.select-menu {
+    position: relative;
+    width: 100%;
+}
+
+.select-menu.error .select-btn {
+    border-color: #e74c3c;
+}
+
+.select-menu.success .select-btn {
+    border-color: #2ecc71;
+}
+
+.select-menu .options-container {
+    overflow-y: auto; /* Включение вертикальной прокрутки */
+    border: 1px solid #ddd; /* Добавление рамки для контейнера */
+    border-radius: 8px;
+}
+.select-menu .select-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 42px;
+    padding: 0 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    font-size: 14px;
+    transition: border 0.3s;
+}
+
+.select-menu .select-btn i {
+    font-size: 12px;
+    transition: transform 0.5s;
+}
+.select-menu.active .select-btn i {
+    transform: rotate(-180deg);
+}
+.select-menu .options {
+    max-height: 250px;
+    overflow-y: auto;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.247);
+    display: none;
+    z-index: 1000;
+}
+
+.select-menu.active .options {
+    display: block;
+}
+
+.select-menu .options .option {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: background-color 0.3s;
+}
+
+.select-menu .options .option:hover {
+    background-color: #f2f2f2;
+}
+
+.select-menu .options .option i {
+    font-size: 25px;
+    margin-right: 12px;
+}
+
+.select-menu .options .option .option-text {
+    font-size: 14px;
+    color: #333;
+}
+
+select {
+    display: none;
+}
+textarea {
+    resize: vertical; /* Разрешить изменение размера только по горизонтали */
+}
+@media screen and (max-width: 920px) {
+
+    .container img{
+        display: none;
+    }
+
+    .container form{
+        width: 100%;
+    }
+
+}
+
+/* Button styles */
+button{
+    width: 100%;
+    border: none;
+    padding: 10px;
+    background-color: #59007A;
+    color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.5s ease;
+}
+
+button:hover{
+    background-color: #FF9C2E;
+}
+
+button.secondary { 
+    background-color: #52A7CC;
+    transition: background-color 0.3s;
+}
+
+button.secondary:hover { 
+    background-color: #000000;
+}
+
+.button-group {
+    display: none;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+
+/* h2 styles */
+h2{
+    text-align: center;
+    color: #100629;
+    font-size: 30px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+h2.edit:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}

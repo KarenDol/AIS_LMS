@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Students table</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/finance.css' %}">
+</head>
+
+<body>
+    <main class="table" id="students_table">
+        <section class="table__header">
+            <h1>Список студентов</h1>
+            <div class="input-group">
+                <input type="search" placeholder="Search Data...">
+                <img src="{% static 'search.png' %}" alt="">
+            </div>
+            <div class="student__reg">
+                <a href='/register_student' class="student__reg-btn" title="Students"></a>
+            </div>
+            <div class="export__file">
+                <label for="export-file" class="export__file-btn" title="Export File"></label>
+                <input type="checkbox" id="export-file">
+                <div class="export__file-options">
+                    <label>Export As &nbsp; &#10140;</label>
+                    <label for="export-file" id="toPDF">PDF <img src="{% static 'pdf.png' %}" alt=""></label>
+                    <label for="export-file" id="toJSON">JSON <img src="{% static 'json.png' %}" alt=""></label>
+                    <label for="export-file" id="toCSV">CSV <img src="{% static 'csv.png' %}" alt=""></label>
+                    <label for="export-file" id="toEXCEL">EXCEL <img src="{% static 'excel.png' %}" alt=""></label>
+                </div>
+            </div>
+        </section>
+        <section class="table__body">
+            <table>
+                <thead>
+                    <tr>
+                        <th> Фамилия </th>
+                        <th> Имя </th>
+                        <th> Класс </th>
+                        <th> Номер Родителя </th>
+                        <th> Оплачено </th>
+                        <th> К Оплате </th>
+                        <th> Статус </th>
+                    </tr>
+                </thead>
+                {% if n == 1 %}
+                <tbody>
+                    {% for student in my_list %}
+                        <tr>
+                            <td>{{ student.Last_Name }}</td>
+                            <td>{{ student.First_Name }}</td>
+                            <td>{{ student.Class }}</td>
+                            <td>{{ student.Phone }}</td>
+                            <td>{{ student.Jan }}</td>
+                            <td>{{ student.Payment }}</td>
+                            {% if student.Jan < student.Payment %}
+                              <td><p class="status cancelled">Долг</p></td>
+                            {% else %}
+                              <td><p class="status paid">Оплачено</p></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                {% elif n == 2 %}
+                <tbody>
+                    {% for student in my_list %}
+                        <tr>
+                            <td>{{ student.Last_Name }}</td>
+                            <td>{{ student.First_Name }}</td>
+                            <td>{{ student.Class }}</td>
+                            <td>{{ student.Phone }}</td>
+                            <td>{{ student.Feb }}</td>
+                            <td>{{ student.Payment }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                {% elif n == 3 %}
+                <tbody>
+                    {% for student in my_list %}
+                        <tr>
+                            <td><a href="/cash/{{student.id}}">{{ student.Last_Name }}</a></td>
+                            <td>{{ student.First_Name }}</td>
+                            <td>{{ student.Class }}</td>
+                            <td>{{ student.Phone }}</td>
+                            <td>{{ student.Mar }}</td>
+                            <td>{{ student.Payment }}</td>
+                            {% if student.Mar < student.Payment %}
+                              <td><p class="status cancelled">Долг</p></td>
+                            {% else %}
+                              <td><p class="status paid">Оплачено</p></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                {% elif n == 4 %}
+                <tbody>
+                    {% for student in my_list %}
+                        <tr>
+                            <td>{{ student.Last_Name }}</td>
+                            <td>{{ student.First_Name }}</td>
+                            <td>{{ student.Class }}</td>
+                            <td>{{ student.Phone }}</td>
+                            <td>{{ student.Apr }}</td>
+                            <td>{{ student.Payment }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                {% elif n == 5 %}
+                <tbody>
+                    {% for student in my_list %}
+                        <tr>
+                            <td>{{ student.Last_Name }}</td>
+                            <td>{{ student.First_Name }}</td>
+                            <td>{{ student.Class }}</td>
+                            <td>{{ student.Phone }}</td>
+                            <td>{{ student.May }}</td>
+                            <td>{{ student.Payment }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                {% elif n == 9 %}
+                <tbody>
+                    {% for student in my_list %}
+                        <tr>
+                            <td>{{ student.Last_Name }}</td>
+                            <td>{{ student.First_Name }}</td>
+                            <td>{{ student.Class }}</td>
+                            <td>{{ student.Phone }}</td>
+                            <td>{{ student.Sep }}</td>
+                            <td>{{ student.Payment }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                {% elif n == 10 %}
+                <tbody>
+                    {% for student in my_list %}
+                        <tr>
+                            <td>{{ student.Last_Name }}</td>
+                            <td>{{ student.First_Name }}</td>
+                            <td>{{ student.Class }}</td>
+                            <td>{{ student.Phone }}</td>
+                            <td>{{ student.Nov }}</td>
+                            <td>{{ student.Payment }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                {% elif n == 11 %}
+                <tbody>
+                    {% for student in my_list %}
+                        <tr>
+                            <td>{{ student.Last_Name }}</td>
+                            <td>{{ student.First_Name }}</td>
+                            <td>{{ student.Class }}</td>
+                            <td>{{ student.Phone }}</td>
+                            <td>{{ student.Oct }}</td>
+                            <td>{{ student.Payment }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                {% elif n == 12 %}
+                <tbody>
+                    {% for student in my_list %}
+                        <tr>
+                            <td>{{ student.Last_Name }}</td>
+                            <td>{{ student.First_Name }}</td>
+                            <td>{{ student.Class }}</td>
+                            <td>{{ student.Phone }}</td>
+                            <td>{{ student.Dec }}</td>
+                            <td>{{ student.Payment }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                {% endif %}
+            </table>
+        </section>
+    </main>
+    <script src="{% static 'js/finance.js' %}"></script>
+</body>
+
+</html>

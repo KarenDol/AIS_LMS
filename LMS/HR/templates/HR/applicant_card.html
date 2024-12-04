@@ -1,0 +1,131 @@
+{% extends 'HR/index.html' %}
+{% block content %}
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'HR/css/apply.css' %}">
+    <link rel="icon" href="{% static 'HR/favicon.png' %}">
+    <title>Карточка Кандидата</title>
+</head>
+
+<body>
+    <div class="container" id="container">
+        <img src="{% static 'HR/staff.jpg' %}">
+        <form id="mainForm">
+            {% csrf_token %}
+            <h2>Карточка Кандидата</h2>
+            <div class="button-group">
+                <button class="reject-button" id="reject">
+                    🗂️ Отправить в Архив
+                </button>
+                <button class="approve-button" id="interview">
+                    📅 Назначить Интервью
+                </button>
+            </div>
+
+            <div class="form-control">
+                <label for="lastname">Фамилия</label>
+                <input type="text" id="lastname" name="lastname" value="{{last_name}}" disabled>
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="firstname">Имя</label>
+                <input type="text" id="firstname" name="firstname" value="{{first_name}}" disabled>
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="patronim">Отчество</label>
+                <input type="text" id="patronim" name="patronim" value="{{patronim}}" disabled>
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="iin">ИИН</label>
+                <input type="tel" id="iin" name="iin" value="{{iin}}" disabled>
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="phone">Номер Телефона для СМС</label>
+                <input type="tel" id="phone" name="phone" value="{{phone}}" disabled>
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="salary">Желаемая Заработная Плата</label>
+                <span class="currency-code">₸</span>
+                <input type="text" id="salary" name="salary" value="{{exp_salary}}" disabled>
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="grade">Позиция</label>
+                <div class="select-menu">
+                <input type="text" name="position" id="selectedPosition" value="{{position}}" disabled>  
+                </div>
+            </div>
+
+            <div class="form-control">
+                <label for="lang">Язык Преподавания</label>
+                <div class="radio-options">
+                        <div class="radio-option">
+                            <input type="radio" id="ru" name="lang" value="Рус" {% if lang == "Рус" %} checked {% endif %} disabled>
+                            <label for="ru">Русский</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="kk" name="lang" value="Каз" {% if lang == "Каз" %} checked {% endif %} disabled>
+                            <label for="kk">Казахский</label>
+                        </div>
+                </div>
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="cv">Резюме</label>
+                <div class="file-input">
+                    <label for="cv" class="file-selector" onclick="window.location.href='/hr/cv/{{iin}}/'">📄 Файл</label>
+                    <p id="file_name" style="color: black;">Резюме.pdf</p>
+                </div>
+                <i class="icon"></i>
+            </div>
+        </form>
+    </div>
+
+    <div class="pop-up" id="pop-up">
+        <p class="header">Выберите дату и время собеседования</p>
+        <div class="button-group">
+            <input type="date" id="date">
+            <div class="select-menu" id="select-menu">
+                <div class="select-btn">
+                    <span class="sBtn-text">Выберите время</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <ul class="options">
+                    {% for option in TimeOptions %}
+                    <li class="option">
+                        <span class="option-text">{{ option }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <input type="text" id="selectedTimeInput" hidden>
+            </div>
+        </div>
+
+        <div class="button-group">
+                <button id="cancel">Отмена</button>
+                <button id="ok">Ок</button>
+        </div>
+        
+    </div>
+    <script>
+        const iin_value = "{{ iin }}";
+    </script>
+    <script src="https://unpkg.com/imask"></script>
+    <script src="{% static 'HR/js/applicant_card.js' %}"></script>
+</body>
+{% endblock content %}

@@ -1,0 +1,79 @@
+:root {
+    --white: #F7F8E2;
+    --primary: #F57B51;
+    --dark: #9CCD62;
+}
+
+header {
+    background-color: #572B79;
+    color: var(--white);
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    top: 0;
+    justify-content: space-between;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.AIS{
+    position: left;
+    margin-left: 10%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.AIS .AIS-Text{
+    text-align: left;
+    position: right;
+}
+
+.AIS img{
+    margin-right: 10px;
+    height: 50px;
+    width: auto;
+    margin-top: 5px;
+}
+
+.AIS-Text p{
+    margin: 0px;
+}
+
+a{
+    color: var(--white);
+    text-decoration: none;
+}
+
+.Person{
+    position: right;
+    margin-right: 10%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.Person img{
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    margin-left: 10px;
+    object-fit: cover;
+}
+
+
+.spin {
+    animation: spin 2s linear forwards;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/sign_contract.css' %}">
+    <title>Подписание договора</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <div class="container">
+    <iframe src="{% static contract %}" style="width:55%; height:600px;" frameborder="0"></iframe>
+
+<style>
+@media screen and (max-width: 768px) {
+    iframe {
+        width: 100% !important;
+    }
+}
+</style>
+    <form id="mainForm" method="POST" action="{% url 'success' std_id=std_id %}">
+        {% csrf_token %}
+        <h2>Договор</h2>
+        <p class="maindesc">Добро пожаловать, пожалуйста ознакомьтесь со следующим договором и введите код из смс</p>
+        <div class="prompt">
+          Введите код из смс:
+        </div>
+
+        <div class="digit-group" data-group-name="digits" data-autosubmit="false" autocomplete="off">
+          <input type="text" id="digit-1" name="digit-1" data-next="digit-2" />
+          <input type="text" id="digit-2" name="digit-2" data-next="digit-3" data-previous="digit-1" />
+          <input type="text" id="digit-3" name="digit-3" data-next="digit-4" data-previous="digit-2" />
+          <input type="text" id="digit-4" name="digit-4" data-next="digit-5" data-previous="digit-3" />
+        </div>
+
+        <button type="submit">Подписать</button>
+    </form>
+</div>
+
+    <script src="{% static 'js/sign_contract.js' %}"></script>
+</body>
+</html>

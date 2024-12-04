@@ -1,0 +1,27 @@
+<!-- templates/emails/email_template.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f4f4f4; }
+    .container { max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px; }
+    .header, .footer { text-align: center; color: #444; font-size: 12px; }
+    .content { color: #333; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Your Newsletter Title</h2>
+    </div>
+    <div class="content">
+      <p>Hello {{ recipient_name }},</p>
+      <p>Welcome to our newsletter! Here’s what’s new...</p>
+      <!-- Additional content here -->
+    </div>
+    <div class="footer">
+      <p>&copy; 2024 Your Company. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>

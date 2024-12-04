@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/cash.css' %}">
+    <title>Оплата ученика</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <img src="{% static 'Hall.jpg' %}">
+        <form id="mainForm" method="POST" action="{% url 'cash' entr_id=entr_id %}" novalidate>
+            {% csrf_token %}
+            <h2>Оплата ученика</h2>
+            <div class="form-control">
+                <label for="name">Фамилия</label>
+                <div id="name" class="input-div" contenteditable="false">{{ student.Last_Name }}</div>
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="name">Имя</label>
+                <div id="firstname" class="input-div" contenteditable="false">{{ student.First_Name }}</div>
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="class">Класс</label>
+                <div id="class" class="input-div" contenteditable="false">{{ student.Class }}</div>
+                <i class="icon"></i>
+            </div>
+
+            <div class="select-menu" id="monthSelect">
+                <div class="select-btn">
+                    <span class="sBtn-text">Выберите месяц</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <ul class="options">
+                    <li class="option">
+                        <span class="option-text">Сентябрь</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Октябрь</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Ноябрь</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Декабрь</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Январь</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Февраль</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Март</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Апрель</span>
+                    </li>
+                    <li class="option">
+                        <span class="option-text">Май</span>
+                    </li>
+                </ul>
+            </div>
+
+            <input type="hidden" name="month" id="selectedClassInput">
+
+            <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const fullcostInput = document.getElementById('fullcost');
+    
+    fullcostInput.addEventListener('keypress', function (event) {
+        const charCode = event.which ? event.which : event.keyCode;
+        if (charCode < 48 || charCode > 57) {
+            event.preventDefault();
+        }
+    });
+});
+            </script>
+
+            <div class="form-control" id="cost">
+                <label for="fullcost">Сумма оплаты</label>
+                    <span class="currency-code">₸</span>
+                    <input type="text" id="fullcost" name="payment" autocomplete="off">
+                    <i class="icon"></i>
+            </div>
+
+            <button type="submit">Отправить</button>
+
+        </form>
+    </div>
+
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 class="success">Success!</h2>
+            <p>Ваша форма была успешно отправлена.</p>
+        </div>
+    </div>
+
+    <div id="failModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 class="failed">Failed!</h2>
+            <p>Ученик уже оплачен</p>
+        </div>
+    </div>
+
+
+    <script src="{% static 'js/cash.js' %}"></script>
+</body>
+</html>

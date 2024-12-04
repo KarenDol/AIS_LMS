@@ -1,0 +1,116 @@
+{% extends 'user_manager/index.html' %}
+{% block content %}
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'user_manager/css/student.css' %}">
+    <link rel="icon" href="{% static 'user_manager/favicon.png' %}">
+    <title>Ученик</title>
+</head>
+
+<body>
+    <div class="container">
+        <img src="{% static 'user_manager/student_pic.jpg' %}">
+        <form id="mainForm" method="POST" action="{% url 'register_student'%}" novalidate>
+            {% csrf_token %}
+            <h2 class="edit">
+                Карточка Ученика
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" class="pen">
+                    <path fill="currentColor" d="M22 7.24a1 1 0 0 0-.29-.71l-4.24-4.24a1 1 0 0 0-.71-.29a1 1 0 0 0-.71.29l-2.83 2.83L2.29 16.05a1 1 0 0 0-.29.71V21a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .76-.29l10.87-10.93L21.71 8a1.2 1.2 0 0 0 .22-.33a1 1 0 0 0 0-.24a.7.7 0 0 0 0-.14ZM6.83 20H4v-2.83l9.93-9.93l2.83 2.83ZM18.17 8.66l-2.83-2.83l1.42-1.41l2.82 2.82Z"/>
+                </svg>
+            </h2>
+            <div class="button-group" id="buttons_card">
+                <button class="secondary" id="button_contract">
+                    📝 Договор
+                  </button>
+                  <button  class="secondary" id="button_parent">
+                      👩‍👧‍👦 Карточка Родителя
+                  </button>
+            </div>
+
+            <div class="form-control">
+                <label for="name">Фамилия</label>
+                <input type="text" id="lastname" maxlength="40" name="lastname" placeholder="Ex: Долмагамбетов...">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="firstname">Имя</label>
+                <input type="text" id="firstname" maxlength="30" name="firstname" placeholder="Ex: Карен...">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="patronim">Отчество</label>
+                <input type="text" id="patronim" maxlength="40" name="patronim" placeholder="Оставьте пустым, если отсутствует">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="iin">ИИН</label>
+                <input type="tel" id="iin" name="IIN" maxlength="12" inputmode="numeric" placeholder="Ex: 010608567567">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="grade">Класс Обучения</label>
+                <div class="select-menu">
+                    <div class="select-btn">
+                        <span class="sBtn-text">{{ grade }}</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <ul class="options">
+                        {% for option in Grades %}
+                        <li class="option">
+                            <span class="option-text">{{ option }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <input type="text" name="grade" id="grade" hidden>
+            </div>
+
+            <div class="form-control">
+                <label for="phone">Номер Телефона</label>
+                <input type="tel" id="phone" name="phone">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="nationality">Национальность</label>
+                <input type="text" id="nationality" name="nationality" maxlength="20" placeholder="Ex: Казах...">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="prev_school">С какой школы перевелся</label>
+                <input type="text" id="prev_school" name="prev_school" maxlength="50" placeholder="Ex: Aqbobek International School...">
+                <i class="icon"></i>
+            </div>
+
+            <div class="form-control">
+                <label for="message">Комментарий</label>
+                <textarea id="message" name="comment" maxlength="200" rows="4" placeholder="Ex: Ребенок не знает русского языка..."></textarea>
+                <i class="icon"></i>
+            </div>
+
+            <div class="button-group" id="buttons_edit">
+                <button id="button_cancel">Отменить</button>
+                <button id="button_save">Сохранить</button>
+            </div>
+            <button id="button_back" onclick="event.preventDefault(); window.location.href='/'">Назад</button>
+        </form>
+    </div>
+    <script>
+        let student = null;
+        if ('{{ student|default:"null"|escapejs }}') {
+            student = JSON.parse('{{ student|default:"null"|escapejs }}');
+        }
+    </script>
+    <script src="{% static 'user_manager/js/student.js' %}"></script>
+    <script src="https://unpkg.com/imask"></script>
+</body>
+{% endblock content %}

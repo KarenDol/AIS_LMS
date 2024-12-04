@@ -1,0 +1,530 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body{
+    background: url(/static/HR/bg.jpg) no-repeat center/cover;
+    align-items: center;
+    justify-content: center;
+}
+
+.container{
+    margin: 20px auto;
+    display: flex;
+    gap: 45px;
+    background-color: #fff;
+    width: 100%;
+    min-width: 900px;
+    max-width: 70%;
+    padding: 45px;
+    border-radius: 10px;
+    box-shadow: 10px 10px 30px rgba(255, 255, 255, 0.1);
+}
+
+.container.blur{
+    filter: blur(5px); /* Adjust the blur amount as needed */
+    transition: filter 0.3s; /* Smooth transition for the blur effect */
+}
+
+
+.container img {
+    width: 50%;
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+.container form {
+    width: 50%;
+}
+
+form h2{
+    text-align: center;
+    color: #100629;
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+
+.form-control{
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.sal-cond.hidden{
+    display: none;
+    opacity: 0;
+}
+
+.sal-cond.visible{
+    display: block;
+    opacity: 1;
+}
+
+.form-control{
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.form-control label{
+    display: block;
+    margin-bottom: 5px;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+input,
+textarea,
+.file-input{
+    width: 100%;
+    padding: 10px;
+    padding-right: 40px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    outline: none;
+    transition: border 0.3s;
+    font-size: 1rem;
+}
+input:focus {
+    border: 2px solid #59007A;
+}
+#salary {
+    padding-left: 25px;
+}
+.input-wrapper {
+    position: relative;
+}
+.currency-code {
+    position: absolute;
+    top: 68%;
+    transform: translateY(-50%);
+    left: 10px;
+}
+button{
+    margin-top: 15px;
+    width: 100%;
+    border: none;
+    padding: 10px;
+    background-color: #59007A;
+    color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.5s ease;
+}
+
+button:hover{
+    background-color: #FF9C2E;
+}
+
+.form-control .icon{
+    position: absolute;
+    right: 10px;
+    top: 71%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: transparent;
+    pointer-events: none;
+}
+
+.form-control.success input,
+.form-control.success .file-input,
+.form-control.success textarea{
+    border-color: #29b864dc;
+}
+
+.form-control.success .icon{
+    color: #28bb65e3;
+}
+
+.form-control.error input,
+.form-control.error .file-input,
+.form-control.error textarea{
+    border-color: #e74d3cb0;
+}
+
+.form-control.error .icon,
+.form-control.error input::placeholder,
+.form-control.error textarea::placeholder{
+    color: #e74d3cd2;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    animation: fadeIn 0.3s ease-in-out; 
+}
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 50px;
+    width: 100%;
+    max-width: 500px;
+    border: 1px solid #888;
+    border-radius: 10px;
+    text-align: center;
+    animation: slideIn 0.3s ease-in-out; 
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.modal-content h2 {
+    font-size: 38px;
+    color: #59007A;
+    padding-bottom: 15px;
+}
+.close-button{
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.close-button:hover,
+.close-button:focus{
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Стили для селектора select-menu */
+.select-menu {
+    position: relative;
+    width: 100%;
+}
+.select-menu.error .select-btn {
+    border-color: #e74d3cb0;
+}
+
+.select-menu.success .select-btn {
+    border-color: #29b864dc;
+}
+
+.select-menu .options-container {
+    overflow-y: auto; 
+    border: 1px solid #ddd; 
+    border-radius: 8px;
+}
+.select-menu .select-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 42px;
+    width: 100%;
+    padding: 0 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    font-size: 14px;
+    transition: border 0.3s;
+}
+
+.select-menu .select-btn i {
+    font-size: 12px;
+    transition: transform 0.5s;
+}
+
+.select-menu.active .select-btn i {
+    transform: rotate(-180deg);
+}
+
+.select-menu .options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.247);
+    display: none;
+    z-index: 1000;
+    overflow-y: auto;
+    height: 180px;
+}
+
+.select-menu.active .options {
+    display: block;
+}
+
+.select-menu .options .option {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: background-color 0.3s;
+}
+
+.select-menu .options .option:hover {
+    background-color: #f2f2f2;
+}
+
+.select-menu .options .option i {
+    font-size: 25px;
+    margin-right: 12px;
+}
+
+.select-menu .options .option .option-text {
+    font-size: 14px;
+    color: #333;
+}
+
+select {
+    display: none;
+}
+textarea {
+    resize: vertical; 
+}
+::selection{
+    background: #7d2ae8;
+    color: #fff;
+    }
+@media screen and (max-width: 920px) {
+    
+    .container img{
+        display: none;
+    }
+
+    .container form{
+        width: 100%;
+    }
+
+}
+@media screen and (max-width: 600px) {
+    body {
+        padding: 15px 15px;
+    }
+    .container {
+        padding: 30px;
+    }
+}
+
+.label-status{
+    display: flex;   
+    gap: 1rem;
+    margin-bottom: 5px;
+    align-items: center;
+}
+
+p.positive{
+    padding: .4rem 0;
+    border-radius: 2rem;
+    text-align: center;
+    background-color: #86e49d;
+    margin-left: auto;
+    min-width: 120px;
+    color: #006b21;
+}
+
+p.negative{
+    padding: .4rem 0;
+    border-radius: 2rem;
+    text-align: center;
+    background-color: #d893a3;
+    color: #b30021;
+    margin-left: auto;
+    min-width: 120px;
+    color: #b30021;
+}
+
+label.file-selector {
+    text-align: center;
+    width: auto;
+    border: 1px solid #b7b7b7;
+    padding: 5px;
+    background-color: #52A7CC;
+    color: #fff;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.5s ease;
+    margin-top: 0px;
+}
+
+/* Hover and active states for the custom label */
+label.file-selector:hover {
+    background-color: #085678;
+}
+
+.file-selector:active {
+    background-color: #e5e7eb;
+    color: black; /* Change text color when active */
+}
+
+.file-input{
+    display: flex;
+    align-items: center;
+}
+
+.file-input p{
+    margin-left: 5px;
+    font-size: 14px;
+    color: #737373;
+    display: flex;
+    align-items: center;
+}
+
+.radio-options{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.radio-option{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.radio-options label{
+    font-weight: 400;
+    padding-top: 4px;
+}
+
+.select-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 15px 0px;
+}
+
+.button-group button {
+    flex-grow: 1;
+    margin-right: 5px;
+    border: none;
+    padding: 10px;
+    color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.5s ease;
+    height: 60px;
+}
+
+.approve-button {
+    background-color: #00BF7C;
+    transition: background-color 0.3s;
+}
+.approve-button:hover {
+    background-color: #3BEF69;
+}
+.reject-button {
+    background-color: #E75A5F;
+    transition: background-color 0.3s;
+}
+.reject-button:hover {
+    background-color: #DB0227;
+}
+
+
+.pop-up{
+    position: fixed; /* Use fixed positioning to keep it in view */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust position to center */
+    display: none;
+    background-color: #FFFFFF;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 500px;
+    z-index: 1000;
+}
+
+.pop-up p{
+    color: #ffffff;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+p.header{
+    color: #59007A;
+    background-color: #C574E4;
+    border: #59007A 1px solid;
+    height: 40px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    display: flex;          /* Enable Flexbox */
+    align-items: center;    /* Center vertically */
+    justify-content: center; /* Center horizontally */
+}
+
+.outer-container.blur {
+    filter: blur(px); /* Adjust the blur amount as needed */
+    transition: filter 0.3s; /* Smooth transition for the blur effect */
+}
+
+.pop-up button{
+    margin-top: 20px; 
+    padding: 8px 20px;
+    background-color: #59007A;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+    width: 100%;
+}
+
+.pop-up button:hover {
+    background-color: #FF9C2E;
+}
+
+.pop-up input,
+.pop-up .select-menu{
+    height: 42px;
+    width: 200px;
+    padding: 0px 10px;
+    margin: 15px;
+}
+
+.pop-up .button-group{
+    margin: 10px 0px; 
+}
+
+.pop-up .button-group button{
+    height: auto; 
+}

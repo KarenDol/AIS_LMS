@@ -1,0 +1,70 @@
+{% extends 'user_manager/index.html' %}
+{% block content %}
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Главная</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'user_manager/css/home.css' %}">
+</head>
+
+<body>
+    <main id="students_table">
+        <section class="table__header">
+            <p style="font-weight: bold;">Класс</p>
+            <div class="select-menu" >
+                <div class="select-btn">
+                    <span class="sBtn-text">Все классы</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <ul class="options">
+                    {% for option in Grades %}
+                        <li class="option">
+                            <span class="option-text">{{ option }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <input type="hidden" name="grade" id="selectedClassInput">
+            <div class="input-group">
+                <input type="search" placeholder="Фамилия Имя...">
+                <img src="{% static 'user_manager/search.png' %}" alt="" class="search-icon">
+            </div>
+
+            <div class="export">
+                {% csrf_token %}
+                <img class="register_student" id="export" src="{% static 'user_manager/Export.png' %}">
+            </div>
+
+            <a class="register_student" href="{% url 'register_student' %}">
+                <img class="register_student" src="{% static 'user_manager/New Student Icon.png' %}">
+            </a>
+
+        </section>
+        <section class="table__body">
+            <table>
+                <thead>
+                    <tr>
+                        <th> # </th>
+                        <th> Фамилия </th>
+                        <th> Имя </th>
+                        <th> Отчество </th>
+                        <th> ИИН </th>
+                        <th> Номер ребенка </th>
+                    </tr>
+                </thead>
+                <tbody id="studentsTableBody">
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <script>
+        var students = JSON.parse('{{ students|escapejs }}');
+        var Grades_dict = JSON.parse('{{ Grades_dict|escapejs }}');
+    </script>
+    <script src="{% static 'user_manager/js/home.js' %}"></script>
+</body>
+{% endblock content %}

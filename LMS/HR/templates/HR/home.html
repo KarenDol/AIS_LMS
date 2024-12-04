@@ -1,0 +1,98 @@
+{% extends 'HR/index.html' %}
+{% block content %}
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Список Кандидатов</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'HR/css/home.css' %}">
+    <link rel="icon" href="{% static 'HR/favicon.png' %}">
+</head>
+
+<body>
+    <div class="message-container"></div>
+
+    <main>
+        <section class="table__header">
+            <p style="font-weight: bold;">Позиция</p>
+             <div class="select-menu" >
+                <div class="select-btn">
+                    <span class="sBtn-text">Все позиции</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <ul class="options">
+                    {% for option in positions %}
+                        <li class="option">
+                            <span class="option-text">{{ option }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <input type="hidden" name="grade" id="selectedClassInput">
+            <div class="input-group">
+                <input type="search" placeholder="Фамилия Имя...">
+                <img src="{% static 'HR/search.png' %}" alt="" class="search-icon">
+            </div>
+
+            <a class="register_student" href="{% url 'apply' %}">
+                <img class="register_student" src="{% static 'HR/New Student Icon.png' %}">
+            </a>
+        </section>
+        <section class="table__body">
+            <table>
+                <thead>
+                    <tr>
+                        <th> # </th>
+                        <th> Фамилия </th>
+                        <th> Имя </th>
+                        <th> Отчество </th>
+                        <th> Позиция </th>
+                        <th> Статус </th>
+                    </tr>
+                </thead>
+                <tbody id="studentsTableBody">
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <script>
+        const applicants = JSON.parse('{{ applicants|escapejs }}');
+        const interviews = JSON.parse('{{ interviews|escapejs }}');
+    </script>
+    <script src="{% static 'HR/js/home.js' %}"></script>
+    <script>
+        // Function to show a message
+        function showMessage(type, text) {
+            const container = document.querySelector('.message-container');
+            
+            // Create message element
+            const message = document.createElement('div');
+            message.classList.add('message', `message-${type}`);
+            message.innerHTML = `
+                <span>${text}</span>
+                <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+            `;
+    
+            // Append message to container
+            container.appendChild(message);
+    
+            // Auto-remove the message after 4 seconds
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 4000);
+        }
+    
+        // Load messages from Django and display them
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if messages %}
+                {% for message in messages %}
+                    showMessage('{{ message.tags }}', '{{ message|escapejs }}');
+                {% endfor %}
+            {% endif %}
+        });
+    </script>
+</body>
+{% endblock content %}

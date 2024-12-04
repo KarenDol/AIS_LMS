@@ -1,0 +1,50 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'favicon.png' %}">
+    <title>Подписание Договора</title>
+    <link rel="stylesheet" href="{% static 'css/sign_doc.css' %}">
+</head>
+<link rel="stylesheet" href="{% static 'css/sign_doc.css' %}">
+    <div class="container">
+        <div class="header-section">
+            <h1>Загрузите файлы</h1>
+            <p>Ознакомьтесь с договором и подпишите его</p>
+            <div class="doc">
+                <img src="{% static 'Arrow.png'%}" alt="file">
+                <a href="{% static dogovor %}" download><p><b>Договор.docx</b></p></a>
+            </div>
+        </div>
+        <form id='form' method="POST" enctype="multipart/form-data" action="{% url 'sign_doc' IIN=IIN %}" novalidate>
+            {% csrf_token %}
+        <div class="drop-section">
+            <div class="col">
+                <div class="PDF-icon">
+                    <img src="{% static 'PDF Logo.png'%}" alt="file">
+                </div>
+                <span>Drag & Drop your files here</span>
+                <span style="color: #ffffff80">OR</span>
+                <button class="file-selector">Browse Files</button>
+                <input type="file" name="file" class="file-selector-input" id="fileInput">
+            </div>
+            <div class="col">
+                <div class="drop-here">Drop Here</div>
+            </div>
+        </div>
+        <div class="list-section">
+            <div class="list-title">Загруженные файлы</div>
+            <div class="list"></div>
+        </div>
+        <button type="submit">Отправить</button></form>
+    </div>
+    <script>
+        var IIN = "{{ IIN }}";
+        console.log(IIN);
+        var staticUrl = "{% static 'PDF File.png' %}";
+    </script>
+<script src="{% static 'js/sign_doc.js'%}"></script>
+{% endblock %}

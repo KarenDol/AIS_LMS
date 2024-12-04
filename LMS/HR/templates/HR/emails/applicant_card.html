@@ -1,0 +1,127 @@
+{% load static %}
+
+<!-- <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" href="{% static 'favicon.png' %}">
+    <title>Карточка Кандидата</title>
+</head>
+
+<body style="background: url(/static/bg.jpg) no-repeat center/cover; display: flex; align-items: center; justify-content: center; padding: 15px;">
+    <div style="margin: 20px auto; display: flex; gap: 45px; background-color: #fff; width: 100%; min-width: 900px; max-width: 70%; padding: 45px; border-radius: 10px; box-shadow: 10px 10px 30px rgba(255, 255, 255, 0.1);">
+        <img src="{% static 'staff.jpg' %}" style="width: 50%; border-radius: 20px; object-fit: cover;">
+        <form id="mainForm" method="POST" action="{% url 'apply' %}" novalidate enctype="multipart/form-data" style="width: 50%;">
+            {% csrf_token %}
+            <h2 style="text-align: center; margin-bottom: 15px; color: #100629; font-size: 30px;">Карточка Кандидата</h2>
+            <div style="position: relative; margin-bottom: 15px;">
+                <label for="lastname" style="display: block; margin-bottom: 5px; font-size: 1rem; font-weight: 500;">Фамилия</label>
+                <input type="text" id="lastname" name="lastname" value="{{last_name}}" disabled style="width: 100%; padding: 10px; padding-right: 40px; border: 2px solid #ddd; border-radius: 10px; outline: none; transition: border 0.3s; font-size: 1rem;">
+            </div>
+
+            <div style="position: relative; margin-bottom: 15px;">
+                <label for="firstname" style="display: block; margin-bottom: 5px; font-size: 1rem; font-weight: 500;">Имя</label>
+                <input type="text" id="firstname" name="firstname" value="{{first_name}}" disabled style="width: 100%; padding: 10px; padding-right: 40px; border: 2px solid #ddd; border-radius: 10px; outline: none; transition: border 0.3s; font-size: 1rem;">
+            </div>
+
+            <div style="position: relative; margin-bottom: 15px;">
+                <label for="patronim" style="display: block; margin-bottom: 5px; font-size: 1rem; font-weight: 500;">Отчество</label>
+                <input type="text" id="patronim" name="patronim" value="{{patronim}}" disabled style="width: 100%; padding: 10px; padding-right: 40px; border: 2px solid #ddd; border-radius: 10px; outline: none; transition: border 0.3s; font-size: 1rem;">
+            </div>
+
+            <div style="position: relative; margin-bottom: 15px;">
+                <label for="iin" style="display: block; margin-bottom: 5px; font-size: 1rem; font-weight: 500;">ИИН</label>
+                <input type="tel" id="iin" name="iin" value="{{iin}}" disabled style="width: 100%; padding: 10px; padding-right: 40px; border: 2px solid #ddd; border-radius: 10px; outline: none; transition: border 0.3s; font-size: 1rem;">
+            </div>
+
+            <div style="position: relative; margin-bottom: 15px;">
+                <label for="phone" style="display: block; margin-bottom: 5px; font-size: 1rem; font-weight: 500;">Номер Телефона для СМС</label>
+                <input type="tel" id="phone" name="phone" value="{{phone}}" disabled style="width: 100%; padding: 10px; padding-right: 40px; border: 2px solid #ddd; border-radius: 10px; outline: none; transition: border 0.3s; font-size: 1rem;">
+            </div>
+
+            <div style="position: relative; margin-bottom: 15px;">
+                <label for="salary" style="display: block; margin-bottom: 5px; font-size: 1rem; font-weight: 500;">Желаемая Заработная Плата</label>
+                <span style="position: absolute; top: 68%; transform: translateY(-50%); left: 10px; font-size: 1rem;">₸</span>
+                <input type="text" id="salary" name="salary" value="{{exp_salary}}" disabled style="width: 100%; padding: 10px; padding-left: 25px; padding-right: 40px; border: 2px solid #ddd; border-radius: 10px; outline: none; transition: border 0.3s; font-size: 1rem;">
+            </div>
+
+            <div style="position: relative; margin-bottom: 15px;">
+                <label for="grade" style="display: block; margin-bottom: 5px; font-size: 1rem; font-weight: 500;">Позиция</label>
+                <div style="position: relative; width: 100%; margin: 5px auto;">
+                    <input type="text" name="position" id="selectedPosition" value="{{position}}" disabled style="width: 100%; padding: 10px; padding-right: 40px; border: 2px solid #ddd; border-radius: 10px; outline: none; transition: border 0.3s; font-size: 1rem;">
+                </div>
+            </div>
+            
+            <div style="position: relative; margin-bottom: 15px;">
+                <label for="lang" style="display: block; margin-bottom: 5px; font-size: 1rem; font-weight: 500;">Язык Преподавания</label>
+                <div style="display: flex; align-items: center;">
+                    <div style="margin-right: 10px;">
+                        <input type="radio" id="ru" name="lang" value="Рус" {% if lang == "Рус" %}checked{% endif %} disabled>
+                        <label for="ru">Русский</label>
+                    </div>
+                    <div style="margin-right: 10px;">
+                        <input type="radio" id="kk" name="lang" value="Каз" {% if lang == "Каз" %}checked{% endif %} disabled>
+                        <label for="kk">Казахский</label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</body> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Template</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 20px;">
+    <tr>
+      <td align="center">
+        <!-- Main email container -->
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; padding: 20px; border-radius: 5px; box-shadow: 0px 4px 8px rgba(0,0,0,0.1);">
+          <!-- Header Section -->
+          <tr>
+            <td align="center" style="padding: 10px 0;">
+              <h1 style="color: #333333; font-size: 24px;">{{position}}</h1>
+            </td>
+          </tr>
+
+          <!-- Hero Image -->
+          <tr>
+            <td align="center" style="padding: 10px 0;">
+              <img src="https://i.ibb.co/1XP3BPb/AIS-header.jpg" width="100%" alt="AIS Header" style="display: block; border-radius: 5px;" />
+            </td>
+          </tr>
+
+          <!-- Content Section -->
+          <tr>
+            <td style="padding: 20px; color: #333333;">
+              <p style="font-size: 16px; line-height: 1.6;">Новая Заявка!</p>
+              <p style="font-size: 16px; line-height: 1.6;">{{last_name}} {{first_name}} {{patronim}} подал(а) заявку на позицию "{{position}}". Чтобы узнать больше о кандидате, пройдите на сайт.</p>
+              <p style="font-size: 16px; line-height: 1.6; text-align: right;">P.S. Ваш электронный помощник Кемаль!🤖</p>
+            </td>
+          </tr>
+
+          <!-- Call-to-Action Button -->
+          <tr>
+            <td align="center" style="padding: 20px;">
+              <a href="https://a1s.kz" style="display: inline-block; padding: 12px 25px; color: #ffffff; background-color: #57058B; text-decoration: none; border-radius: 5px; font-size: 16px;">Посмотреть на сайте</a>
+            </td>
+          </tr>
+
+          <!-- Footer Section -->
+          <tr>
+            <td align="center" style="padding: 10px 0; color: #888888; font-size: 12px;">
+              <p>&copy; 2024 Aqbobek International School. Автоматическая рассылка.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
