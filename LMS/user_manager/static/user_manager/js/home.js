@@ -1,16 +1,29 @@
+const main = document.querySelector('main');
 const search = document.querySelector('.input-group input'),
 table_headings = document.querySelectorAll('thead th');
 table_rows = document.querySelectorAll('tbody tr'),
 tableSection = document.getElementById('studentsTableBody');
 const selectMenu = document.querySelector(".select-menu"),
 selectBtn = selectMenu.querySelector(".select-btn"),
-options = selectMenu.querySelectorAll(".option"),
+optionsContainer = selectMenu.querySelector(".options"),
 sBtn_text = selectMenu.querySelector(".sBtn-text");
 exp = document.getElementById('export');
+const whatsapp = document.getElementById('whatsapp');
+const register = document.getElementById('register');
+const buttons_wa = document.getElementById('buttons_wa');
+const cancel = document.getElementById('cancel');
+const send = document.getElementById('send');
+const popup = document.getElementById('pop-up');
+const wa_text = document.getElementById('wa_text');
+const button_cancel = document.getElementById('button_cancel');
+const button_send = document.getElementById('button_send');
+
+
 var gradeSelection = "Все классы";
 let counter = 1;
 
 document.addEventListener('DOMContentLoaded', function() {
+    populateSelectMenu();
     populateTable();
     if (selectMenu.classList.contains("active")) {
         selectMenu.classList.remove("active");
@@ -19,6 +32,29 @@ document.addEventListener('DOMContentLoaded', function() {
     exp.addEventListener("click", () => {
         window.location.href = `/export/${gradeSelection}/`;
     })
+
+    const options = selectMenu.querySelectorAll(".option");
+    options.forEach(option => {
+        option.addEventListener("click", () => {
+            let selectedOption = option.querySelector(".option-text").innerText;
+            sBtn_text.innerText = selectedOption;
+            let selectedClassInput = document.getElementById('selectedClassInput');
+            selectedClassInput.value = selectedOption;
+
+            let optionsContainer = selectMenu.querySelector(".options");
+            optionsContainer.animate([
+                { opacity: 1, visibility: "visible" },
+                { opacity: 0, visibility: "hidden" }
+            ], {
+                duration: 100,
+                fill: "forwards"
+            });
+            selectMenu.classList.remove("active");
+
+            gradeSelection = selectedOption;
+            populateTable();
+        })
+    });
 });
 
 // search logic
@@ -38,6 +74,50 @@ search.addEventListener('input', () => {
 
 
 // select menu logic
+function populateSelectMenu(){
+    // Clear any existing content (optional)
+    optionsContainer.innerHTML = '';
+
+    //Add "Все класссы"
+    {
+        const li = document.createElement('li');
+        li.classList.add('option');
+        const span = document.createElement('span');
+        span.classList.add('option-text');
+        span.textContent = 'Все классы';
+        li.appendChild(span);
+        optionsContainer.appendChild(li);
+    }
+
+    // Iterate through each grade from 0 to 11
+    for (let grade = 0; grade <= 11; grade++) {
+        const letters = Grades_Letters[grade];
+        // For each letter in the grade, create a list item
+        letters.forEach(letter => {
+            const li = document.createElement('li');
+            li.classList.add('option');
+
+            const span = document.createElement('span');
+            span.classList.add('option-text');
+            span.textContent = `${grade}${letter} класс`;
+
+            li.appendChild(span);
+            optionsContainer.appendChild(li);
+        });
+    }
+
+    //Add "Лид"
+    {
+        const li = document.createElement('li');
+        li.classList.add('option');
+        const span = document.createElement('span');
+        span.classList.add('option-text');
+        span.textContent = 'Лиды';
+        li.appendChild(span);
+        optionsContainer.appendChild(li);
+    }
+}
+
 selectBtn.addEventListener("click", () => {
     if (selectMenu.classList.contains("active")) {
         selectMenu.classList.remove("active");
@@ -51,7 +131,7 @@ selectBtn.addEventListener("click", () => {
         });
     } else {
         selectMenu.classList.add("active");
-        let optionsContainer = selectMenu.querySelector(".options");
+        
         optionsContainer.animate([
             { opacity: 0, visibility: "hidden" },
             { opacity: 1, visibility: "visible" }
@@ -62,28 +142,6 @@ selectBtn.addEventListener("click", () => {
     }
 });
 
-options.forEach(option => {
-    option.addEventListener("click", () => {
-        let selectedOption = option.querySelector(".option-text").innerText;
-        sBtn_text.innerText = selectedOption;
-        let selectedClassInput = document.getElementById('selectedClassInput');
-        selectedClassInput.value = selectedOption;
-
-        let optionsContainer = selectMenu.querySelector(".options");
-        optionsContainer.animate([
-            { opacity: 1, visibility: "visible" },
-            { opacity: 0, visibility: "hidden" }
-        ], {
-            duration: 100,
-            fill: "forwards"
-        });
-        selectMenu.classList.remove("active");
-
-        gradeSelection = selectedOption;
-        populateTable();
-    })
-});
-
 
 // populate logic
 function populateTable() {
@@ -91,36 +149,46 @@ function populateTable() {
     counter = 1; //Обнулить counter
     if (gradeSelection=='Все классы'){
         students.forEach(function(student) {
-            if (student.status !== 'Лид'){
+            if (student.status === 'Акт'){
                 addStudent(student);
             }
         });
-        exp.style.visibility = "visible";
+        exp.style.display = "block";
     }
-    else if (gradeSelection=='-') {
+    else if (gradeSelection=='Лиды') {
         students.forEach(function(student) {
             if ((student.status === 'Лид')){
                 addStudent(student);
             }
         });
-        exp.style.visibility = "hidden";
+        exp.style.display = "none";
     }
     else{
+        // Use a regex to extract the grade number and letter
+        const match = gradeSelection.match(/^(\d+)([A-Za-zА-Яа-я])\s+класс$/);
+        const selected_grade = parseInt(match[1], 10); 
+        const selected_letter = match[2];               
         students.forEach(function(student) {
-            if ((student.grade === Grades_dict[gradeSelection]) && (student.status === 'Акт')){
-                addStudent(student);
+            if ((student.status === 'Акт')){
+                if ((student.grade_num === selected_grade) && (student.grade_let === selected_letter)){
+                    addStudent(student);
+                }
             }
         });
-        exp.style.visibility = "visible";
+        exp.style.display = "block";
     }
     table_rows = document.querySelectorAll('tbody tr');
 }
 
-function addStudent(student){
+function addStudent(student) {
     var tr = document.createElement('tr');
     tr.innerHTML = `
         <td>${counter}</td>
-        <td><a href="/card_student/${student.IIN}/">${student.Last_Name}</td>
+        <td>
+            <a href="${student.status === "Лид" ? "/temp_card_std/" + student.IIN + "/" : "/card_student/" + student.IIN + "/"}">
+                ${student.Last_Name}
+            </a>
+        </td>
         <td>${student.First_Name}</td>
         <td>${student.Patronim}</td>
         <td>${student.IIN}</td>
@@ -129,3 +197,143 @@ function addStudent(student){
     tableSection.appendChild(tr);
     counter++;
 }
+
+
+// populate logic for WhatsApp 
+function populateTable_wa() {
+    tableSection.innerHTML = ''; // Clear the table first
+    if (gradeSelection=='Все классы'){
+        students.forEach(function(student) {
+            if (student.status === 'Акт'){
+                addStudent_wa(student);
+            }
+        });
+    }
+    else if (gradeSelection=='Лиды') {
+        students.forEach(function(student) {
+            if ((student.status === 'Лид')){
+                addStudent_wa(student);
+            }
+        });
+    }
+    else{
+        // Use a regex to extract the grade number and letter
+        const match = gradeSelection.match(/^(\d+)([A-Za-zА-Яа-я])\s+класс$/);
+        const selected_grade = parseInt(match[1], 10); 
+        const selected_letter = match[2];               
+        students.forEach(function(student) {
+            if ((student.status === 'Акт')){
+                if ((student.grade_num === selected_grade) && (student.grade_let === selected_letter)){
+                    addStudent(student);
+                }
+            }
+        });
+        exp.style.display = "block";
+    }
+    table_rows = document.querySelectorAll('tbody tr');
+}
+
+function addStudent_wa(student){
+    var tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><input type="checkbox"></td>
+        <td><a href="/card_student/${student.IIN}/">${student.Last_Name}</td>
+        <td>${student.First_Name}</td>
+        <td>${student.Patronim}</td>
+        <td>${student.IIN}</td>
+        <td>${student.phone}</td>
+    `;
+    tableSection.appendChild(tr);
+}
+
+whatsapp.addEventListener('click', () => {
+    buttons_wa.style.display = "flex";
+    whatsapp.style.display = "none";
+    exp.style.display = "none";
+    register.style.display = "none";
+
+    populateTable_wa();
+})
+
+cancel.addEventListener('click', () => {
+    buttons_wa.style.display = "none";
+    whatsapp.style.display = "block";
+    exp.style.display = "block";
+    register.style.display = "block";
+
+    populateTable();
+})
+
+send.addEventListener('click', () => {
+    popup.style.display = 'block';
+    main.style.filter = 'blur(5px)';
+    cancel.disabled = true;
+    send.disabled = true;
+})
+
+button_cancel.addEventListener('click', () => {
+    popup.style.display = 'none';
+    main.style.filter = 'blur(0px)';
+    cancel.disabled = false;
+    send.disabled = false;
+})
+
+button_send.addEventListener('click', () => {
+    // Get all checkboxes in the table
+    const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+    
+    // Initialize an array to hold the data of checked students
+    const checkedStudents = [];
+
+    // Loop through checkboxes and find the checked ones
+    checkboxes.forEach((checkbox, index) => {
+        if (checkbox.checked) {
+            // Get the row corresponding to the checkbox
+            const row = checkbox.closest('tr');
+            
+            // Extract data from the row cells
+            const iin = row.cells[4].textContent.trim();
+                
+            // Add the student IIN to the array
+            checkedStudents.push(iin);
+        }
+    });
+
+    // Get the value of the textarea
+    const waText = document.getElementById('wa_text').value.trim();
+
+    /// If no students are selected or wa_text is empty, show an alert and exit
+    if (checkedStudents.length === 0 || !waText) {
+        alert('Выберите учеников и введите текст рассылки!');
+        return;
+    }
+    // Send the data to the server
+    fetch('/wa/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value // Include CSRF token if using Django
+        },
+        body: JSON.stringify({ 
+            checkedStudents: checkedStudents,
+            wa_text: waText
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Произошла ошибка!');
+        }
+    })
+    .then(data => {
+        // Handle the server's response
+        console.log('Server response:', data);
+        alert('Данные успешно отправлены!');
+    })
+    .catch(error => {
+        // Handle errors
+        console.error('Error:', error);
+        alert('Произошла ошибка!');
+    });
+})

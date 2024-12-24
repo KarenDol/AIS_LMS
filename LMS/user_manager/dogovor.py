@@ -1,14 +1,15 @@
 from .models import Student, Parent, Contract
+from django.http import FileResponse
 from docxtpl import DocxTemplate
-import subprocess
 from django.conf import settings
 import os
+from datetime import datetime
 
 def fill_doc(IIN):
     student = Student.objects.get(IIN=IIN)
     parent = student.parent_1
     contract = student.contract
-    template_location = os.path.join(settings.STATIC_ROOT, 'docs', 'template.docx')
+    template_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'template.docx')
     document = DocxTemplate(template_location)
     context = {
         'doc_number': contract.numb,
@@ -24,7 +25,7 @@ def fill_doc(IIN):
         'l_month_ru': month_ru(contract.last_date.month),
         'l_month_kz': month_kz(contract.last_date.month),
         'l_year': contract.last_date.year,
-        'birthdate': student.birthdate,
+        'birthdate': IIN[5:7] + '/' + IIN[3:5] + '/' + "20" + IIN[:2],
         'grade': student.grade,
         'IIN': student.IIN,
         'parent_name': parent.First_Name + ' ' + parent.Last_Name,
@@ -40,8 +41,45 @@ def fill_doc(IIN):
         'ID_num': parent.ID_number,
         }
     document.render(context)
-    docs_location = os.path.join(settings.STATIC_ROOT, 'docs', 'dogovor' + str(contract.numb) + '.docx')
+    docs_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'dogovor' + str(contract.numb) + '.docx')
     document.save(docs_location)
+
+def fill_join(IIN):
+    student = Student.objects.get(IIN=IIN)
+    template_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'Прикрепительный талон.docx')
+    document = DocxTemplate(template_location)
+    context = {
+        "Last_Name": student.Last_Name,
+        "First_Name": student.First_Name,
+        "Patronim": student.Patronim,
+        "birthdate": IIN[5:7] + '/' + IIN[3:5] + '/' + "20" + IIN[:2],
+        "grade": student.grade_num,
+        "lang": student.lang,
+        "prev_school": student.prev_school,
+        "today": datetime.today().strftime("%d/%m/%Y"),
+    }
+    document.render(context)
+    docs_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'join' + IIN + '.docx')
+    document.save(docs_location)
+
+
+def fill_leave(IIN):
+    student = Student.objects.get(IIN=IIN)
+    template_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'Открепительный талон.docx')
+    document = DocxTemplate(template_location)
+    context = {
+        "Last_Name": student.Last_Name,
+        "First_Name": student.First_Name,
+        "Patronim": student.Patronim,
+        "birthdate": "20" + IIN[:2] + '/' + IIN[3:5] + '/' + IIN[5:7],
+        "grade": student.grade_num,
+        "lang": student.lang,
+        "today": datetime.today().strftime("%d/%m/%Y"),
+    }
+    document.render(context)
+    docs_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'leave' + IIN + '.docx')
+    document.save(docs_location)
+    
 
 def month_ru(month):
     if month<7:

@@ -17,7 +17,7 @@ from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', views.home, name='hr_home'),
     path('apply/', views.apply, name='apply'),
     path('email/<iin>/', views.send_email, name='send_email'),
     path("login/", views.login_user, name='login_user'), 

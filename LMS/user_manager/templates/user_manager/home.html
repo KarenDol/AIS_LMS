@@ -19,13 +19,7 @@
                     <span class="sBtn-text">Все классы</span>
                     <i class="fa-solid fa-chevron-down"></i>
                 </div>
-                <ul class="options">
-                    {% for option in Grades %}
-                        <li class="option">
-                            <span class="option-text">{{ option }}</span>
-                        </li>
-                    {% endfor %}
-                </ul>
+                <ul class="options"></ul>
             </div>
 
             <input type="hidden" name="grade" id="selectedClassInput">
@@ -34,15 +28,27 @@
                 <img src="{% static 'user_manager/search.png' %}" alt="" class="search-icon">
             </div>
 
-            <div class="export">
-                {% csrf_token %}
-                <img class="register_student" id="export" src="{% static 'user_manager/Export.png' %}">
+            <div class="action-buttons">
+                <div class="whatsapp">
+                    <img class="whatsapp" id="whatsapp" src="{% static 'user_manager/WhatsApp.webp' %}">
+                    <span class="tooltiptext">Ватсап рассылка</span>
+                </div>
+
+                <div class="export">
+                    <img class="register_student" id="export" src="{% static 'user_manager/Export.png' %}">
+                    <span class="tooltiptext">Экспортировать в Excel</span>
+                </div>
+
+                <div class="register_student">
+                    <a href="/register_student"><img class="register_student" id="register" src="{% static 'user_manager/New Student Icon.png' %}"></a>
+                    <span class="tooltiptext">Добавить ученика</span>
+                </div>
             </div>
 
-            <a class="register_student" href="{% url 'register_student' %}">
-                <img class="register_student" src="{% static 'user_manager/New Student Icon.png' %}">
-            </a>
-
+            <div class="icons-group" id="buttons_wa">
+                <button id="cancel"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"><path fill="#DB0227" d="m8.4 16.308l3.6-3.6l3.6 3.6l.708-.708l-3.6-3.6l3.6-3.6l-.708-.708l-3.6 3.6l-3.6-3.6l-.708.708l3.6 3.6l-3.6 3.6zM12.003 21q-1.866 0-3.51-.708q-1.643-.709-2.859-1.924t-1.925-2.856T3 12.003t.709-3.51Q4.417 6.85 5.63 5.634t2.857-1.925T11.997 3t3.51.709q1.643.708 2.859 1.922t1.925 2.857t.709 3.509t-.708 3.51t-1.924 2.859t-2.856 1.925t-3.509.709"/></svg></button>
+                <button id="send"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"><path fill="#3BEF69" d="M4 18.5v-5.154L9.846 12L4 10.654V5.5L19.423 12z"/></svg></button>
+            </div>
         </section>
         <section class="table__body">
             <table>
@@ -61,9 +67,17 @@
             </table>
         </section>
     </main>
+    <div class="pop-up" id="pop-up">
+        <p class="header">Введите текст рассылки</p>
+        <textarea rows="6" id="wa_text"></textarea>
+        <div class="button-group">
+            <button id="button_cancel">Отменить</button>
+            <button id="button_send">Отправить</button>
+        </div>
+    </div>
     <script>
         var students = JSON.parse('{{ students|escapejs }}');
-        var Grades_dict = JSON.parse('{{ Grades_dict|escapejs }}');
+        var Grades_Letters = JSON.parse('{{ Grades_Letters|escapejs }}');
     </script>
     <script src="{% static 'user_manager/js/home.js' %}"></script>
 </body>

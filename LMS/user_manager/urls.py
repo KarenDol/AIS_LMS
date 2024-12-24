@@ -24,13 +24,16 @@ urlpatterns = [
     path('user_settings/', views.user_settings, name='user_settings'),
     path('404/<error_code>', views.error, name='error'),
 
-    #Register
+    #Student
     path('register_student/', views.register_student, name='register_student'),
+    path('card_student/<IIN>/', views.card_student, name='card_student'),
+    path('temp_card_std/<IIN>/', views.temp_card_std, name='temp_card_std'),
+
+    #Register
     path('register_parent/<IIN>/', views.register_parent, name='register_parent'),
     path('register_contract/<IIN>/', views.register_contract, name='register_contract'),
 
     #Card view
-    path('card_student/<IIN>/', views.card_student, name='card_student'),
     path('card_parent/<IIN>/', views.card_parent, name='card_parent'),
     path('card_contract/<IIN>/', views.card_contract, name='card_contract'),
 
@@ -39,7 +42,18 @@ urlpatterns = [
     re_path(r'^api/serve_static/(?P<filename>.+)$', views.serve_static, name='serve_static'),
     path('export/<grade>/', views.export, name='export'),
 
-    #Others
+    #Fill documents
     path('sign_doc/<IIN>/', views.sign_doc, name='sign_doc'),
+    path('join_doc/<IIN>/', views.join_doc, name='join_doc'),
+    path('leave_doc/<IIN>/', views.leave_doc, name='leave_doc'),
+    path('fill_contract/<IIN>/', views.fill_contract, name='fill_contract'),
+
+    #Honors
+    path("honors/<IIN>/", views.honors, name='honors'),
+    path("delete_honor/<id>/", views.delete_honor, name='delete_honor'),
+
+    #Others
+    path('accept/<IIN>/', views.accept_student, name='accept_student'),
     path('join_fee/<IIN>/', views.join_fee, name='join_fee'),
+    path("wa/", views.wa, name='wa'),
 ]

@@ -5,19 +5,20 @@ from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from django.forms.models import model_to_dict
-from django.http import FileResponse, Http404
-from .models import Student, Parent, Contract, List_Of_Students, LMS_User
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
+from .models import Student, Parent, Contract, List_Of_Students, LMS_User, Honor
 from django.db import IntegrityError
-import datetime
+from datetime import datetime
 import requests
-from .dogovor import fill_doc
-from .const import Grades, Grades_dict, Grades_home, User_type_dict
+from .dogovor import *
+from .const import *
 import json
 import os
-from django.http import JsonResponse
 import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Font, Border, Side, Alignment
+from io import BytesIO
+import re
 
 # Create your views here.
 def home(request):
@@ -25,17 +26,15 @@ def home(request):
         return redirect('logout')
     students = list(Student.objects.all()
                     .order_by('Last_Name', 'First_Name', 'Patronim')
-                    .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'phone', 'grade', 'status'))
+                    .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'phone', 'grade', 'status', 'grade_num', 'grade_let'))
     students_json = json.dumps(students)
-    Grades_dict_json = json.dumps(Grades_dict)
+    Grades_Letters_json = json.dumps(Grades_Letters)
 
     #Populating context
     context = {
-        'Grades': Grades_home, 
-        'Grades_dict': Grades_dict_json, 
+        'Grades_Letters': Grades_Letters_json, 
         'students': students_json,
     }
-
     return render(request, 'user_manager/home.html', context)
 
 #Check if student exists or not    
@@ -66,6 +65,13 @@ def contract_exist(IIN):
         else:
             return False
     else:
+        return False
+    
+def honor_exist(id):
+    try:
+        honor = Honor.objects.get(pk=id)
+        return True
+    except Student.DoesNotExist:
         return False
     
 #If user exists
@@ -99,7 +105,7 @@ def serve_static(request, filename):
     if os.path.exists(file_path):
         return FileResponse(open(file_path, 'rb'))
     else:
-        raise Http404("Avatar not found.")
+        raise Http404("Avatar not found")
 
 def login_user(request):
     if request.user.is_authenticated:
@@ -138,15 +144,15 @@ def register_student(request):
             firstname = request.POST['firstname']
             patronim = request.POST['patronim']
             IIN = request.POST['IIN']
-            grade = Grades_dict[request.POST['grade']]
-            nationality = request.POST['nationality']
+            grade_num = request.POST['grade']
+            lang = request.POST['lang']
             prev_school = request.POST['prev_school']                
-            phone = request.POST['phone']
+            temp_phone = request.POST['phone']
             comment = request.POST['comment']
 
             #Check if student already exists
             if student_exist(IIN):
-                return redirect('error', error_code='Ученик c таким ИИН уже добавлен в систему')
+                return redirect("error", error_code="Ученик c таким ИИН уже добавлен в систему")
 
             if user_student_exist(IIN):
                 new_user = User.objects.get(username=IIN)
@@ -154,23 +160,21 @@ def register_student(request):
                 new_user = User(username=IIN, first_name=firstname)
                 new_user.set_password("AIS@100")
                 new_user.save()
-            new_student = Student(user=new_user, Last_Name=lastname, First_Name=firstname, Patronim=patronim, phone=phone,
-                            IIN=IIN, prev_school=prev_school, grade=grade, nationality=nationality,
-                            comment=comment)
+            new_student = Student(user=new_user, Last_Name=lastname, First_Name=firstname, Patronim=patronim, temp_phone=temp_phone,
+                            IIN=IIN, prev_school=prev_school, grade_num=grade_num, lang=lang, comment=comment)
             new_student.save()
-            messages.success(request, "Новый ученик был добавлен в систему")
-            return redirect('register_parent', IIN=new_student.IIN)
+            messages.success(request, "Новый ученик добавлен в систему")
+            return redirect('home')
         else:
             context = {
-                'Grades': Grades,
                 'student': json.dumps(None), #Send empty student for JS 
             }
-            return render(request, 'user_manager/student.html', context)
+            return render(request, 'user_manager/temp_student.html', context)
     else:
         messages.success(request, "Only ВнСв can add new students")
         return redirect('home')
-
-def card_student(request, IIN):
+    
+def accept_student(request, IIN):
     if (not user_auth(request)):
         return redirect('logout')
     if student_exist(IIN):
@@ -180,10 +184,92 @@ def card_student(request, IIN):
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         if request.method == "POST":
+            nationality = request.POST['nationality']
+            grade_let = request.POST['grade']
+
+            student.nationality = nationality
+            student.grade_let = grade_let
+            student.status = "Акт"
+
+            student.save() #Accept the student permanently
+            messages.success(request, "Ученик принят в школу")
+            return redirect('card_student', IIN=IIN)
+        else:
+            student.status = "Int" #Neccessary fro js
+            student_dict = model_to_dict(student)  # Convert the Student object to a dictionary
+            student_json = json.dumps(student_dict) # Serialize it to JSON
+            Letters = Grades_Letters[student.grade_num]
+            Letters_json = json.dumps(Letters) # Serialize it to JSON
+            context = {
+                'Letters': Letters_json,
+                'student': student_json,
+            }
+            return render(request, 'user_manager/student.html', context)
+    else:
+        messages.success(request, "Только зам по ВСиРШ можем менять карточку студента")
+        return redirect('home') 
+
+def temp_card_std(request, IIN):
+    if (not user_auth(request)):
+        return redirect('logout')
+    if student_exist(IIN):
+        student = Student.objects.get(IIN=IIN)
+        if student.status == "Акт":
+            return redirect('card_student', IIN=IIN)
+    else:
+        return redirect('error', error_code='Ученика с таким ИИН нет в системе')
+    current_user = LMS_User.objects.get(user=request.user)
+    if current_user.user_type == 'ВнСв':
+        if request.method == "POST":
             lastname = request.POST['lastname']
             firstname = request.POST['firstname']
             patronim = request.POST['patronim']
-            grade = Grades_dict[request.POST['grade']]
+            grade = request.POST['grade']
+            lang = request.POST['lang']
+            prev_school = request.POST['prev_school']                
+            temp_phone = request.POST['phone']
+            comment = request.POST['comment']
+
+            student.Last_Name = lastname
+            student.First_Name=firstname
+            student.Patronim = patronim
+            student.temp_phone = temp_phone
+            student.prev_school = prev_school
+            student.grade_num = grade
+            student.lang = lang
+            student.comment = comment
+
+            student.save() 
+            messages.success(request, "Данные ученика изменены")
+            return redirect('temp_card_std', IIN=IIN)
+        else:
+            student_dict = model_to_dict(student)  # Convert the Student object to a dictionary
+            student_json = json.dumps(student_dict) # Serialize it to JSON
+            context = {
+                'Grades': Grades_Letters[student.grade_num],
+                'student': student_json,
+            }
+            return render(request, 'user_manager/temp_student.html', context)
+    else:
+        messages.success(request, "Только зам по ВСиРШ можем менять карточку студента")
+        return redirect('home')
+
+def card_student(request, IIN):
+    if (not user_auth(request)):
+        return redirect('logout')
+    if student_exist(IIN):
+        student = Student.objects.get(IIN=IIN)
+        if student.status == "Лид":
+            return redirect('temp_card_std', IIN=IIN)
+    else:
+        return redirect('error', error_code='Ученика с таким ИИН нет в системе')
+    current_user = LMS_User.objects.get(user=request.user)
+    if current_user.user_type == 'ВнСв':
+        if request.method == "POST":
+            lastname = request.POST['lastname']
+            firstname = request.POST['firstname']
+            patronim = request.POST['patronim']
+            grade_let = request.POST['grade']
             nationality = request.POST['nationality']
             prev_school = request.POST['prev_school']                
             phone = request.POST['phone']
@@ -194,7 +280,7 @@ def card_student(request, IIN):
             student.Patronim = patronim
             student.phone = phone
             student.prev_school = prev_school
-            student.grade = grade
+            student.grade_let = grade_let
             student.nationality = nationality
             student.comment = comment
 
@@ -204,8 +290,10 @@ def card_student(request, IIN):
         else:
             student_dict = model_to_dict(student)  # Convert the Student object to a dictionary
             student_json = json.dumps(student_dict) # Serialize it to JSON
+            Letters_json = json.dumps(Grades_Letters[student.grade_num])
+
             context = {
-                'Grades': Grades,
+                'Letters': Letters_json,
                 'student': student_json,
             }
             return render(request, 'user_manager/student.html', context)
@@ -218,7 +306,7 @@ def register_parent(request, IIN):
     if (not user_auth(request)):
         return redirect('logout')
     if student_exist(IIN):
-        new_student = Student.objects.get(IIN=IIN)
+        student = Student.objects.get(IIN=IIN)
     else:
         return redirect('error', error_code='Ученика с таким ИИН нет в системе')
     if parent_exist(IIN): #If parent already exists
@@ -249,11 +337,12 @@ def register_parent(request, IIN):
                         Working_Place=Place, Position=Position, Address=address)
             new_parent.save()
             
-            new_student.parent_1 = new_parent
-            new_student.save()
+            student.parent_1 = new_parent
+            student.save()
             return redirect('register_contract', IIN=IIN)            
         else:
             context = {
+                'temp_phone': student.temp_phone,
                 'IIN': IIN,
             }
             return render(request, 'user_manager/parent.html', context)
@@ -269,13 +358,14 @@ def register_contract(request, IIN):
     else:
         return redirect('error', error_code='Ученика с таким ИИН нет в системе')
     if not parent_exist(IIN):
-        return redirect('error', "Сначала убедитесь, что студент и родитель добавлены в систему")
+        messages.error(request, "Необходимо сначала добавить родителя")
+        return redirect('register_parent', IIN=IIN)
     current_user = LMS_User.objects.get(user=request.user)
     if contract_exist(IIN): #If contract already exists
         return redirect('error', error_code='Договор для данного ученика уже составлен')
     if current_user.user_type == 'ВнСв':
         if request.method == 'POST':
-            date = str(datetime.datetime.now())
+            date = str(datetime.now())
             numb = date[2:4] + date[5:7] + date[8:10] + date[11:13] + date[14:16] + date[17:19]
             sign_date = request.POST['sign_date']
             first_date = request.POST['first_date']
@@ -290,12 +380,11 @@ def register_contract(request, IIN):
             student.contract = new_contract
             student.status = 'Акт'
             student.save()
-            # fill_doc(IIN) // Do not create the document unless required
             return redirect('home')
         else:
             context = {
                 'IIN': IIN, 
-                'today': str(datetime.date.today()),
+                'today': str(datetime.today()),
             }
             return render(request, 'user_manager/contract.html', context)
     else:
@@ -309,7 +398,8 @@ def card_parent(request, IIN):
         student = Student.objects.get(IIN=IIN)
         parent = student.parent_1
     else:
-        return redirect('error', error_code='Родителя нет в системе')
+        messages.error(request, "Родителя нет в системе")
+        return redirect('register_parent', IIN=IIN)
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         if request.method == "POST":
@@ -359,7 +449,8 @@ def card_contract(request, IIN):
         student = Student.objects.get(IIN=IIN)
         contract = student.contract
     else:
-        return redirect('error', "Сначала убедитесь, что студент, родитель и договор добавлены в систему")
+        messages.error(request, "Договора нет в системе")
+        return redirect('register_contract', IIN=IIN)
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         if request.method == 'POST':
@@ -699,3 +790,217 @@ def export(request, grade):
         return FileResponse(open(doc_location, 'rb'))
     else:
         return redirect('error', "Войдите в систему как зам по ВСиРШ")
+    
+
+def honors(request, IIN):
+    if (not user_auth(request)):
+        return redirect('logout')
+    if student_exist(IIN):
+        student = Student.objects.get(IIN=IIN)
+        if student.status != "Акт":
+            messages.error(request, "Данный студент не является активным")
+            return redirect('card_student', IIN=IIN)
+    else:
+        return redirect('error', error_code='Ученика с таким ИИН нет в системе')
+    current_user = LMS_User.objects.get(user=request.user)
+    if current_user.user_type == 'ВнСв':
+        if request.method == "POST":
+            title = request.POST['title']
+            description = request.POST['description']
+            date = request.POST['date']
+            date = f"{date}-01"
+            date = datetime.strptime(date, "%Y-%m-%d").date()
+            honor = Honor(student=student, title=title, description=description, date=date)
+            honor.save()
+            return redirect('honors', IIN=IIN)
+        else:
+            honors = list(Honor.objects.filter(student=student)
+                        .order_by('date'))
+            # Convert each honor's date to the desired format (e.g., "YYYY-MM")
+            honors_serializable = [
+                {
+                    "id": honor.pk,
+                    "title": honor.title,
+                    "date": honor.date.strftime("%Y-%m"),  # Format the date
+                    "description": honor.description,
+                }
+                for honor in honors
+            ]
+            honors_json = json.dumps(honors_serializable)
+            context={
+                'IIN': IIN,
+                'honors': honors_json,
+            }
+            return render(request, 'user_manager/honors.html', context)
+    else:
+        messages.success(request, "Только зам по ВСиРШ можем менять карточку студента")
+        return redirect('home')
+    
+def delete_honor(request, id):
+    if (not user_auth(request)):
+        return redirect('logout')
+    if honor_exist(id):
+        honor = Honor.objects.get(pk=id)
+    else:
+        return redirect('error', error_code='Ученика с таким ИИН нет в системе')
+    current_user = LMS_User.objects.get(user=request.user)
+    if current_user.user_type == 'ВнСв':
+        if request.method == "POST":
+            honor.delete()  # Delete the object
+            return JsonResponse({"success": True, "message": "Honor deleted successfully."})
+        else:
+            return HttpResponse(status=405)  # Method Not Allowed for non-POST requests
+
+    else:
+        messages.success(request, "Только зам по ВСиРШ можем менять карточку студента")
+        return redirect('home')
+    
+def join_doc(request, IIN):
+    if (not user_auth(request)):
+        return redirect('logout')
+    if student_exist(IIN):
+        student = Student.objects.get(IIN=IIN)
+    else:
+        return redirect('error', error_code='Ученика с таким ИИН нет в системе')
+    current_user = LMS_User.objects.get(user=request.user)
+    if current_user.user_type == 'ВнСв':
+        fill_join(IIN)
+        file_path = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'join' + IIN + '.docx')
+
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as f:
+                file_data = BytesIO(f.read())
+
+            # Delete the file
+            try:
+                os.remove(file_path)
+            except OSError:
+                raise Http404("Unable to delete the file")
+            
+            # Return the file response
+            file_data.seek(0)  # Reset buffer pointer to the start
+            return FileResponse(file_data)
+        else:
+            raise Http404("File not found")
+    else:
+        messages.error(request, "Только зам по ВСиРШ можем менять карточку студента")
+        return redirect('home')
+    
+def leave_doc(request, IIN):
+    if (not user_auth(request)):
+        return redirect('logout')
+    if student_exist(IIN):
+        student = Student.objects.get(IIN=IIN)
+    else:
+        return redirect('error', error_code='Ученика с таким ИИН нет в системе')
+    current_user = LMS_User.objects.get(user=request.user)
+    if current_user.user_type == 'ВнСв':
+        fill_leave(IIN)
+        file_path = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'leave' + IIN + '.docx')
+
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as f:
+                file_data = BytesIO(f.read())
+
+            # Delete the file
+            try:
+                os.remove(file_path)
+            except OSError:
+                raise Http404("Unable to delete the file")
+            
+            # Return the file response
+            file_data.seek(0)  # Reset buffer pointer to the start
+            return FileResponse(file_data)
+        else:
+            raise Http404("File not found")
+    else:
+        messages.error(request, "Только зам по ВСиРШ можем менять карточку студента")
+        return redirect('home')
+    
+def fill_contract(request, IIN):
+    if (not user_auth(request)):
+        return redirect('logout')
+    if (contract_exist(IIN)):
+        student = Student.objects.get(IIN=IIN)
+        contract = Contract.objects.get(student=student)
+    else:
+        return redirect('error', error_code='Договора ученика нет в системе')
+    current_user = LMS_User.objects.get(user=request.user)
+    if current_user.user_type == 'ВнСв':
+        fill_doc(IIN)
+        file_path = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'dogovor' + str(contract.numb) + '.docx')
+
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as f:
+                file_data = BytesIO(f.read())
+
+            # Delete the file
+            try:
+                os.remove(file_path)
+            except OSError:
+                raise Http404("Unable to delete the file")
+            
+            # Return the file response
+            file_data.seek(0)  # Reset buffer pointer to the start
+            return FileResponse(file_data)
+        else:
+            raise Http404("File not found")
+    else:
+        messages.error(request, "Только зам по ВСиРШ можем менять карточку студента")
+        return redirect('home')
+    
+def wa(request):
+    if request.method == 'POST':
+        try:
+            # Parse the JSON body
+            data = json.loads(request.body)
+            
+            # Extract the required data
+            checked_students = data.get('checkedStudents', [])
+            wa_text = data.get('wa_text', '')
+
+            url = "	https://7103.api.greenapi.com/waInstance7103163711/sendMessage/677efe89a87e474f93b6ca379ea32a364bf6be6020414505bd"
+
+            for IIN in checked_students:
+                student = Student.objects.get(IIN=IIN)
+                parent = student.parent_1
+                phone = parent.Phone
+
+                # Remove +, parentheses, and dashes from the phone number
+                phone = re.sub(r'[^\d]', '', phone)  # Keeps only digits
+
+                payload = {
+                    "chatId": f"{phone}@c.us",
+                    "message": wa_text
+                }
+                headers = {
+                'Content-Type': 'application/json'
+                }
+
+                requests.post(url, json=payload, headers=headers)
+
+            # Return a success response
+            return JsonResponse({'status': 'success', 'message': 'Data received successfully'})
+        
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
+
+    # Return an error for non-POST requests
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+
+def migrate():
+    students = Student.objects.all()
+    for student in students:
+        if student.grade != '':
+            # This regex pattern captures one or more digits followed by one or more non-digit characters.
+            pattern = r"(\d+)(\D+)"
+            match = re.match(pattern, student.grade)
+            if match:
+        
+                grade = int(match.group(1))  # Convert numeric part to an integer
+                letter = match.group(2).strip()  # Letter part
+
+                student.grade_num = grade
+                student.grade_let = letter
+
+                student.save()

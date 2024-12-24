@@ -129,3 +129,4 @@ function addApplicant(applicant){
     tableSection.appendChild(tr);
     counter++;
 }
+

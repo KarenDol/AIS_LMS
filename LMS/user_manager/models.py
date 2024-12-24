@@ -40,6 +40,9 @@ class Student(models.Model):
     Patronim = models.CharField(max_length=40, null=True)
     IIN = models.CharField(max_length=12)
     grade = models.CharField(max_length=3, choices=Grades_models, default='-')
+    grade_num = models.IntegerField(null=True)
+    grade_let = models.CharField(max_length=1, null=True)
+    lang = models.CharField(max_length=3, null=True)
     parent_1 = models.ForeignKey(Parent, on_delete=models.CASCADE, null=True, related_name='mom')
     # parent_2 = models.ForeignKey(Parent, on_delete=models.CASCADE, null=True, related_name='dad')
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE, null=True)
@@ -49,7 +52,14 @@ class Student(models.Model):
     nationality = models.CharField(max_length=20, null=True)
     prev_school = models.CharField(max_length=50, null=True)
     phone = models.CharField(max_length=20, null=True)
+    temp_phone = models.CharField(max_length=20, null=True)
     comment = models.CharField(max_length=200, null=True)
+
+class Honor(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100) #ex. Gold Medal
+    date = models.DateField() #01-MM-YYYY, award date
+    description = models.CharField(max_length=200) #ex. Republican Olympiad
 
 class LMS_User(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

@@ -4,6 +4,10 @@
     --dark: #9CCD62;
 }
 
+* {
+    font-family: 'Montserrat', sans-serif;
+}
+
 header {
     background-color: #572B79;
     color: var(--white);
@@ -76,4 +80,46 @@ a{
     to {
         transform: rotate(360deg);
     }
+}
+
+/* Message container styles */
+.message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 300px;
+    z-index: 1000;
+}
+
+/* Basic message styles */
+.message {
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    color: #fff;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Message types */
+.message-success { background-color: #4CAF50; }
+.message-error { background-color: #f44336; }
+.message-warning { background-color: #ff9800; }
+.message-info { background-color: #2196F3; }
+
+/* Close button */
+.message .close-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
 }

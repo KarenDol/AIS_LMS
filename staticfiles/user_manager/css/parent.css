@@ -234,6 +234,13 @@ button:hover{
     margin-bottom: 15px;
 }
 
+#button_cancel{
+    background-color: #ffffff;
+    color: #59007A;
+    border: solid 2px;
+    border-color: #59007A;
+}
+
 
 /* h2 styles */
 h2{

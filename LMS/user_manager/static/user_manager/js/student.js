@@ -12,64 +12,30 @@ document.addEventListener('DOMContentLoaded', function () {
     const h2 = document.querySelector("h2");
     const selectMenu = document.querySelector(".select-menu"),
     selectBtn = selectMenu.querySelector(".select-btn"),
-    options = selectMenu.querySelectorAll(".option"),
+    optionsContainer = selectMenu.querySelector(".options"),
     sBtn_text = selectMenu.querySelector(".sBtn-text");
+    const button_back = document.getElementById('button_back');
     //Button group when editing
     const buttons_edit = document.getElementById('buttons_edit');
     const button_cancel = document.getElementById('button_cancel'); //Cancel edit
-    const button_save = document.getElementById('button_save'); //Save edit
-    //Button group for card view
-    const buttons_card = document.getElementById('buttons_card');
-    const button_contract = document.getElementById('button_contract'); 
-    const button_parent = document.getElementById('button_parent'); 
 
-    //Check if the student is in the system
-    if (student){ 
-        //by default, edit is blocked
-        block_edit();
-        form.action = `/card_student/${student.IIN}/`;
+    if (student.status === 'Int'){
+        intermediate();
+        sBtn_text.textContent = `${student.grade_num} класс`;
+        form.action = `/accept/${student.IIN}/`;
     }
     else{
-        h2.innerText = 'Регистрация Ученика';
-        h2.classList.remove('edit');
-        button_back.style.display = "none";
-        buttons_edit.style.display = "flex";
-        button_cancel.innerText = "Назад";
-        
-        //Click to Back button returns to the main page
-        button_cancel.addEventListener("click", (event) => {
-            event.preventDefault()
-            window.location.href = '/';
-        });
+        //by default, edit is blocked
+        block_edit();
+        sBtn_text.textContent = `${student.grade_num}${student.grade_let} класс`;
+        form.action = `/card_student/${student.IIN}/`;
     }
 
-    //Buttons logic
-    button_parent.addEventListener("click", (event) => {
-        event.preventDefault()
-        let url;
-        if (student.parent_1){
-            url = `/card_parent/${student.IIN}/`;
-        }
-        else{
-            url = `/register_parent/${student.IIN}/`;
-        }
-        window.location.href = url;
-    });
+    populateSelectMenu_Letters(student.grade_num, letters);
 
-    button_contract.addEventListener("click", (event) => {
-        event.preventDefault()
-        let url;
-        if (student.contract){
-            url = `/card_contract/${student.IIN}/`;
-        }
-        else if (student.parent_1){
-            url = `/register_contract/${student.IIN}/`;
-        }
-        else{
-            url = `/register_parent/${student.IIN}/`;
-        }
-        window.location.href = url;
-    });
+    //Ensures that if patronim is null, the input is clear
+    patronim.placeholder = '';
+
 
     function allow_edit() { //No student => it's register student
         //All inputs are editable
@@ -84,7 +50,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         //Switch button groups' displays
         buttons_edit.style.display = "flex";
-        buttons_card.style.display = "none";
         button_back.style.display = "none";
 
         //Click to Back button blocks editing
@@ -100,8 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
         lastname.value = student.Last_Name;
         firstname.value = student.First_Name;
         patronim.value = student.Patronim;
-        grade.value = student.grade + ' класс';
-        sBtn_text.innerText = student.grade + ' класс';
+        grade.value = student.grade_num + student.grade_let + ' класс';
         phone.value = student.phone;
         nationality.value = student.nationality;
         prev_school.value = student.prev_school;
@@ -130,7 +94,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         //Switch button groups' displays
         buttons_edit.style.display = "none";
-        buttons_card.style.display = "flex";
         button_back.style.display = "block";
 
         //Click to h2 allows editing
@@ -138,6 +101,37 @@ document.addEventListener('DOMContentLoaded', function () {
             h2.classList.remove('edit');
             allow_edit();
         });
+    }
+
+    function intermediate(){
+        //Populate inputs with their values
+        lastname.value = student.Last_Name;
+        firstname.value = student.First_Name;
+        patronim.value = student.Patronim;
+        grade.value = student.grade_num + ' класс';
+        prev_school.value = student.prev_school;
+        message.value = student.comment;
+        iin.value = student.IIN;
+
+        //Disable all the inputs except grade
+        lastname.disabled = true;
+        firstname.disabled = true;
+        patronim.disabled = true;
+        prev_school.disabled = true;
+        message.disabled = true;
+        iin.disabled = true; //IIN can't be edited in any circumstances
+
+        //Switch button groups' displays
+        button_cancel.addEventListener("click", () => {
+            event.preventDefault();
+            window.location.href = `/temp_card_std/${student.IIN}`;
+        });
+        buttons_edit.style.display = "flex";
+        button_back.style.display = "none";
+
+        //h2 is not clickable 
+        h2.classList.remove('edit');
+        h2.addEventListener("click", () => {});
     }
 
 
@@ -171,6 +165,14 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', function (e) {
         e.preventDefault();
         if (checkInputs()) {
+            //Format the grade
+            // Use a regex to extract the letter
+            console.log(grade.val);
+            const match = grade.value.match(/^(\d+)([A-Za-zА-Яа-я])\s+класс$/);
+            const selected_letter = match[2];
+            grade.value = selected_letter;
+            console.log(grade.value);
+
             form.submit();
         }
     });
@@ -243,8 +245,25 @@ document.addEventListener('DOMContentLoaded', function () {
         return isValid;
     }
 
-
     //class selection menu logic
+    function populateSelectMenu_Letters(grade, letters){
+        // Clear any existing content (optional)
+        optionsContainer.innerHTML = '';
+
+        // Iterate over each letter and create a list item
+        for (let letter of letters) {
+            const li = document.createElement('li');
+            li.classList.add('option');
+
+            const span = document.createElement('span');
+            span.classList.add('option-text');
+            span.textContent = `${grade}${letter} класс`;
+
+            li.appendChild(span);
+            optionsContainer.appendChild(li);
+        }
+    }
+
     selectBtn.addEventListener("click", () => {
         if (selectMenu.classList.contains("active")) {
             selectMenu.classList.remove("active");
@@ -269,6 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    const options = selectMenu.querySelectorAll(".option");
     options.forEach(option => {
         option.addEventListener("click", () => {
             const selectedOption = option.querySelector(".option-text").innerText;

@@ -115,14 +115,6 @@ table {
     width: 100%;
 }
 
-td img {
-    width: 36px;
-    height: 36px;
-    margin-right: .5rem;
-    border-radius: 50%;
-    vertical-align: middle;
-}
-
 table, th, td {
     border-collapse: collapse;
     padding: 1rem;
@@ -158,8 +150,7 @@ tbody tr:hover {
 }
 
 tbody tr td,
-tbody tr td p,
-tbody tr td img {
+tbody tr td p{
     transition: .2s ease-in-out;
 }
 
@@ -167,12 +158,6 @@ tbody tr.hide td,
 tbody tr.hide td p {
     padding: 0;
     font: 0 / 0 sans-serif;
-    transition: .2s ease-in-out .5s;
-}
-
-tbody tr.hide td img {
-    width: 0;
-    height: 0;
     transition: .2s ease-in-out .5s;
 }
 
@@ -335,27 +320,137 @@ select {
   display: none;
 }
 
-.export {
-    position: absolute;
-    right: 7.5%;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.export img:hover{
+#cancel, #send{
+    background-color: #FFFFFF;
+    border-radius: 20%;
+    border: solid 0px;
     cursor: pointer;
 }
 
-a.register_student {
+.icons-group {
+    display: none;
+    justify-content: space-between;
+    gap: 10px;
     position: absolute;
-    right: 2.5%;
-    top: 50%;
-    transform: translateY(-50%);
+    right: 3%;
 }
 
-img.register_student{
-  height: 40px;
-  width: auto;
-  border-radius: 50%;
+/* Pop-up stylings */
+.pop-up{
+    position: fixed; /* Use fixed positioning to keep it in view */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust position to center */
+    display: none;
+    background-color: #FFFFFF;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 500px;
+    z-index: 1000;
 }
 
+p.header{
+    color: #59007A;
+    height: 40px;
+    font-weight: 800;
+    font-size: 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    display: flex;          /* Enable Flexbox */
+    align-items: center;    /* Center vertically */
+    justify-content: center; /* Center horizontally */
+}
+
+textarea{
+    width: 95%;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 20px;
+}
+
+/* Buttons styles */
+.action-buttons{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+    position: absolute;
+    right: 3%;
+}
+
+.action-buttons img{
+    height: 40px;
+}
+
+.export img, .register_student img{
+    border-radius: 50%;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.pop-up button{
+    width: 100%;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.5s ease;
+}
+
+#button_cancel{
+    background-color: #ffffff;
+    color: #59007A;
+    border: solid 2px;
+    border-color: #59007A;
+}
+
+#button_send{
+    background-color: #59007A;
+    color: #fff;
+}
+
+#button_send:hover{
+    background-color: #FF9C2E;
+}
+
+/* tooltip styles */
+.tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+  
+    /* Position the tooltip */
+    left: 50%;    /* Center align */
+    transform: translateX(-50%); /* Correct centering */
+    position: absolute;
+    top: 125%;
+    z-index: 10;
+
+    /* Fade-in effect */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.whatsapp, .export, .register_student{
+    position: relative; /* Ensures tooltip positions relative to this */
+    cursor: pointer;
+}
+
+.whatsapp:hover .tooltiptext, 
+.export:hover .tooltiptext,
+.register_student:hover .tooltiptext{
+    visibility: visible;
+    opacity: 1;
+}

@@ -396,6 +396,7 @@ label.file-selector:hover {
     align-items: center;
 }
 
+/* Radio styles */
 .radio-options{
     display: flex;
     align-items: center;

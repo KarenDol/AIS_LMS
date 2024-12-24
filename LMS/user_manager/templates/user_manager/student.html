@@ -1,4 +1,4 @@
-{% extends 'user_manager/index.html' %}
+{% extends 'user_manager/index_student.html' %}
 {% block content %}
 {% load static %}
 
@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{% static 'user_manager/css/student.css' %}">
-    <link rel="icon" href="{% static 'user_manager/favicon.png' %}">
     <title>Ученик</title>
 </head>
 
@@ -22,14 +21,6 @@
                     <path fill="currentColor" d="M22 7.24a1 1 0 0 0-.29-.71l-4.24-4.24a1 1 0 0 0-.71-.29a1 1 0 0 0-.71.29l-2.83 2.83L2.29 16.05a1 1 0 0 0-.29.71V21a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .76-.29l10.87-10.93L21.71 8a1.2 1.2 0 0 0 .22-.33a1 1 0 0 0 0-.24a.7.7 0 0 0 0-.14ZM6.83 20H4v-2.83l9.93-9.93l2.83 2.83ZM18.17 8.66l-2.83-2.83l1.42-1.41l2.82 2.82Z"/>
                 </svg>
             </h2>
-            <div class="button-group" id="buttons_card">
-                <button class="secondary" id="button_contract">
-                    📝 Договор
-                  </button>
-                  <button  class="secondary" id="button_parent">
-                      👩‍👧‍👦 Карточка Родителя
-                  </button>
-            </div>
 
             <div class="form-control">
                 <label for="name">Фамилия</label>
@@ -59,22 +50,16 @@
                 <label for="grade">Класс Обучения</label>
                 <div class="select-menu">
                     <div class="select-btn">
-                        <span class="sBtn-text">{{ grade }}</span>
+                        <span class="sBtn-text"></span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </div>
-                    <ul class="options">
-                        {% for option in Grades %}
-                        <li class="option">
-                            <span class="option-text">{{ option }}</span>
-                        </li>
-                        {% endfor %}
-                    </ul>
+                    <ul class="options"></ul>
                 </div>
                 <input type="text" name="grade" id="grade" hidden>
             </div>
 
             <div class="form-control">
-                <label for="phone">Номер Телефона</label>
+                <label for="phone">Номер Телефона Родителя</label>
                 <input type="tel" id="phone" name="phone">
                 <i class="icon"></i>
             </div>
@@ -86,7 +71,7 @@
             </div>
 
             <div class="form-control">
-                <label for="prev_school">С какой школы перевелся</label>
+                <label for="prev_school">В какой школе обучается</label>
                 <input type="text" id="prev_school" name="prev_school" maxlength="50" placeholder="Ex: Aqbobek International School...">
                 <i class="icon"></i>
             </div>
@@ -108,6 +93,9 @@
         let student = null;
         if ('{{ student|default:"null"|escapejs }}') {
             student = JSON.parse('{{ student|default:"null"|escapejs }}');
+        }
+        if ('{{ Letters|default:"null"|escapejs }}') {
+            letters = JSON.parse('{{ Letters|default:"null"|escapejs }}');
         }
     </script>
     <script src="{% static 'user_manager/js/student.js' %}"></script>

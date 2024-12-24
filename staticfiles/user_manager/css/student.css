@@ -26,6 +26,7 @@ body{
 
 .container img{
     width: 50%;
+    height: auto;
     border-radius: 20px;
     object-fit: cover;
 }
@@ -37,6 +38,10 @@ body{
 .form-control{
     position: relative;
     margin-bottom: 15px;
+}
+
+#nationality_block{
+    display: none;
 }
 
 .form-control label{
@@ -244,6 +249,12 @@ button.secondary:hover {
     margin-bottom: 15px;
 }
 
+#button_cancel{
+    background-color: #ffffff;
+    color: #59007A;
+    border: solid 2px;
+    border-color: #59007A;
+}
 
 /* h2 styles */
 h2{
@@ -260,4 +271,23 @@ h2{
 h2.edit:hover{
     text-decoration: underline;
     cursor: pointer;
+}
+
+/* Radio styles */
+.radio-options{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.radio-option{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.radio-options label{
+    font-weight: 400;
+    padding-top: 4px;
 }
