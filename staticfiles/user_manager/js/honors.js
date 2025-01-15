@@ -1,58 +1,93 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('mainForm');
     const honors_containter = document.querySelector(".timeline-container");
-    const h2 = document.querySelector("h2");
-    const button_back = document.getElementById('button_back');
     let timelineInput; //Input for adding new honor
     //Button group when editing
-    const buttons_edit = document.getElementById('buttons_edit');
-    const button_cancel = document.getElementById('button_cancel'); //Cancel edit
+    const button_cancel = document.getElementById('button_cancel');
+    const button_save = document.getElementById('button_save');
 
     //Initial settings
-    populateHonors();
     block_edit();
-    function allow_edit(){
+
+    //Edit existing honor
+    function allow_edit(honor_id){
+        //Change the form submission address
+        form.action = `/edit_honor/${honor_id}/`;
+
+        //Set the text and actions of buttons
+        button_cancel.textContent = "Отменить";
+        button_save.textContent = "Сохранить";
+
+        //Click to Back button blocks editing
+        button_cancel.onclick = function (event) {
+            event.preventDefault();
+            block_edit();
+        };
+
+        //Click to Save button submits the form 
+        button_save.onclick = function () {
+            if (checkInputs()) {
+                form.submit();
+            } else {
+                alert("Заполните все необходимые поля");
+            }
+        };
+    }
+
+    //Add new honor
+    function allow_add(){
+        addInput();
+
         //Input element is visible
         timelineInput.style.display = 'block';
 
-        //Switch button groups' displays
-        buttons_edit.style.display = "flex";
-        button_back.style.display = "none";
-
-        //Disable event listener for h2
-        h2.addEventListener("click", () => {});
+        //Set the text and actions of buttons
+        button_cancel.textContent = "Отменить";
+        button_save.textContent = "Сохранить";
 
         //Click to Back button blocks editing
-        button_cancel.addEventListener("click", (event) => {
-            event.preventDefault()
-            h2.classList.add('edit');
+        button_cancel.onclick = function (event) {
+            event.preventDefault();
             block_edit();
-        });
+        };
+
+        //Click to Save button submits the form 
+        button_save.onclick = function () {
+            if (checkInputs()) {
+                form.submit();
+            } else {
+                alert("Заполните все необходимые поля");
+            }
+        };
     }
 
     function block_edit(){
-        //Input element is invisible
-        timelineInput.style.display = 'none';
+        populateHonors();
 
-        h2.classList.add('edit');
-        //Switch button groups' displays
-        buttons_edit.style.display = "none";
-        button_back.style.display = "block";
+        //Set the text and actions of buttons
+        button_cancel.textContent = "Назад";
+        button_save.textContent = "Добавить";
 
-        //Click to h2 allows editing
-        h2.addEventListener("click", () => {
-            h2.classList.remove('edit');
-            allow_edit();
-        });
+        //Click to Back button sends cak to student card
+        button_cancel.onclick = function (event) {
+            event.preventDefault();
+            window.location.href = `/card_student/${IIN}/`;
+        };
+
+        //Click to Save button allows editing
+        button_save.onclick = function (event) {
+            event.preventDefault();
+            allow_add();
+        };
     }
 
     function populateHonors(){
-        honors_containter.innerHTML = ''; // Clear the table first
+        honors_containter.innerHTML = ''; // Clear the container first
         honors.forEach(function(honor) {
             addHonor(honor);
         })
-        addInput();
-        attachTrashListeners(); // Attach event listeners to trash icons
+        attachTrashListeners();
+        attachEditListeners();
     }
 
     function addHonor(honor){
@@ -67,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <h3 class="timeline-title">${honor.title}</h3>
 
             <div class="icon-group">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="edit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="edit" data-id="${honor.id}">
                     <path fill="currentColor" d="M22 7.24a1 1 0 0 0-.29-.71l-4.24-4.24a1 1 0 0 0-.71-.29a1 1 0 0 0-.71.29l-2.83 2.83L2.29 16.05a1 1 0 0 0-.29.71V21a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .76-.29l10.87-10.93L21.71 8a1.2 1.2 0 0 0 .22-.33a1 1 0 0 0 0-.24a.7.7 0 0 0 0-.14ZM6.83 20H4v-2.83l9.93-9.93l2.83 2.83ZM18.17 8.66l-2.83-2.83l1.42-1.41l2.82 2.82Z"/>
                 </svg>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="trash" data-id="${honor.id}">>
@@ -137,6 +172,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function attachEditListeners() {
+        const editIcons = document.querySelectorAll('svg.edit');
+        editIcons.forEach(icon => {
+            icon.addEventListener('click', function () {
+                const honorId = this.getAttribute('data-id');
+                const honorData = honors.find(honor => honor.id === parseInt(honorId));
+                const { title, date, description } = honorData;
+
+                allow_edit(honorId);
+
+                const timelineItem = icon.closest(".timeline-item"); // Find the closest parent with class "timeline-item"
+                // Replace content with inputs (values are set from existing elements)
+                timelineItem.innerHTML = `
+                    <h3 class="timeline-title">
+                        <input type="text" class="title" id="title-input" name="title" maxlength="100" value="${title}">
+                    </h3>
+                    <p class="timeline-date">
+                        <input type="month" class="date" name="date" value="${date}" min="2022-01">
+                        <span class="timeline-event">
+                            <input type="text" class="event" id="event-input" name="description" maxlength="200" value="${description}">
+                        </span>
+                    </p>
+                `;
+            });
+        });
+    }
+
     function addInput(){
         // Create the <div> element
         timelineInput = document.createElement('div');
@@ -153,14 +215,6 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         honors_containter.appendChild(timelineInput);
     }
-
-    //Form Validation
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        if (checkInputs()) {
-            form.submit();
-        }
-    });
 
     function checkInputs() {
         const titleInput = document.getElementById('title-input');

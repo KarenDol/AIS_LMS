@@ -184,9 +184,11 @@ def accept_student(request, IIN):
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         if request.method == "POST":
+            phone = request.POST['phone']
             nationality = request.POST['nationality']
             grade_let = request.POST['grade']
 
+            student.phone = phone
             student.nationality = nationality
             student.grade_let = grade_let
             student.status = "Акт"
@@ -197,7 +199,7 @@ def accept_student(request, IIN):
         else:
             student.status = "Int" #Neccessary fro js
             student_dict = model_to_dict(student)  # Convert the Student object to a dictionary
-            student_json = json.dumps(student_dict) # Serialize it to JSON
+            student_json = json.dumps(student_dict, default=str)  # Using default=str for unsupported types)
             Letters = Grades_Letters[student.grade_num]
             Letters_json = json.dumps(Letters) # Serialize it to JSON
             context = {
@@ -244,7 +246,7 @@ def temp_card_std(request, IIN):
             return redirect('temp_card_std', IIN=IIN)
         else:
             student_dict = model_to_dict(student)  # Convert the Student object to a dictionary
-            student_json = json.dumps(student_dict) # Serialize it to JSON
+            student_json = json.dumps(student_dict, default=str)  # Using default=str for unsupported types)
             context = {
                 'Grades': Grades_Letters[student.grade_num],
                 'student': student_json,
@@ -259,7 +261,7 @@ def card_student(request, IIN):
         return redirect('logout')
     if student_exist(IIN):
         student = Student.objects.get(IIN=IIN)
-        if student.status == "Лид":
+        if student.status != "Акт":
             return redirect('temp_card_std', IIN=IIN)
     else:
         return redirect('error', error_code='Ученика с таким ИИН нет в системе')
@@ -289,7 +291,7 @@ def card_student(request, IIN):
             return redirect('card_student', IIN=IIN)
         else:
             student_dict = model_to_dict(student)  # Convert the Student object to a dictionary
-            student_json = json.dumps(student_dict) # Serialize it to JSON
+            student_json = json.dumps(student_dict, default=str)  # Using default=str for unsupported type
             Letters_json = json.dumps(Grades_Letters[student.grade_num])
 
             context = {
@@ -855,6 +857,37 @@ def delete_honor(request, id):
         messages.success(request, "Только зам по ВСиРШ можем менять карточку студента")
         return redirect('home')
     
+def edit_honor(request, id):
+    if (not user_auth(request)):
+        return redirect('logout')
+    if honor_exist(id):
+        honor = Honor.objects.get(pk=id)
+    else:
+        return redirect('error', error_code='Такого достижения нет в системе')
+    current_user = LMS_User.objects.get(user=request.user)
+    if current_user.user_type == 'ВнСв':
+        if request.method == "POST":
+            title = request.POST['title']
+            description = request.POST['description']
+            date = request.POST['date']
+            date = f"{date}-01"
+            date = datetime.strptime(date, "%Y-%m-%d").date()
+
+            honor.title = title
+            honor.description = description
+            honor.date = date
+
+            honor.save()
+
+            IIN = honor.student.IIN
+            messages.success(request, "Изменения успешно сохранены")
+            return redirect('honors', IIN=IIN)
+        else:
+            return redirect('error', error_code='Non Post is not required for this url')
+    else:
+        messages.success(request, "Только зам по ВСиРШ можем менять карточку студента")
+        return redirect('home')
+    
 def join_doc(request, IIN):
     if (not user_auth(request)):
         return redirect('logout')
@@ -991,16 +1024,73 @@ def wa(request):
 def migrate():
     students = Student.objects.all()
     for student in students:
-        if student.grade != '':
-            # This regex pattern captures one or more digits followed by one or more non-digit characters.
-            pattern = r"(\d+)(\D+)"
-            match = re.match(pattern, student.grade)
-            if match:
+        # if student.grade != '':
+        #     # This regex pattern captures one or more digits followed by one or more non-digit characters.
+        #     pattern = r"(\d+)(\D+)"
+        #     match = re.match(pattern, student.grade)
+        #     if match:
         
-                grade = int(match.group(1))  # Convert numeric part to an integer
-                letter = match.group(2).strip()  # Letter part
+        #         grade = int(match.group(1))  # Convert numeric part to an integer
+        #         letter = match.group(2).strip()  # Letter part
 
-                student.grade_num = grade
-                student.grade_let = letter
+        #         student.grade_num = grade
+        #         student.grade_let = letter
 
-                student.save()
+        #         student.save()
+        if student.status == 'Выб':
+            student.status = 'Арх'
+            student.save()
+
+
+def archive(request, IIN):
+    if (not user_auth(request)):
+        return redirect('logout')
+    if student_exist(IIN):
+        student = Student.objects.get(IIN=IIN)
+    else:
+        messages.error(request, "Ученика нет в системе")
+        return redirect('home')
+    current_user = LMS_User.objects.get(user=request.user)
+    if current_user.user_type == 'ВнСв':
+        if request.method == 'POST':
+            student.comment = request.POST['comment']
+            student.leave_date = datetime.today()
+            student.status = 'Арх'
+
+            student.save()
+            return redirect('temp_card_std', IIN=IIN)
+        else:
+            student.status = "Int_leave" #Neccessary for js
+            student_dict = model_to_dict(student)  # Convert the Student object to a dictionary
+            student_json = json.dumps(student_dict, default=str) # Use default=str for unsupported data types
+            context = {
+                'student': student_json,
+            }
+            return render(request, 'user_manager/temp_student.html', context)
+    else:
+        messages.success(request, "Only ВнСв can add new students")
+        return redirect('home')
+    
+#Return student back from archive
+def arch_back(request, IIN):
+    if (not user_auth(request)):
+        return redirect('logout')
+    if student_exist(IIN):
+        student = Student.objects.get(IIN=IIN)
+    else:
+        messages.error(request, "Ученика нет в системе")
+        return redirect('home')
+    current_user = LMS_User.objects.get(user=request.user)
+    if current_user.user_type == 'ВнСв':
+        if student.contract:
+            student.contract.delete()  # This will delete the related contract
+            student.contract = None  # Remove the reference to the contract from the studen
+        student.status = 'Лид'
+        student.grade_let = None
+        student.leave_date = None
+        student.comment = None
+        student.save()
+        return redirect('temp_card_std', IIN=IIN)
+    else:
+        messages.success(request, "Only ВнСв can add new students")
+        return redirect('home')

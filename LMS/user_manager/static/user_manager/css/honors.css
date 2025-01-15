@@ -190,7 +190,7 @@ button.secondary:hover {
 }
 
 .button-group {
-    display: none;
+    display: flex;
     justify-content: space-between;
     gap: 10px;
     margin-bottom: 15px;

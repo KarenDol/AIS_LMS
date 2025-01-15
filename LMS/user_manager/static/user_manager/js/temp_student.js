@@ -21,13 +21,33 @@ document.addEventListener('DOMContentLoaded', function () {
     const button_cancel = document.getElementById('button_cancel'); //Cancel edit
 
     //Check if the student is in the system
-    if (student){ 
-        //by default, edit is blocked
-        block_edit();
-        form.action = `/temp_card_std/${student.IIN}/`;
+    if (student){
+        //Archive logic 
+        if (student.status === 'Int_leave'){
+            intermediate_leave()
+            form.action = `/archive/${student.IIN}/`;
+            //Rename Комментарий to Причина выбытия
+            message_label = document.getElementById('message_label');
+            message_label.innerText = 'Причина Выбытия';
+        }
+        else if (student.status === 'Арх'){
+            block_edit();
+            //Remove h2 Event Listener
+            h2.classList.remove('edit');
+            h2.removeEventListener("click", handleH2Click);
+            //Rename Комментарий to Причина выбытия
+            message_label = document.getElementById('message_label');
+            message_label.innerText = `Причина выбытия | ${student.leave_date}`;
+        }
+        //Lid logic
+        else{
+            //by default, edit is blocked
+            block_edit();
+            form.action = `/temp_card_std/${student.IIN}/`;
 
-        //Ensures that if patronim is null, the input is clear
-        patronim.placeholder = '';
+            //Ensures that if patronim is null, the input is clear
+            patronim.placeholder = '';
+        }
     }
     else{
         h2.innerText = 'Регистрация Ученика';
@@ -99,11 +119,51 @@ document.addEventListener('DOMContentLoaded', function () {
         buttons_edit.style.display = "none";
         button_back.style.display = "block";
 
-        //Click to h2 allows editing
-        h2.addEventListener("click", () => {
-            h2.classList.remove('edit');
-            allow_edit();
+        h2.addEventListener("click", handleH2Click);
+    }
+
+    function handleH2Click() {
+        h2.classList.remove('edit');
+        allow_edit();
+    }
+
+    function intermediate_leave(){
+        //Populate inputs with their values
+        lastname.value = student.Last_Name;
+        firstname.value = student.First_Name;
+        patronim.value = student.Patronim;
+        grade.value = student.grade_num + student.grade_let + ' класс';
+        phone.value = student.temp_phone;
+        prev_school.value = student.prev_school;
+        iin.value = student.IIN;
+
+        //Disable all the inputs
+        lastname.disabled = true;
+        firstname.disabled = true;
+        patronim.disabled = true;
+        phone.disabled = true;
+        prev_school.disabled = true;
+        message.disabled = false; //Only message is editable
+        iin.disabled = true; //IIN can't be edited in any circumstances
+        ru.disabled = true;
+        kk.disabled = true;
+        disable_grade();
+
+        //Remove the input evaluations
+        setDefault(lastname);
+        setDefault(firstname);
+        setDefault(patronim);
+        setDefault(phone);
+        setDefault(prev_school);
+        setDefault(message);
+
+        //Switch button groups' displays
+        button_cancel.addEventListener("click", () => {
+            event.preventDefault();
+            window.location.href = `/card_student/${student.IIN}`;
         });
+        buttons_edit.style.display = "flex";
+        button_back.style.display = "none";
     }
 
     // Restrict input chars

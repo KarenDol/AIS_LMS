@@ -29,12 +29,13 @@ document.addEventListener('DOMContentLoaded', function () {
         block_edit();
         sBtn_text.textContent = `${student.grade_num}${student.grade_let} класс`;
         form.action = `/card_student/${student.IIN}/`;
+        console.log(student.leave_date);
     }
-
-    populateSelectMenu_Letters(student.grade_num, letters);
 
     //Ensures that if patronim is null, the input is clear
     patronim.placeholder = '';
+    //Populate grade menu with corresponding letters
+    populateSelectMenu_Letters(student.grade_num, letters);
 
 
     function allow_edit() { //No student => it's register student

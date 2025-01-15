@@ -116,6 +116,17 @@ function populateSelectMenu(){
         li.appendChild(span);
         optionsContainer.appendChild(li);
     }
+
+    //Add "Архив"
+    {
+        const li = document.createElement('li');
+        li.classList.add('option');
+        const span = document.createElement('span');
+        span.classList.add('option-text');
+        span.textContent = 'Архив';
+        li.appendChild(span);
+        optionsContainer.appendChild(li);
+    }
 }
 
 selectBtn.addEventListener("click", () => {
@@ -163,6 +174,14 @@ function populateTable() {
         });
         exp.style.display = "none";
     }
+    else if (gradeSelection=='Архив') {
+        students.forEach(function(student) {
+            if ((student.status === 'Арх')){
+                addStudent(student);
+            }
+        });
+        exp.style.display = "none";
+    }
     else{
         // Use a regex to extract the grade number and letter
         const match = gradeSelection.match(/^(\d+)([A-Za-zА-Яа-я])\s+класс$/);
@@ -185,7 +204,7 @@ function addStudent(student) {
     tr.innerHTML = `
         <td>${counter}</td>
         <td>
-            <a href="${student.status === "Лид" ? "/temp_card_std/" + student.IIN + "/" : "/card_student/" + student.IIN + "/"}">
+            <a href="${student.status === "Лид" || student.status === "Арх" ? "/temp_card_std/" + student.IIN + "/" : "/card_student/" + student.IIN + "/"}">
                 ${student.Last_Name}
             </a>
         </td>

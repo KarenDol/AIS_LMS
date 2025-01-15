@@ -28,6 +28,8 @@ urlpatterns = [
     path('register_student/', views.register_student, name='register_student'),
     path('card_student/<IIN>/', views.card_student, name='card_student'),
     path('temp_card_std/<IIN>/', views.temp_card_std, name='temp_card_std'),
+    path('archive/<IIN>/', views.archive, name='archive'),
+    path('arch_back/<IIN>/', views.arch_back, name='arch_back'),
 
     #Register
     path('register_parent/<IIN>/', views.register_parent, name='register_parent'),
@@ -51,7 +53,8 @@ urlpatterns = [
     #Honors
     path("honors/<IIN>/", views.honors, name='honors'),
     path("delete_honor/<id>/", views.delete_honor, name='delete_honor'),
-
+    path("edit_honor/<id>/", views.edit_honor, name='edit_honor'),
+    
     #Others
     path('accept/<IIN>/', views.accept_student, name='accept_student'),
     path('join_fee/<IIN>/', views.join_fee, name='join_fee'),

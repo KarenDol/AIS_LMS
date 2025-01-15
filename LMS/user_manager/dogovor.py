@@ -54,7 +54,7 @@ def fill_join(IIN):
         "Patronim": student.Patronim,
         "birthdate": IIN[5:7] + '/' + IIN[3:5] + '/' + "20" + IIN[:2],
         "grade": student.grade_num,
-        "lang": student.lang,
+        "lang": lang(student.lang),
         "prev_school": student.prev_school,
         "today": datetime.today().strftime("%d/%m/%Y"),
     }
@@ -73,7 +73,7 @@ def fill_leave(IIN):
         "Patronim": student.Patronim,
         "birthdate": "20" + IIN[:2] + '/' + IIN[3:5] + '/' + IIN[5:7],
         "grade": student.grade_num,
-        "lang": student.lang,
+        "lang": lang(student.lang),
         "today": datetime.today().strftime("%d/%m/%Y"),
     }
     document.render(context)
@@ -144,3 +144,9 @@ def month_kz(month):
                 return "қараша"
             else:
                 return "желтоқсан"
+
+def lang(language):
+    if language == 'Рус':
+        return "Орыс"
+    else:
+        return "Қазақ"
