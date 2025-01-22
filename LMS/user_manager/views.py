@@ -6,11 +6,12 @@ from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from django.forms.models import model_to_dict
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
-from .models import Student, Parent, Contract, List_Of_Students, LMS_User, Honor
+from .models import *
 from django.db import IntegrityError
 from datetime import datetime
 import requests
 from .dogovor import *
+from .report import *
 from .const import *
 import json
 import os
@@ -26,7 +27,7 @@ def home(request):
         return redirect('logout')
     students = list(Student.objects.all()
                     .order_by('Last_Name', 'First_Name', 'Patronim')
-                    .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'phone', 'grade', 'status', 'grade_num', 'grade_let'))
+                    .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'phone', 'temp_phone', 'status', 'grade_num', 'grade_let'))
     students_json = json.dumps(students)
     Grades_Letters_json = json.dumps(Grades_Letters)
 
@@ -35,6 +36,7 @@ def home(request):
         'Grades_Letters': Grades_Letters_json, 
         'students': students_json,
     }
+
     return render(request, 'user_manager/home.html', context)
 
 #Check if student exists or not    
@@ -117,6 +119,7 @@ def login_user(request):
             remember_me = request.POST.get('remember_me')
             user = authenticate(request, username=username, password=password)
             if user is not None:
+                login(request, user)
                 if remember_me:
                     request.session.set_expiry(1209600)  # 2 weeks in seconds
                 else:
@@ -131,7 +134,7 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     messages.success(request, "You have been logged out!")
-    return redirect('user_manager/login_user')
+    return redirect('login_user')
 
 def register_student(request):
     if (not user_auth(request)):
@@ -149,6 +152,7 @@ def register_student(request):
             prev_school = request.POST['prev_school']                
             temp_phone = request.POST['phone']
             comment = request.POST['comment']
+            date = datetime.today() #date of visit
 
             #Check if student already exists
             if student_exist(IIN):
@@ -161,7 +165,7 @@ def register_student(request):
                 new_user.set_password("AIS@100")
                 new_user.save()
             new_student = Student(user=new_user, Last_Name=lastname, First_Name=firstname, Patronim=patronim, temp_phone=temp_phone,
-                            IIN=IIN, prev_school=prev_school, grade_num=grade_num, lang=lang, comment=comment)
+                            IIN=IIN, prev_school=prev_school, grade_num=grade_num, lang=lang, comment=comment, date=date)
             new_student.save()
             messages.success(request, "Новый ученик добавлен в систему")
             return redirect('home')
@@ -187,11 +191,13 @@ def accept_student(request, IIN):
             phone = request.POST['phone']
             nationality = request.POST['nationality']
             grade_let = request.POST['grade']
+            date = datetime.today()
 
             student.phone = phone
             student.nationality = nationality
             student.grade_let = grade_let
             student.status = "Акт"
+            student.date = date
 
             student.save() #Accept the student permanently
             messages.success(request, "Ученик принят в школу")
@@ -226,7 +232,7 @@ def temp_card_std(request, IIN):
             lastname = request.POST['lastname']
             firstname = request.POST['firstname']
             patronim = request.POST['patronim']
-            grade = request.POST['grade']
+            grade_num = request.POST['grade']
             lang = request.POST['lang']
             prev_school = request.POST['prev_school']                
             temp_phone = request.POST['phone']
@@ -237,7 +243,7 @@ def temp_card_std(request, IIN):
             student.Patronim = patronim
             student.temp_phone = temp_phone
             student.prev_school = prev_school
-            student.grade_num = grade
+            student.grade_num = grade_num
             student.lang = lang
             student.comment = comment
 
@@ -476,7 +482,6 @@ def card_contract(request, IIN):
             return redirect('card_contract', IIN=IIN)
         else:
             contract_dict = model_to_dict(contract)  # Convert the Contract object to a dictionary
-            print(contract_dict)
             #serialize dates
             contract_dict['sign_date'] = contract_dict['sign_date'].isoformat()
             contract_dict['first_date'] = contract_dict['first_date'].isoformat()
@@ -704,15 +709,18 @@ def export(request, grade):
         if grade == "Все классы":
             students = list(Student.objects.select_related("parent_1", "contract")
                             .filter(status="Акт")
-                            .order_by('grade', 'Last_Name', 'First_Name', 'Patronim')
-                            .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'grade', 
+                            .order_by('grade_num', 'grade_let', 'Last_Name', 'First_Name', 'Patronim')
+                            .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'grade_num', 'grade_let',
                                     'parent_1__Last_Name', 'parent_1__First_Name', 'parent_1__Patronim',
                                     'parent_1__Phone', 'parent_1__Address', 'contract__monthly'))
         else:
+            match = re.match(r"(\d+)([A-ZА-Я])", grade)
+            grade_num = match.group(1)  
+            grade_let = match.group(2)
             students = list(Student.objects.select_related("parent_1", "contract")
-                            .filter(status="Акт", grade=Grades_dict[grade])
+                            .filter(status="Акт", grade_num = grade_num, grade_let = grade_let)
                             .order_by('Last_Name', 'First_Name', 'Patronim')
-                            .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'grade', 
+                            .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'grade_num', 'grade_let',
                                     'parent_1__Last_Name', 'parent_1__First_Name', 'parent_1__Patronim',
                                     'parent_1__Phone', 'parent_1__Address', 'contract__monthly'))
             
@@ -721,6 +729,7 @@ def export(request, grade):
 
         df['ФИО Ученика'] = df['Last_Name'] + ' ' + df['First_Name'] + ' ' + df['Patronim']
         df['ФИО Родителя'] = df['parent_1__Last_Name'] + ' ' + df['parent_1__First_Name'] + ' ' + df['parent_1__Patronim']
+        df['Класс'] = df['grade_num'].astype(str) + ' ' + df['grade_let'] #stringify grade_num
 
         # Rename columns
         df = df.rename(columns={
@@ -728,7 +737,6 @@ def export(request, grade):
             'parent_1__Phone': 'Номер',
             'parent_1__Address': 'Адрес',
             'contract__monthly': 'Оплата',
-            'grade': 'Класс',
         })
 
         #Reorder the columns
@@ -982,6 +990,44 @@ def fill_contract(request, IIN):
         messages.error(request, "Только зам по ВСиРШ можем менять карточку студента")
         return redirect('home')
     
+def spravka(request, IIN):
+    if (not user_auth(request)):
+        return redirect('logout')
+    if (student_exist(IIN)):
+        student = Student.objects.get(IIN=IIN)
+    else:
+        return redirect('error', error_code="Ученика с таким ИИН нет в системе")
+    current_user = LMS_User.objects.get(user=request.user)
+    if current_user.user_type == 'ВнСв':
+        date = datetime.today()
+        student_name = f"{student.Last_Name} {student.First_Name} {student.Patronim}"
+        spravka = Document(date = date, receiver = student_name, type = "Справка со школы")
+        spravka.save()
+
+        id = spravka.id
+        fill_spravka(IIN, id)
+        file_path = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'spravka' + IIN + '.docx')
+
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as f:
+                file_data = BytesIO(f.read())
+
+            # Delete the file
+            try:
+                os.remove(file_path)
+            except OSError:
+                raise Http404("Unable to delete the file")
+            
+            # Return the file response
+            file_data.seek(0)  # Reset buffer pointer to the start
+            return FileResponse(file_data)
+        else:
+            raise Http404("File not found")
+    else:
+        messages.error(request, "Только зам по ВСиРШ можем менять карточку студента")
+        return redirect('home')
+
+
 def wa(request):
     if request.method == 'POST':
         try:
@@ -997,19 +1043,40 @@ def wa(request):
             for IIN in checked_students:
                 student = Student.objects.get(IIN=IIN)
                 parent = student.parent_1
-                phone = parent.Phone
+                contract = student.contract
+
+                if parent:
+                    phone = parent.Phone
+                else:
+                    student.temp_phone
 
                 # Remove +, parentheses, and dashes from the phone number
                 phone = re.sub(r'[^\d]', '', phone)  # Keeps only digits
 
+
+                # Text formatting for the tags
+                initial = wa_text.split()
+                final = []
+                for word in initial:
+                    if word=="@Ученик":
+                        final.append(f"{student.Last_Name} {student.First_Name}")
+                    elif word=="@Родитель":
+                        if parent:
+                            final.append(f"{parent.First_Name} {parent.Patronim}")
+                    elif word=="@Оплата":
+                        if contract:
+                            final.append(f"{contract.monthly:,}")
+                    else:
+                        final.append(word)
+                final = ' '.join(final)
+
                 payload = {
                     "chatId": f"{phone}@c.us",
-                    "message": wa_text
+                    "message": final
                 }
                 headers = {
                 'Content-Type': 'application/json'
                 }
-
                 requests.post(url, json=payload, headers=headers)
 
             # Return a success response
@@ -1037,9 +1104,9 @@ def migrate():
         #         student.grade_let = letter
 
         #         student.save()
-        if student.status == 'Выб':
-            student.status = 'Арх'
-            student.save()
+        student.lang = languages[student.grade_num][student.grade_let]
+        student.save()
+
 
 
 def archive(request, IIN):
@@ -1056,6 +1123,7 @@ def archive(request, IIN):
             student.comment = request.POST['comment']
             student.leave_date = datetime.today()
             student.status = 'Арх'
+            student.date = datetime.today()
 
             student.save()
             return redirect('temp_card_std', IIN=IIN)
@@ -1090,7 +1158,8 @@ def arch_back(request, IIN):
         student.leave_date = None
         student.comment = None
         student.save()
+        messages.success(request, "Статус ученика успешно изменен")
         return redirect('temp_card_std', IIN=IIN)
     else:
-        messages.success(request, "Only ВнСв can add new students")
+        messages.error(request, "Only ВнСв can add new students")
         return redirect('home')

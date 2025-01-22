@@ -8,6 +8,7 @@
     <title>Главная</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="{% static 'user_manager/css/home.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js"></script>
 </head>
 
 <body>
@@ -54,12 +55,12 @@
             <table>
                 <thead>
                     <tr>
-                        <th> # </th>
+                        <th id="checked"> # </th>
                         <th> Фамилия </th>
                         <th> Имя </th>
                         <th> Отчество </th>
                         <th> ИИН </th>
-                        <th> Номер ребенка </th>
+                        <th> Контактный номер </th>
                     </tr>
                 </thead>
                 <tbody id="studentsTableBody">
@@ -68,8 +69,13 @@
         </section>
     </main>
     <div class="pop-up" id="pop-up">
+        {% csrf_token %}
         <p class="header">Введите текст рассылки</p>
-        <textarea rows="6" id="wa_text"></textarea>
+        <div class="marquee">
+            <div class="marquee-text">Сделайте рассылку более персональной: @Родитель - Имя Отчество родителя, @Ученик - Фамилия Имя ученика, @Оплата - Ежемесячная оплата</div>
+        </div>
+        <div id="editor" class="editor" contenteditable="true">
+        </div>
         <div class="button-group">
             <button id="button_cancel">Отменить</button>
             <button id="button_send">Отправить</button>

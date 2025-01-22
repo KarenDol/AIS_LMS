@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
             h2.removeEventListener("click", handleH2Click);
             //Rename Комментарий to Причина выбытия
             message_label = document.getElementById('message_label');
-            message_label.innerText = `Причина выбытия | ${student.leave_date}`;
+            message_label.innerText = `Причина выбытия | Выбыл: ${student.date}`;
         }
         //Lid logic
         else{
@@ -47,6 +47,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             //Ensures that if patronim is null, the input is clear
             patronim.placeholder = '';
+
+            //Update Комментарий with date of visit
+            message_label = document.getElementById('message_label');
+            message_label.innerText = `Комментарий | Консультация: ${student.date}`;
         }
     }
     else{

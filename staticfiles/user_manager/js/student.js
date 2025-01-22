@@ -23,13 +23,23 @@ document.addEventListener('DOMContentLoaded', function () {
         intermediate();
         sBtn_text.textContent = `${student.grade_num} класс`;
         form.action = `/accept/${student.IIN}/`;
+        //Update Комментарий with date of visit
+        message_label = document.getElementById('message_label');
+        message_label.innerText = `Комментарий | Консультация: ${student.date}`;
     }
+    //the student is Акт
     else{
         //by default, edit is blocked
         block_edit();
         sBtn_text.textContent = `${student.grade_num}${student.grade_let} класс`;
         form.action = `/card_student/${student.IIN}/`;
         console.log(student.leave_date);
+
+        //Update Комментарий with date of visit
+        if (student.date) {
+            message_label = document.getElementById('message_label');
+            message_label.innerText = `Комментарий | Принят: ${student.date}`;
+        }
     }
 
     //Ensures that if patronim is null, the input is clear
@@ -169,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
             //Format the grade
             // Use a regex to extract the letter
             console.log(grade.val);
-            const match = grade.value.match(/^(\d+)([A-Za-zА-Яа-я])\s+класс$/);
+            const match = grade.value.match(/^(\d+)([A-Za-zА-Яа-яӘәҒғҚқҢңӨөҰұҮүҺһІі])\s+класс$/);
             const selected_letter = match[2];
             grade.value = selected_letter;
             console.log(grade.value);

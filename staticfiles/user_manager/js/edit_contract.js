@@ -105,20 +105,4 @@ document.addEventListener('DOMContentLoaded', function () {
         formControl.className = 'form-control success';
         icon.className = 'icon fas fa-check-circle';
     }
-
-    function showModal() {
-        const modal = document.getElementById('successModal');
-        modal.style.display = 'block';
-
-        const closeBtn = document.querySelector('.close-button');
-        closeBtn.onclick = function () {
-            modal.style.display = 'none';
-        };
-
-        window.onclick = function (event) {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        };
-    }
 });

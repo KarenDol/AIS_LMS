@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, re_path
-from . import views
+from . import views, report
 
 urlpatterns = [
     #System pages
@@ -43,12 +43,14 @@ urlpatterns = [
     path('api/user-info/', views.get_user_info, name='get_user_info'),
     re_path(r'^api/serve_static/(?P<filename>.+)$', views.serve_static, name='serve_static'),
     path('export/<grade>/', views.export, name='export'),
+    path('bot', report.report, name='report'),
 
     #Fill documents
     path('sign_doc/<IIN>/', views.sign_doc, name='sign_doc'),
     path('join_doc/<IIN>/', views.join_doc, name='join_doc'),
     path('leave_doc/<IIN>/', views.leave_doc, name='leave_doc'),
     path('fill_contract/<IIN>/', views.fill_contract, name='fill_contract'),
+    path('spravka/<IIN>/', views.spravka, name='spravka'),
 
     #Honors
     path("honors/<IIN>/", views.honors, name='honors'),

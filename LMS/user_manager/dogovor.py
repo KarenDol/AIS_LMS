@@ -26,7 +26,7 @@ def fill_doc(IIN):
         'l_month_kz': month_kz(contract.last_date.month),
         'l_year': contract.last_date.year,
         'birthdate': IIN[5:7] + '/' + IIN[3:5] + '/' + "20" + IIN[:2],
-        'grade': student.grade,
+        'grade': student.grade_num,
         'IIN': student.IIN,
         'parent_name': parent.First_Name + ' ' + parent.Last_Name,
         'child_name': student.First_Name + ' ' + student.Last_Name,
@@ -78,6 +78,24 @@ def fill_leave(IIN):
     }
     document.render(context)
     docs_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'leave' + IIN + '.docx')
+    document.save(docs_location)
+
+def fill_spravka(IIN, id):
+    student = Student.objects.get(IIN=IIN)
+    template_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'Справка.docx')
+    document = DocxTemplate(template_location)
+    context = {
+        "doc_id": f"c{id}-25",
+        "dd": datetime.today().strftime("%d"),
+        "mm": month_ru(int(datetime.today().strftime("%m"))),
+        "yyyy": datetime.today().strftime("%Y"),
+        "student_name": f"{student.Last_Name} {student.First_Name} {student.Patronim}",
+        "student_year": "20" + student.IIN[:2],
+        "gr_num": student.grade_num,
+        "gr_let": student.grade_let,
+    }
+    document.render(context)
+    docs_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'spravka' + IIN + '.docx')
     document.save(docs_location)
     
 

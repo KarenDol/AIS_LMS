@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function () {
             </ul>
         `
         }
-
         else{
             nav_content.innerHTML = `
             <ul>
@@ -34,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <li><a href="/card_contract/${student.IIN}/">Карточка Договора</a></li>
                 <li><a href="/leave_doc/${student.IIN}/" download="Открепительный талон.docx">Открепительный талон</a></li>
                 <li><a href="/fill_contract/${student.IIN}/" download="Договор.docx">Договор</a></li>
+                <li><a href="/spravka/${student.IIN}/" download="Справка со школы.docx">Справка со школы</a></li>
                 <li><a href="/honors/${student.IIN}/">Достижения</a></li>
                 <li><a href="/archive/${student.IIN}/">Отправить в Архив</a></li>
             </ul>

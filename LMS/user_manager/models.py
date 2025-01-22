@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from .const import Grades_models, student_status
+from .const import student_status
 
 #Create your models here.
 class Parent(models.Model):
@@ -33,29 +33,26 @@ class Contract(models.Model):
     status = models.BooleanField(default=False) #Подписано или нет
 
 class Student(models.Model):
-    #crucial
+    #lid student attributes
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    IIN = models.CharField(max_length=12)
     Last_Name = models.CharField(max_length=40)
     First_Name = models.CharField(max_length=30)
     Patronim = models.CharField(max_length=40, null=True)
-    IIN = models.CharField(max_length=12)
     grade_num = models.IntegerField(null=True)
     grade_let = models.CharField(max_length=1, null=True)
     lang = models.CharField(max_length=3, null=True)
+    temp_phone = models.CharField(max_length=20, null=True) #Lid contact phone number
+    phone = models.CharField(max_length=20, null=True)
+    prev_school = models.CharField(max_length=50, null=True)
+    nationality = models.CharField(max_length=20, null=True)
+    comment = models.CharField(max_length=200, null=True) #Serves as a leave reason as well
     parent_1 = models.ForeignKey(Parent, on_delete=models.CASCADE, null=True, related_name='mom')
     # parent_2 = models.ForeignKey(Parent, on_delete=models.CASCADE, null=True, related_name='dad')
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE, null=True)
+
     status = models.CharField(max_length=30, choices=student_status, default='Лид')
-
-    #not crucial
-    nationality = models.CharField(max_length=20, null=True)
-    prev_school = models.CharField(max_length=50, null=True)
-    phone = models.CharField(max_length=20, null=True)
-    temp_phone = models.CharField(max_length=20, null=True)
-    comment = models.CharField(max_length=200, null=True) #Serves as a leave reason
-
-    #leaving atributes
-    leave_date = models.DateField(null=True)
+    date = models.DateField(null=True) #Date of the last status update
 
 
 class Honor(models.Model):
@@ -94,3 +91,8 @@ class List_Of_Students(models.Model):
     Mar = models.IntegerField(default=0)
     Apr = models.IntegerField(default=0)
     May = models.IntegerField(default=0)
+
+class Document(models.Model):
+    date = models.DateField()
+    receiver = models.CharField(max_length=100) #Куда/кому адресован документ
+    type = models.CharField(max_length = 50) #Что за документ?

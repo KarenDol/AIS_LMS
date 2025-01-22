@@ -9,12 +9,14 @@ optionsContainer = selectMenu.querySelector(".options"),
 sBtn_text = selectMenu.querySelector(".sBtn-text");
 exp = document.getElementById('export');
 const whatsapp = document.getElementById('whatsapp');
-const register = document.getElementById('register');
+const checked = document.getElementById('checked');
+let checked_state = false;
 const buttons_wa = document.getElementById('buttons_wa');
+const actionButtons = document.querySelector(".action-buttons");
 const cancel = document.getElementById('cancel');
 const send = document.getElementById('send');
 const popup = document.getElementById('pop-up');
-const wa_text = document.getElementById('wa_text');
+const editor = document.getElementById('editor');
 const button_cancel = document.getElementById('button_cancel');
 const button_send = document.getElementById('button_send');
 
@@ -184,7 +186,7 @@ function populateTable() {
     }
     else{
         // Use a regex to extract the grade number and letter
-        const match = gradeSelection.match(/^(\d+)([A-Za-zА-Яа-я])\s+класс$/);
+        const match = gradeSelection.match(/^(\d+)([A-Za-zА-Яа-яӘәҒғҚқҢңӨөҰұҮүҺһІі])\s+класс$/);
         const selected_grade = parseInt(match[1], 10); 
         const selected_letter = match[2];               
         students.forEach(function(student) {
@@ -198,25 +200,6 @@ function populateTable() {
     }
     table_rows = document.querySelectorAll('tbody tr');
 }
-
-function addStudent(student) {
-    var tr = document.createElement('tr');
-    tr.innerHTML = `
-        <td>${counter}</td>
-        <td>
-            <a href="${student.status === "Лид" || student.status === "Арх" ? "/temp_card_std/" + student.IIN + "/" : "/card_student/" + student.IIN + "/"}">
-                ${student.Last_Name}
-            </a>
-        </td>
-        <td>${student.First_Name}</td>
-        <td>${student.Patronim}</td>
-        <td>${student.IIN}</td>
-        <td>${student.phone}</td>
-    `;
-    tableSection.appendChild(tr);
-    counter++;
-}
-
 
 // populate logic for WhatsApp 
 function populateTable_wa() {
@@ -243,13 +226,31 @@ function populateTable_wa() {
         students.forEach(function(student) {
             if ((student.status === 'Акт')){
                 if ((student.grade_num === selected_grade) && (student.grade_let === selected_letter)){
-                    addStudent(student);
+                    addStudent_wa(student);
                 }
             }
         });
         exp.style.display = "block";
     }
     table_rows = document.querySelectorAll('tbody tr');
+}
+
+function addStudent(student) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td>${counter}</td>
+        <td>
+            <a href="${student.status === "Лид" || student.status === "Арх" ? "/temp_card_std/" + student.IIN + "/" : "/card_student/" + student.IIN + "/"}">
+                ${student.Last_Name}
+            </a>
+        </td>
+        <td>${student.First_Name}</td>
+        <td>${student.Patronim}</td>
+        <td>${student.IIN}</td>
+        <td>${student.status === "Лид" ? student.temp_phone : student.phone}</td>
+    `;
+    tableSection.appendChild(tr);
+    counter++;
 }
 
 function addStudent_wa(student){
@@ -260,29 +261,59 @@ function addStudent_wa(student){
         <td>${student.First_Name}</td>
         <td>${student.Patronim}</td>
         <td>${student.IIN}</td>
-        <td>${student.phone}</td>
+        <td>${student.status === "Лид" ? student.temp_phone : student.phone}</td>
     `;
     tableSection.appendChild(tr);
 }
 
 whatsapp.addEventListener('click', () => {
     buttons_wa.style.display = "flex";
-    whatsapp.style.display = "none";
-    exp.style.display = "none";
-    register.style.display = "none";
+    actionButtons.style.display = "none";
+
+    //Add check all button
+    checked.innerText = '[_]';
+    checked_state = false;
+    checked.addEventListener('click', checkedHandler);
 
     populateTable_wa();
 })
 
 cancel.addEventListener('click', () => {
     buttons_wa.style.display = "none";
-    whatsapp.style.display = "block";
-    exp.style.display = "block";
-    register.style.display = "block";
+    actionButtons.style.display = "flex";
+
+    //Remove check all button
+    checked.innerText = '#';
+    checked.addEventListener('click', () => {}); 
+
+    checked_state  = false;
 
     populateTable();
 })
 
+function checkedHandler(){
+    // Get all checkboxes in the table
+    const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+
+    if (checked_state){
+        checked_state = false;
+        checked.innerText = '[_]'
+        // Unmark all checkboxes as checked
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+    }
+    else{
+        checked_state = true;        
+        checked.innerText = '[v]'
+
+        // Mark all checkboxes as checked
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = true;
+        });
+    }
+}
+ 
 send.addEventListener('click', () => {
     popup.style.display = 'block';
     main.style.filter = 'blur(5px)';
@@ -318,8 +349,8 @@ button_send.addEventListener('click', () => {
         }
     });
 
-    // Get the value of the textarea
-    const waText = document.getElementById('wa_text').value.trim();
+    // Get the content of the contenteditable div
+    const waText = document.getElementById('editor').innerText.trim();
 
     /// If no students are selected or wa_text is empty, show an alert and exit
     if (checkedStudents.length === 0 || !waText) {
@@ -356,3 +387,40 @@ button_send.addEventListener('click', () => {
         alert('Произошла ошибка!');
     });
 })
+
+
+//Editor logic
+const tags = ["@Родитель", "@Ученик", "@Оплата"];
+
+function highlightContent() {
+  const instance = new Mark(editor);
+
+  // Save cursor position
+  const selection = window.getSelection();
+  const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+
+  // Unmark previous highlights
+  instance.unmark({
+    done: () => {
+      // Highlight new tags
+      instance.mark(tags, {
+        element: "span",
+        className: "highlight",
+        accuracy: "exactly",
+        caseSensitive: true
+      });
+
+      // Restore cursor position
+      if (range) {
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    },
+  });
+}
+
+// Listen for input events on the contenteditable div
+editor.addEventListener("input", highlightContent);
+
+// Initial highlight on page load
+highlightContent();
