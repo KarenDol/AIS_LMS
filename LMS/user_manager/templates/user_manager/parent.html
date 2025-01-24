@@ -42,8 +42,8 @@
             </div>
 
             <div class="form-control">
-                <label for="phone">Номер телефона</label>
-                <input type="tel" id="phone" name="phone" value="{{ temp_phone }}">
+                <label for="phone" id="phone-label">Номер телефона</label>
+                <input type="tel" id="phone" name="phone">
                 <i class="icon"></i>
             </div>
 
@@ -97,7 +97,6 @@
         if ('{{ parent|default:"null"|escapejs }}') {
             parent = JSON.parse('{{ parent|default:"null"|escapejs }}');
         }
-        console.log(parent);
     </script>
     <script src="{% static 'user_manager/js/parent.js' %}"></script>
     <script src="https://unpkg.com/imask"></script>

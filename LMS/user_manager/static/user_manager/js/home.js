@@ -247,7 +247,7 @@ function addStudent(student) {
         <td>${student.First_Name}</td>
         <td>${student.Patronim}</td>
         <td>${student.IIN}</td>
-        <td>${student.status === "Лид" ? student.temp_phone : student.phone}</td>
+        <td>${student.phone}</td>
     `;
     tableSection.appendChild(tr);
     counter++;
@@ -261,7 +261,7 @@ function addStudent_wa(student){
         <td>${student.First_Name}</td>
         <td>${student.Patronim}</td>
         <td>${student.IIN}</td>
-        <td>${student.status === "Лид" ? student.temp_phone : student.phone}</td>
+        <td>${student.temp_phone}</td>
     `;
     tableSection.appendChild(tr);
 }

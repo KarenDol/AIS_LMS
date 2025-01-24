@@ -25,9 +25,10 @@ import re
 def home(request):
     if (not user_auth(request)):
         return redirect('logout')
+    
     students = list(Student.objects.all()
                     .order_by('Last_Name', 'First_Name', 'Patronim')
-                    .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'phone', 'temp_phone', 'status', 'grade_num', 'grade_let'))
+                    .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'phone', 'status', 'grade_num', 'grade_let'))
     students_json = json.dumps(students)
     Grades_Letters_json = json.dumps(Grades_Letters)
 
@@ -150,7 +151,7 @@ def register_student(request):
             grade_num = request.POST['grade']
             lang = request.POST['lang']
             prev_school = request.POST['prev_school']                
-            temp_phone = request.POST['phone']
+            phone = request.POST['phone']
             comment = request.POST['comment']
             date = datetime.today() #date of visit
 
@@ -164,7 +165,8 @@ def register_student(request):
                 new_user = User(username=IIN, first_name=firstname)
                 new_user.set_password("AIS@100")
                 new_user.save()
-            new_student = Student(user=new_user, Last_Name=lastname, First_Name=firstname, Patronim=patronim, temp_phone=temp_phone,
+
+            new_student = Student(user=new_user, Last_Name=lastname, First_Name=firstname, Patronim=patronim, phone=phone,
                             IIN=IIN, prev_school=prev_school, grade_num=grade_num, lang=lang, comment=comment, date=date)
             new_student.save()
             messages.success(request, "Новый ученик добавлен в систему")
@@ -188,12 +190,10 @@ def accept_student(request, IIN):
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         if request.method == "POST":
-            phone = request.POST['phone']
             nationality = request.POST['nationality']
             grade_let = request.POST['grade']
             date = datetime.today()
 
-            student.phone = phone
             student.nationality = nationality
             student.grade_let = grade_let
             student.status = "Акт"
@@ -235,13 +235,13 @@ def temp_card_std(request, IIN):
             grade_num = request.POST['grade']
             lang = request.POST['lang']
             prev_school = request.POST['prev_school']                
-            temp_phone = request.POST['phone']
+            phone = request.POST['phone']
             comment = request.POST['comment']
 
             student.Last_Name = lastname
             student.First_Name=firstname
             student.Patronim = patronim
-            student.temp_phone = temp_phone
+            student.phone = phone
             student.prev_school = prev_school
             student.grade_num = grade_num
             student.lang = lang
@@ -350,7 +350,6 @@ def register_parent(request, IIN):
             return redirect('register_contract', IIN=IIN)            
         else:
             context = {
-                'temp_phone': student.temp_phone,
                 'IIN': IIN,
             }
             return render(request, 'user_manager/parent.html', context)
@@ -1048,7 +1047,7 @@ def wa(request):
                 if parent:
                     phone = parent.Phone
                 else:
-                    student.temp_phone
+                    phone = student.phone
 
                 # Remove +, parentheses, and dashes from the phone number
                 phone = re.sub(r'[^\d]', '', phone)  # Keeps only digits
@@ -1087,6 +1086,29 @@ def wa(request):
 
     # Return an error for non-POST requests
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+
+def wa_exists(request, phone):
+    try:
+        # Remove +, parentheses, and dashes from the phone number
+        phone = re.sub(r'[^\d]', '', phone)  # Keeps only digits
+
+        url = "https://7103.api.greenapi.com/waInstance7103163711/checkWhatsapp/677efe89a87e474f93b6ca379ea32a364bf6be6020414505bd"
+
+        payload = { 
+            "phoneNumber": phone  
+        }
+        headers = {
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.post(url, json=payload, headers=headers)
+
+        return JsonResponse(response.json(), status = 200)
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
+
+
 
 def migrate():
     students = Student.objects.all()
@@ -1163,3 +1185,4 @@ def arch_back(request, IIN):
     else:
         messages.error(request, "Only ВнСв can add new students")
         return redirect('home')
+

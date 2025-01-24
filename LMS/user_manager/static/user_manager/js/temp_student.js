@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const ru = document.getElementById('ru');
     const kk = document.getElementById('kk');
     const phone = document.getElementById('phone');
+    const phoneLabel = document.getElementById('phone-label');
     const message = document.getElementById('message');
     const h2 = document.querySelector("h2");
     const selectMenu = document.querySelector(".select-menu"),
@@ -52,6 +53,8 @@ document.addEventListener('DOMContentLoaded', function () {
             message_label = document.getElementById('message_label');
             message_label.innerText = `Комментарий | Консультация: ${student.date}`;
         }
+        //Check WA availability in any cases
+        existsWhatsapp();
     }
     else{
         h2.innerText = 'Регистрация Ученика';
@@ -94,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
         grade.value = student.grade_num + ' класс';
         if (student.lang=="Рус") {ru.checked = true;} else {kk.checked = true;}
         sBtn_text.innerText = student.grade_num + ' класс';
-        phone.value = student.temp_phone;
+        phone.value = student.phone;
         prev_school.value = student.prev_school;
         message.value = student.comment;
         iin.value = student.IIN;
@@ -137,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
         firstname.value = student.First_Name;
         patronim.value = student.Patronim;
         grade.value = student.grade_num + student.grade_let + ' класс';
-        phone.value = student.temp_phone;
+        phone.value = student.phone;
         prev_school.value = student.prev_school;
         iin.value = student.IIN;
 
@@ -183,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
     iin.addEventListener('input', () => {
         iin.value = iin.value.replace(/[^0-9]/g, '');
     });
-
+    phone.addEventListener('input', existsWhatsapp);
 
     //Phone mask
     var maskOptions = {
@@ -192,6 +195,34 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     var mask = new IMask(phone, maskOptions);
 
+    //Check if WhatsApp exists
+    function existsWhatsapp() {
+        if (isPhone(phone.value)) {
+            fetch(`/wa_exists/${phone.value}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.existsWhatsapp) {
+                    phoneLabel.innerText = "Номер Телефона Родителя | WhatsApp доступен";
+                } else {
+                    phoneLabel.innerText = "Номер Телефона Родителя | WhatsApp не доступен";
+                }
+            })
+            .catch(error => {
+                // Handle errors
+                console.error('Error:', error);
+                alert('Произошла ошибка!');
+            });
+        }
+        else{
+            phoneLabel.innerText = "Номер Телефона Родителя";
+        }
+    }
 
     //Form Validation
     form.addEventListener('submit', function (e) {

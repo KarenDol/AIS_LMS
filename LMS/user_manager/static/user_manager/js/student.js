@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const iin = document.getElementById('iin');
     const grade = document.getElementById('grade');
     const phone = document.getElementById('phone');
+    const phoneLabel = document.getElementById('phone-label');
     const message = document.getElementById('message');
     const h2 = document.querySelector("h2");
     const selectMenu = document.querySelector(".select-menu"),
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
         //Update Комментарий with date of visit
         message_label = document.getElementById('message_label');
         message_label.innerText = `Комментарий | Консультация: ${student.date}`;
+        existsWhatsapp();
     }
     //the student is Акт
     else{
@@ -40,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
             message_label = document.getElementById('message_label');
             message_label.innerText = `Комментарий | Принят: ${student.date}`;
         }
+        existsWhatsapp();
     }
 
     //Ensures that if patronim is null, the input is clear
@@ -123,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
         prev_school.value = student.prev_school;
         message.value = student.comment;
         iin.value = student.IIN;
+        phone.value = student.phone;
 
         //Disable all the inputs except grade
         lastname.disabled = true;
@@ -131,6 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
         prev_school.disabled = true;
         message.disabled = true;
         iin.disabled = true; //IIN can't be edited in any circumstances
+        phone.disabled = true;
 
         //Switch button groups' displays
         button_cancel.addEventListener("click", () => {
@@ -162,7 +167,36 @@ document.addEventListener('DOMContentLoaded', function () {
     iin.addEventListener('input', () => {
         iin.value = iin.value.replace(/[^0-9]/g, '');
     });
+    phone.addEventListener('input', existsWhatsapp);
 
+    //Check if WhatsApp exists
+    function existsWhatsapp() {
+        if (isPhone(phone.value)) {
+            fetch(`/wa_exists/${phone.value}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.existsWhatsapp) {
+                    phoneLabel.innerText = "Номер Телефона | WhatsApp доступен";
+                } else {
+                    phoneLabel.innerText = "Номер Телефона | WhatsApp не доступен";
+                }
+            })
+            .catch(error => {
+                // Handle errors
+                console.error('Error:', error);
+                alert('Произошла ошибка!');
+            });
+        }
+        else{
+            phoneLabel.innerText = "Номер Телефона";
+        }
+    }
 
     //Phone mask
     var maskOptions = {

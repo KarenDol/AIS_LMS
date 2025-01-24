@@ -42,7 +42,6 @@ class Student(models.Model):
     grade_num = models.IntegerField(null=True)
     grade_let = models.CharField(max_length=1, null=True)
     lang = models.CharField(max_length=3, null=True)
-    temp_phone = models.CharField(max_length=20, null=True) #Lid contact phone number
     phone = models.CharField(max_length=20, null=True)
     prev_school = models.CharField(max_length=50, null=True)
     nationality = models.CharField(max_length=20, null=True)
