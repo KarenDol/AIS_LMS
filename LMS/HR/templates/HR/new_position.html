@@ -1,0 +1,92 @@
+{% extends 'HR/index.html' %}
+{% block content %}
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'HR/css/new_position.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+    <link rel="icon" href="{% static 'HR/favicon.png' %}">
+    <title>Новая вакансия</title>
+</head>
+
+<body>
+    <form id="mainForm" method="POST" action="{% url 'new_position' %}" novalidate enctype="multipart/form-data">
+        {% csrf_token %}
+    <div class="container">
+        <div class="position">
+            <div class="position-title">
+                <input class="position-title" id="title" name="title" type="text" placeholder="Ex. Учитель Химии...">
+            </div>
+            <div class="salary">
+                <div class="salary-label">
+                    <p>Заработная плата | </p>
+                    <input type="checkbox" id="salary_status" name="salary_status">
+                    <label for="salary_status">Без указания з/п</label>
+                </div>
+                <div class="salary-input" id="salary-input">
+                    <span class="currency-code">₸</span>
+                    <input class="salary" id="salary" name="salary" type="text" placeholder="Ex. 200 000...">
+                </div>
+            </div>
+            <div class="experince">
+                <div class="salary-label">
+                    <p>Требуемый опыт:</p>
+                </div>
+                <div class="radio-options">
+                    <div class="radio-option">
+                        <input type="radio" id="exp1" name="experience" value="exp1" checked>
+                        <label for="exp1">Без опыта</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="exp2" name="experience" value="exp2">
+                        <label for="exp2">1-2 года</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="exp3" name="experience" value="exp3">
+                        <label for="exp3">3-5 лет</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="exp4" name="experience" value="exp4">
+                        <label for="exp4">Более 5 лет</label>
+                    </div>
+                </div>              
+            </div>
+        </div>
+        <div class="line"></div>
+
+        <div class="block">
+            <div class="title">
+                <h2>Описание</h2>
+            </div>
+            <div class="text">
+                <div class="editor" id="desc-editor"></div>
+            </div>
+            <input id="desc-input" name="description" type="hidden">
+        </div>
+        <div class="line"></div>
+
+        <div class="block">
+            <div class="title">
+                <h2>Требования</h2>
+            </div>
+            <div class="text">
+                <div class="editor" id="req-editor"></div>
+            </div>
+            <input  id="req-input" name="requirements" type="hidden">
+        </div>
+        <div class="line"></div>
+
+        <div class="button-group">
+            <button id="button_cancel">Назад</button>
+            <button id="button_save">Сохранить</button>
+        </div>
+    </div>
+</form>
+</body>
+<script src="{% static 'HR/js/new_position.js' %}"></script>
+<!-- Include the Quill library -->
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+{% endblock content %}

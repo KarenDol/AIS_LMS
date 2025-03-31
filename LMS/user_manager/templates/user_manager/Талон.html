@@ -1,0 +1,71 @@
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'user_manager/css/Талон.css' %}">
+    <title>Родитель</title>
+</head>
+
+<body>
+    <table border="1" class="outer">
+        <tr>
+            <td><img class="logo" src="{% static 'user_manager/AIS_Horizontal.png' %}"></td>
+            <td>
+                <h3><strong>Оқушының мектепке келуі туралы анықтама</strong></h3>
+                <br>
+                <table class="inner">
+                    <colgroup>
+                        <col style="width: 148px;">
+                        <col style="width: 148px;">
+                        <col style="width: 80px;">
+                        <col style="width: 95px;">
+                    </colgroup>                
+                    <tr>
+                        <td><p>Тегі</p></td>
+                        <td class="field"><p><u>{{ Last_Name }}</u></p></td>
+                        <td><p>Аты</p></td>
+                        <td class="field"><u>{{ First_Name }}</u></p></td>
+                    </tr>
+                    <tr>
+                        <td><p>Әкесінің Аты</p></td>
+                        <td class="field"><p><u>{{ Patronim }}</u></p></td>
+                        <td><p>Туған Күні</p></td>
+                        <td class="field"><p><u>{{ birthdate }}</u></p></td>
+                    </tr>
+                    <tr>
+                        <td ><p>Оқитын Класы</p></td>
+                        <td class="field"><p><u>{{ grade }}</u></p></td>
+                        <td><p>Оқу Тілі</p></td>
+                        <td class="field"><p><u>{{ lang }}</u></p></td>
+                    </tr>
+                    <tr>
+                        <td><p>Қайдан Келді</p></td>
+                        <td colspan="3" class="field"><p><u>{{prev_school}}</u></p></td>
+                    </tr>
+                    <tr>
+                        <td><p>Қайда Келді</p></td>
+                        <td colspan="3" class="field"><p><u>“Aqbobek International School”</u></p></td>
+                    </tr>
+                    <tr>
+                        <td><p>Мектеп Директоры</p></td>
+                        <td colspan="3" style="padding-left: 20px;">
+                            <p><u>Тулеушов Г. С.</u></p>
+                            <img src="{% static 'user_manager/Stamp.png' %}" 
+                            style="position: absolute; top: 170px; left: 470px; width: 118px">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td colspan="3"  style="padding-left: 20px;">
+                            <p><u>{{ today }}</u></p>
+                            <img src="{% static 'user_manager/Sign.png' %}" 
+                            style="position: absolute; top: 230px; left: 420px; width: 90px">
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>

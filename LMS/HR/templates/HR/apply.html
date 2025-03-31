@@ -1,3 +1,5 @@
+{% extends 'HR/index_apply.html' %}
+{% block content %}
 {% load static %}
 
 <head>
@@ -12,7 +14,7 @@
 <body>
     <div class="container">
         <img src="{% static 'HR/staff.jpg' %}">
-        <form id="mainForm" method="POST" action="{% url 'apply' %}" novalidate enctype="multipart/form-data">
+        <form id="mainForm" method="POST" action="{% url 'apply' pos_id=0 %}" novalidate enctype="multipart/form-data">
             {% csrf_token %}
             <h2>Форма Подачи</h2>
             <div class="form-control">
@@ -35,7 +37,7 @@
 
             <div class="form-control">
                 <label for="iin">ИИН</label>
-                <input type="tel" id="iin" name="iin" inputmode="numeric" placeholder="ИИН кандидата (12 символов)" maxlength="12" autocomplete="off">
+                <input type="tel" id="iin" name="iin" inputmode="numeric" placeholder="ИИН кандидата (12 символов)" maxlength="13" autocomplete="off">
                 <i class="icon"></i>
             </div>
 
@@ -89,10 +91,10 @@
             </div>
 
             <div class="form-control">
-                <label for="cv">Резюме</label>
+                <label for="cv">Скан</label>
                 <div class="file-input">
                     <label for="cv" class="file-selector">📄 Файл</label>
-                    <p id="file_name">Резюме.pdf</p>
+                    <p id="file_name">Скан.pdf</p>
                 </div>
                 <input type="file" id="cv" name="cv" autocomplete="off" hidden>
                 <i class="icon"></i>
@@ -101,7 +103,7 @@
             <button type="submit">Подать Заявку</button>
         </form>
     </div>
-
     <script src="{% static 'HR/js/apply.js' %}"></script>
     <script src="https://unpkg.com/imask"></script>
 </body>
+{% endblock content %}

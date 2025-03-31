@@ -28,7 +28,7 @@
                 <div class="bento-item">
                     <div class="avatar-container">
                         <div class="avatar">
-                            <img src="{% static user_dict.picture %}" alt="User Avatar" id="avatar-image">
+                            <img alt="User Avatar" id="avatar-image">
                             <div class="avatar-overlay">
                                 <i class="fas fa-plus"></i>
                             </div>
@@ -111,7 +111,7 @@
             </div>
 
             <div class="action-buttons">
-                <button type="button" class="btn btn-logout" onclick="window.location.href='{% url 'logout' %}';">Выйти</button>
+                <button type="button" class="btn btn-logout" onclick="window.location.href='{% url 'logout_user' prev_page=prev_page %}';">Выйти</button>
                 <div class="right-buttons">
                     <button type="button" class="btn btn-reset" disabled>Сбросить</button>
                     <button type="submit" class="btn btn-save" disabled>Сохранить</button>
@@ -126,11 +126,16 @@
                 username: '{{ user_dict.username|escapejs }}',
                 email: '{{ user_dict.email|escapejs }}',
                 phone: '{{ user_dict.phone|escapejs }}',
-                avatarSrc: '123.jpg'
+                avatarSrc: '{{ user_dict.picture|escapejs }}'
             };
         }; 
     </script>
     <script src="https://unpkg.com/imask"></script>
+    <script>
+        if (window.location.pathname.startsWith('/user_settings/')) {
+          window.history.replaceState(null, null, '/user_settings/');
+        }
+      </script>
     <script src="{% static 'user_manager/js/user_settings.js' %}"></script>
 </body>
 </html>

@@ -45,7 +45,7 @@ form h2{
     text-align: center;
     color: #100629;
     font-size: 30px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .form-control{
@@ -103,7 +103,6 @@ input:focus {
     left: 10px;
 }
 button{
-    margin-top: 15px;
     width: 100%;
     border: none;
     padding: 10px;
@@ -111,12 +110,19 @@ button{
     color: #fff;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
     transition: all 0.5s ease;
 }
 
 button:hover{
     background-color: #FF9C2E;
+}
+
+#back{
+    background-color: #ffffff;
+    color: #59007A;
+    border: solid 2px;
+    border-color: #59007A;
 }
 
 .form-control .icon{
@@ -429,19 +435,6 @@ label.file-selector:hover {
     margin: 15px 0px;
 }
 
-.button-group button {
-    flex-grow: 1;
-    margin-right: 5px;
-    border: none;
-    padding: 10px;
-    color: #fff;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.5s ease;
-    height: 60px;
-}
-
 .approve-button {
     background-color: #00BF7C;
     transition: background-color 0.3s;
@@ -456,7 +449,13 @@ label.file-selector:hover {
 .reject-button:hover {
     background-color: #DB0227;
 }
-
+.disabled {
+    background-color: #6A6A6A;
+    cursor: default;
+}
+.disabled:hover {
+    background-color: #6A6A6A;
+}
 
 .pop-up{
     position: fixed; /* Use fixed positioning to keep it in view */

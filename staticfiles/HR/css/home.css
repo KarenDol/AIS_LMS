@@ -1,10 +1,10 @@
 
 * {
-    margin: 0;
-    padding: 0;
+    margin: 0 !important;;
+    padding: 0 !important;
 
-    box-sizing: border-box;
-    font-family: sans-serif;
+    box-sizing: border-box !important;
+    font-family: sans-serif !important;
 }
 @media print {
  .table, .table__body {
@@ -14,27 +14,26 @@
  }
 }
 body {
-    background: url(/static/HR/background_9.jpg) center / cover;
-    justify-content: center;
-    align-items: center;
+    background: url(/static/HR/background_9.jpg) center / cover !important;
+    justify-content: center !important;
+    align-items: center !important;
 }
 
 main {
-    width: 82vw;
-    height: 80vh;
-    background-color: #fff5;
-    justify-content: center;
-    align-items: center;
-    margin: 0 auto;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    width: 82vw !important;
+    height: 80vh !important;
+    background-color: #fff5 !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+    backdrop-filter: blur(7px) !important;
+    box-shadow: 0 .4rem .8rem #0005 !important;
+    border-radius: .8rem !important;
 
-    backdrop-filter: blur(7px);
-    box-shadow: 0 .4rem .8rem #0005;
-    border-radius: .8rem;
 
-
-    overflow-y: auto;
+    overflow-y: auto !important;
 }
 
 .table__header {

@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const workplace = document.getElementById('workplace');
     const position = document.getElementById('position');
     const phone = document.getElementById('phone');
+    const phoneLabel = document.getElementById('phone-label');
     const address = document.getElementById('address');
     const h2 = document.querySelector("h2");
 
@@ -17,6 +18,8 @@ document.addEventListener('DOMContentLoaded', function () {
         //by default, edit is blocked
         block_edit();
         form.action = `/card_parent/${IIN}/`;
+
+        existsWhatsapp();
     }
     else{
         h2.innerText = 'Регистрация родителя';
@@ -30,6 +33,8 @@ document.addEventListener('DOMContentLoaded', function () {
             event.preventDefault()
             window.location.href = `/card_student/${IIN}/`;;
         });
+
+        existsWhatsapp();
     }
 
     function allow_edit() { //No student => it's register student
@@ -126,6 +131,38 @@ document.addEventListener('DOMContentLoaded', function () {
     ID_numb.addEventListener('input', () => {
         ID_numb.value = ID_numb.value.replace(/[^0-9]/g, '');
     });
+
+    phone.addEventListener('input', existsWhatsapp);
+
+    //Check if WhatsApp exists
+    function existsWhatsapp() {
+        if (isPhone(phone.value)) {
+            fetch(`/wa_exists/${phone.value}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.existsWhatsapp) {
+                    phoneLabel.innerText = "Номер Телефона | WhatsApp доступен";
+                } else {
+                    phoneLabel.innerText = "Номер Телефона | WhatsApp не доступен";
+                }
+            })
+            .catch(error => {
+                // Handle errors
+                console.error('Error:', error);
+                alert('Произошла ошибка!');
+            });
+        }
+        else{
+            phoneLabel.innerText = "Номер Телефона";
+        }
+    }
+
 
     //Phone mask
     var maskOptions = {

@@ -18,15 +18,18 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='hr_home'),
-    path('apply/', views.apply, name='apply'),
+    path('apply/<int:pos_id>', views.apply, name='apply'),
     path('email/<iin>/', views.send_email, name='send_email'),
-    path("login/", views.login_user, name='login_user_hr'), 
-    path("logout/", views.logout_user, name='logout_hr'),
     path("applicant_card/<iin>/", views.applicant_card, name='applicant_card'),
     path('404/<error_code>', views.error, name='error'),
     path("card_review/<iin>/", views.card_review, name='card_review'),
     path("appoint_int/<iin>/", views.appoint_int, name='appoint_int'),
     path("report_int/<iin>/", views.report_int, name='report_int'),
+   
+    #Портал вакансий
+    path('jobs/', views.jobs, name='jobs'), 
+    path('new_position/', views.new_position, name='new_position'),
+    path('position/<id>/', views.position, name='position'),
 
     #serve static api
     path("cv/<iin>/", views.cv, name='cv'),

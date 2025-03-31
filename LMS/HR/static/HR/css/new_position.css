@@ -1,0 +1,185 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "San Francisco", 
+                 "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body{
+    background-color: #dcdcdc;
+    align-items: center;
+    justify-content: center;
+}
+
+.container{
+    margin: 20px auto;
+    background-color: #fff;
+    width: 100%;
+    min-width: 900px;
+    max-width: 70%;
+    padding: 45px;
+    border-radius: 10px;
+    box-shadow: 10px 10px 30px rgba(255, 255, 255, 0.1);
+}
+
+.block{
+    display: flex;
+    gap: 10px;
+}
+
+.title{
+    width: 20%
+}
+
+.text{
+    width: 80%;
+    font-size: 18px;
+    margin-bottom: 40px;
+}
+
+/* Quill Editor Styles */
+.editor{
+    font-family: -apple-system, BlinkMacSystemFont, "San Francisco", 
+                 "Helvetica Neue", Helvetica, Arial, sans-serif;
+    height: 400px;
+}
+.editor h1{
+    font-size: 27px !important;;
+}
+.editor h2{
+    font-size: 24x !important;;
+}
+.editor h3{
+    font-size: 21px !important;
+}
+.editor p{
+    font-size: 18px !important;
+}
+.editor li{
+    font-size: 18px !important;
+}
+
+
+.line {
+    height: 1px;
+    background-color: #CCC; 
+    margin: 15px 0; 
+}
+
+/* input styles */
+input.position-title{
+    font-size: 22px;
+    font-weight: 700;
+    width: 350px;
+    border: none;
+    text-align: center;
+}
+
+input.salary{
+    width: 30%;
+    padding: 10px;
+    padding-left: 25px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    outline: none;
+    transition: border 0.3s;
+    font-size: 1rem;
+}
+
+.salary-input{
+    position: relative;
+}
+
+.currency-code{
+    font-size: 20px;
+    left: 10px;
+    position: absolute;
+    top: 9px;
+}
+
+/* Radio styles */
+.radio-options{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 5px;
+}
+
+.radio-option{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding-left: 10px;
+    gap: 5px;
+}
+
+.salary-label{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.salary-label label{
+    font-size: 18px;
+}
+
+.radio-options label{
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.experince p, .salary p{
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.position-title p{
+    font-size: 22px;
+}
+
+.salary-label{
+    margin-bottom: 10px;
+}
+
+.position-title{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.position-title, .salary, .experince{
+    margin-bottom: 10px;
+}
+
+/* Button styles */
+button{
+    width: 100%;
+    border: none;
+    padding: 10px;
+    background-color: #59007A;
+    color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.5s ease;
+}
+
+button:hover{
+    background-color: #FF9C2E;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+#button_cancel{
+    background-color: #ffffff;
+    color: #59007A;
+    border: solid 2px;
+    border-color: #59007A;
+}

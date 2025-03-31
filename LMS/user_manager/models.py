@@ -95,3 +95,19 @@ class Document(models.Model):
     date = models.DateField()
     receiver = models.CharField(max_length=100) #Куда/кому адресован документ
     type = models.CharField(max_length = 50) #Что за документ?
+
+class Candidate(models.Model):
+    student = models.OneToOneField(Student, on_delete=models.CASCADE, primary_key=True)
+    letter = models.CharField(max_length=1)
+    status = models.BooleanField()
+
+class Change(models.Model):
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
+    date_time = models.DateTimeField()
+    change_type = models.CharField(max_length=6, choices=[
+        ('let', 'letter'),
+        ('sta', 'status')
+    ])
+    let_a = models.CharField(max_length=1, null=True)
+    let_b = models.CharField(max_length=1, null=True)
+    changed_status = models.BooleanField(null=True)

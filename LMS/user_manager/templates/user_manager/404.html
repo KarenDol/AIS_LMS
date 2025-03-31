@@ -20,8 +20,8 @@
     <div class="main">
       <h1>404</h1>
       <p>Кажется вы забрели не туда...<br>{{ error_code }}</p>
-      <button type="button" onclick="window.location.href='/'">Домой</button>
-    </div>
+      <button type="button" onclick="window.location.href='{% url prev_page %}'">Домой</button>
+    </div> 
 
     <script>
       if (window.location.pathname.startsWith('/404/')) {

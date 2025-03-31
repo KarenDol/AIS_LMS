@@ -1,0 +1,52 @@
+* {
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+body {
+    justify-content: center;
+    align-items: center;
+}
+
+h3{
+    font-size: 18px;
+}
+
+p{
+    font-size: 16px;
+}
+
+img.logo{
+    width: 114px;   
+}
+
+table{
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+th, td{
+    border: none;
+    border-collapse: collapse;
+}
+
+table.outer{
+    text-align: center;
+    width: 616px;
+}
+
+table.inner{
+    border: none;
+    width: 100%;
+}
+
+table.inner td{
+    padding-top: 10px;
+}
+
+td.field{
+    text-align: center;
+}

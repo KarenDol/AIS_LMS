@@ -28,61 +28,52 @@
 
             <div class="form-control">
                 <label for="lastname">Фамилия</label>
-                <input type="text" id="lastname" name="lastname" value="{{last_name}}" disabled>
-                <i class="icon"></i>
+                <input type="text" id="lastname" disabled>
             </div>
 
             <div class="form-control">
                 <label for="firstname">Имя</label>
-                <input type="text" id="firstname" name="firstname" value="{{first_name}}" disabled>
-                <i class="icon"></i>
+                <input type="text" id="firstname" disabled>
             </div>
 
             <div class="form-control">
                 <label for="patronim">Отчество</label>
-                <input type="text" id="patronim" name="patronim" value="{{patronim}}" disabled>
-                <i class="icon"></i>
+                <input type="text" id="patronim" disabled>
             </div>
 
             <div class="form-control">
                 <label for="iin">ИИН</label>
-                <input type="tel" id="iin" name="iin" value="{{iin}}" disabled>
-                <i class="icon"></i>
+                <input type="tel" id="iin" disabled>
             </div>
 
             <div class="form-control">
                 <label for="phone">Номер Телефона для СМС</label>
-                <input type="tel" id="phone" name="phone" value="{{phone}}" disabled>
-                <i class="icon"></i>
+                <input type="tel" id="phone" disabled>
             </div>
 
             <div class="form-control">
                 <label for="salary">Желаемая Заработная Плата</label>
                 <span class="currency-code">₸</span>
-                <input type="text" id="salary" name="salary" value="{{exp_salary}}" disabled>
-                <i class="icon"></i>
+                <input type="text" id="salary" disabled>
             </div>
 
             <div class="form-control">
                 <label for="grade">Позиция</label>
-                <div class="select-menu">
-                <input type="text" name="position" id="selectedPosition" value="{{position}}" disabled>  
-                </div>
+                <input type="text" id="position" disabled>  
             </div>
 
             <div class="form-control">
                 <label for="lang">Язык Преподавания</label>
                 <div class="radio-options">
                         <div class="radio-option">
-                            <input type="radio" id="ru" name="lang" value="Рус" {% if lang == "Рус" %} checked {% endif %} disabled>
+                            <input type="radio" id="ru" disabled>
                             <label for="ru">Русский</label>
                         </div>
                         <div class="radio-option">
-                            <input type="radio" id="kk" name="lang" value="Каз" {% if lang == "Каз" %} checked {% endif %} disabled>
+                            <input type="radio" id="kk" disabled>
                             <label for="kk">Казахский</label>
                         </div>
                 </div>
-                <i class="icon"></i>
             </div>
 
             <div class="form-control">
@@ -93,6 +84,8 @@
                 </div>
                 <i class="icon"></i>
             </div>
+
+            <button id="back" onclick="event.preventDefault(); window.location.href='/hr'">Назад</button>
         </form>
     </div>
 
@@ -126,6 +119,11 @@
         const iin_value = "{{ iin }}";
     </script>
     <script src="https://unpkg.com/imask"></script>
+    <script>
+        if ('{{ applicant|default:"null"|escapejs }}') {
+            applicant = JSON.parse('{{ applicant|default:"null"|escapejs }}');
+        }
+    </script>
     <script src="{% static 'HR/js/applicant_card.js' %}"></script>
 </body>
 {% endblock content %}

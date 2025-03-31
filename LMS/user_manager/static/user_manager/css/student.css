@@ -40,15 +40,15 @@ body{
     margin-bottom: 15px;
 }
 
-#nationality_block{
-    display: none;
-}
-
 .form-control label{
     display: block;
     margin-bottom: 5px;
     font-size: 1rem;
     font-weight: 500;
+}
+
+#nationality_block{
+    display: none;
 }
 
 .form-control input,

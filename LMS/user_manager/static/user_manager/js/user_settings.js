@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 originalData[key] = value;
             }
         }
+        console.log(`serve_static for ${userData.avatarSrc}`);
+        avatarImage.src = '/api/serve_static/' + userData.avatarSrc;
         originalData.avatarSrc = userData.avatarSrc;
     }
 
@@ -141,7 +143,8 @@ document.addEventListener('DOMContentLoaded', function() {
     resetButton.addEventListener('click', function() {
         for (const [key, value] of Object.entries(originalData)) {
             if (key === 'avatarSrc') {
-                avatarImage.src = value;
+                console.log(`serve_static for ${value}`);
+                avatarImage.src = '/api/serve_static/' + value;
             } else {
                 const input = document.getElementById(key);
                 if (input) {

@@ -19,17 +19,20 @@ from . import views, report
 urlpatterns = [
     #System pages
     path('', views.home, name='home'),
-    path("login/", views.login_user, name='login_user'),
-    path("logout/", views.logout_user, name='logout'),
-    path('user_settings/', views.user_settings, name='user_settings'),
-    path('404/<error_code>', views.error, name='error'),
+    path("login/<prev_page>", views.login_user, name='login_user'),
+    path("logout/<prev_page>", views.logout_user, name='logout_user'),
+    path('user_settings/<prev_page>', views.user_settings, name='user_settings'),
+    path('404/<prev_page>/<error_code>/', views.error, name='error'),
 
     #Student
     path('register_student/', views.register_student, name='register_student'),
     path('card_student/<IIN>/', views.card_student, name='card_student'),
     path('temp_card_std/<IIN>/', views.temp_card_std, name='temp_card_std'),
+    path('accept/<IIN>/', views.accept_student, name='accept_student'),
     path('archive/<IIN>/', views.archive, name='archive'),
     path('arch_back/<IIN>/', views.arch_back, name='arch_back'),
+    path('1_grade/', views.first_grade, name='1_grade'),
+    path('change_candidate/<pk>/', views.change_candidate, name='change_candidate'),
 
     #Register
     path('register_parent/<IIN>/', views.register_parent, name='register_parent'),
@@ -58,8 +61,8 @@ urlpatterns = [
     path("edit_honor/<id>/", views.edit_honor, name='edit_honor'),
     
     #Others
-    path('accept/<IIN>/', views.accept_student, name='accept_student'),
     path('join_fee/<IIN>/', views.join_fee, name='join_fee'),
     path("wa/", views.wa, name='wa'),
     path("wa_exists/<phone>/", views.wa_exists, name='wa_exists'),
+    path("templ/", views.templ, name="templ")
 ]

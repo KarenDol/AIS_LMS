@@ -24,7 +24,7 @@ import re
 # Create your views here.
 def home(request):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     
     students = list(Student.objects.all()
                     .order_by('Last_Name', 'First_Name', 'Patronim')
@@ -110,9 +110,10 @@ def serve_static(request, filename):
     else:
         raise Http404("Avatar not found")
 
-def login_user(request):
+#Login and logout with prev_page 
+def login_user(request, prev_page):
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect(prev_page)
     else:
         if request.method == "POST":
             username = request.POST['username']
@@ -125,21 +126,24 @@ def login_user(request):
                     request.session.set_expiry(1209600)  # 2 weeks in seconds
                 else:
                     request.session.set_expiry(0)
-                return redirect('home')
+                return redirect(prev_page)
             else:
                 messages.error(request, "Login failed. Please check your username and password.")
-                return redirect('login_user')
+                return redirect('login_user', prev_page)
         else:
-            return render(request, 'user_manager/login.html')
-
-def logout_user(request):
+            context={
+                'prev_page': prev_page,
+            }
+            return render(request, 'user_manager/login.html', context)
+        
+def logout_user(request, prev_page):
     logout(request)
-    messages.success(request, "You have been logged out!")
-    return redirect('login_user')
+    messages.info(request, "You have been logged out!")
+    return redirect('login_user', prev_page=prev_page)
 
 def register_student(request):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'register_student')
     
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
@@ -169,6 +173,11 @@ def register_student(request):
             new_student = Student(user=new_user, Last_Name=lastname, First_Name=firstname, Patronim=patronim, phone=phone,
                             IIN=IIN, prev_school=prev_school, grade_num=grade_num, lang=lang, comment=comment, date=date)
             new_student.save()
+
+            if grade_num == '1':
+                candidate = Candidate(student=new_student, letter='?', status=False)
+            candidate.save()
+
             messages.success(request, "Новый ученик добавлен в систему")
             return redirect('home')
         else:
@@ -182,11 +191,11 @@ def register_student(request):
     
 def accept_student(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', prev_page='home')
     if student_exist(IIN):
         student = Student.objects.get(IIN=IIN)
     else:
-        return redirect('error', error_code='Ученика с таким ИИН нет в системе')
+        return redirect('error', prev_page='home', error_code='Ученика с таким ИИН нет в системе')
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         if request.method == "POST":
@@ -219,13 +228,13 @@ def accept_student(request, IIN):
 
 def temp_card_std(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if student_exist(IIN):
         student = Student.objects.get(IIN=IIN)
         if student.status == "Акт":
             return redirect('card_student', IIN=IIN)
     else:
-        return redirect('error', error_code='Ученика с таким ИИН нет в системе')
+        return redirect('error', prev_page='home', error_code='Ученика с таким ИИН нет в системе')
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         if request.method == "POST":
@@ -264,13 +273,13 @@ def temp_card_std(request, IIN):
 
 def card_student(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if student_exist(IIN):
         student = Student.objects.get(IIN=IIN)
         if student.status != "Акт":
             return redirect('temp_card_std', IIN=IIN)
     else:
-        return redirect('error', error_code='Ученика с таким ИИН нет в системе')
+        return redirect('error', prev_page='home', error_code='Ученика с таким ИИН нет в системе')
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         if request.method == "POST":
@@ -312,13 +321,13 @@ def card_student(request, IIN):
 
 def register_parent(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if student_exist(IIN):
         student = Student.objects.get(IIN=IIN)
     else:
-        return redirect('error', error_code='Ученика с таким ИИН нет в системе')
+        return redirect('error', prev_page='home', error_code='Ученика с таким ИИН нет в системе')
     if parent_exist(IIN): #If parent already exists
-        return redirect('error', error_code='Родитель данного ученика уже добавлен в систему')
+        return redirect('error', prev_page='home', error_code='Родитель данного ученика уже добавлен в систему')
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         if request.method == 'POST':
@@ -359,17 +368,17 @@ def register_parent(request, IIN):
 
 def register_contract(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if student_exist(IIN):
         student = Student.objects.get(IIN=IIN)
     else:
-        return redirect('error', error_code='Ученика с таким ИИН нет в системе')
+        return redirect('error', prev_page='home', error_code='Ученика с таким ИИН нет в системе')
     if not parent_exist(IIN):
         messages.error(request, "Необходимо сначала добавить родителя")
         return redirect('register_parent', IIN=IIN)
     current_user = LMS_User.objects.get(user=request.user)
     if contract_exist(IIN): #If contract already exists
-        return redirect('error', error_code='Договор для данного ученика уже составлен')
+        return redirect('error', prev_page='home', error_code='Договор для данного ученика уже составлен')
     if current_user.user_type == 'ВнСв':
         if request.method == 'POST':
             date = str(datetime.now())
@@ -400,7 +409,7 @@ def register_contract(request, IIN):
 
 def card_parent(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if parent_exist(IIN):
         student = Student.objects.get(IIN=IIN)
         parent = student.parent_1
@@ -451,7 +460,7 @@ def card_parent(request, IIN):
 
 def card_contract(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if contract_exist(IIN):
         student = Student.objects.get(IIN=IIN)
         contract = student.contract
@@ -497,12 +506,12 @@ def card_contract(request, IIN):
 
 def join_fee(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if contract_exist(IIN):
         student = Student.objects.get(IIN=IIN)
         contract = student.contract
     else:
-        return redirect('error', "Сначала убедитесь, что студент, родитель и договор добавлены в систему")
+        return redirect('error', prev_page='home', error_code = "Сначала убедитесь, что студент, родитель и договор добавлены в систему")
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         if (contract.join_fee_status):
@@ -532,13 +541,10 @@ def send_sms(phones, message):
         response = requests.get(api_url, params=params)
          # Check the response status code
         if response.status_code == 200:
-            print(response.status_code)
             # SMS sent successfully
-            print("SMS was sent succesfully")
             return True
         else:
             # Handle any errors
-            print("SMS was not sent")
             return False
 
     except requests.RequestException as e:
@@ -547,7 +553,7 @@ def send_sms(phones, message):
 
 def sign_doc(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     student = student_exist(IIN)
     contract = student.contract
     dogovor = os.path.join('docs', contract.template_location)
@@ -625,66 +631,78 @@ def cash(request, entr_id):
         messages.success(request, "Login in to access that page")
         return redirect('login_user')
 
-def user_settings(request):
-    if request.user.is_authenticated:
-        current_user = LMS_User.objects.get(user=request.user)
-        if request.method == "POST":
-            try:
-                new_username = request.POST['username']
-                if new_username and new_username != current_user.user.username:
-                    current_user.user.username = new_username
-                    current_user.user.save()
-                
-                oldPassword = request.POST['oldPassword']
-                newPassword = request.POST['newPassword']
-                if oldPassword:
-                    user = authenticate(username = request.user.username, password = oldPassword)
-                    print(request.user.username, oldPassword)
-                    if user is not None:
-                        user.set_password(newPassword)
-                        user.save()
-                    else:
-                        print("WrongPassword")
-                
-                new_email = request.POST['email']
-                if new_email and new_email != current_user.email:
-                    current_user.email = new_email
-                
-                new_phone = request.POST['phone']
-                if new_phone and new_phone != current_user.phone:
-                    current_user.phone = new_phone
+def user_settings(request, prev_page):
+    if (not user_auth(request)):
+        return redirect('logout_user', prev_page=prev_page)
+    current_user = LMS_User.objects.get(user=request.user)
+    if request.method == "POST":
+        try:
+            new_username = request.POST['username']
+            if new_username and new_username != current_user.user.username:
+                current_user.user.username = new_username
+                current_user.user.save()
+            
+            oldPassword = request.POST['oldPassword']
+            newPassword = request.POST['newPassword']
+            if oldPassword:
+                user = authenticate(username = request.user.username, password = oldPassword)
+                print(request.user.username, oldPassword)
+                if user is not None:
+                    user.set_password(newPassword)
+                    user.save()
+                else:
+                    print("WrongPassword")
+            
+            new_email = request.POST['email']
+            if new_email and new_email != current_user.email:
+                current_user.email = new_email
+            
+            new_phone = request.POST['phone']
+            if new_phone and new_phone != current_user.phone:
+                current_user.phone = new_phone
 
-                if 'avatar' in request.FILES:
-                    new_avatar = request.FILES['avatar']
-                    folder_path = os.path.join(settings.STATIC_ROOT, 'avatars')
+            if 'avatar' in request.FILES:
+                new_avatar = request.FILES['avatar']
+                folder_path = os.path.join(settings.STATIC_ROOT, 'user_manager', 'avatars')
 
-                    fs = FileSystemStorage(folder_path)
-                    fs.save(new_avatar.name, new_avatar)
+                # Get the exact file path
+                file_name = current_user.user.username
+                file_path = os.path.join(folder_path, file_name)
 
+                # Delete the file if it exists (only 1 image per user)
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
 
-                    current_user.picture = os.path.join('avatars', new_avatar.name)
-                
-                current_user.save()
-                
-                
-                
-                # Send success response
-                return JsonResponse({'status': 'success', 'message': 'Settings updated successfully'}, status=200)
-            except Exception as e:
-                # Handle exceptions and return an error response
-                print(f"Error occurred: {e}")
-                return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-        else:
-            user_dict = model_to_dict(current_user, fields=['name', 'phone', 'email', 'picture'])
-            user_dict['position'] = User_type_dict[current_user.user_type]
-            user_dict['username'] = current_user.user.username
-            user_dict['picture'] = 'user_manager/' + user_dict['picture']
-            return render(request, 'user_manager/user_settings.html', {'user_dict': user_dict})
+                fs = FileSystemStorage(folder_path)
+                fs.save(current_user.user.username, new_avatar)
+
+                current_user.picture = os.path.join('avatars', current_user.user.username)
+
+            current_user.save()
+            # Send success response
+            return JsonResponse({'status': 'success', 'message': 'Settings updated successfully'}, status=200)
+        except Exception as e:
+            # Handle exceptions and return an error response
+            print(f"Error occurred: {e}")
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     else:
-        return redirect('login')
+        user_dict = model_to_dict(current_user, fields=['name', 'phone', 'email', 'picture'])
+        user_dict['position'] = User_type_dict[current_user.user_type]
+        user_dict['username'] = current_user.user.username
+        user_dict['picture'] = user_dict['picture']
+
+        context = {
+            'user_dict': user_dict,
+            'prev_page': prev_page
+        }
+        return render(request, 'user_manager/user_settings.html', context)
     
-def error(request, error_code):
-    return render(request, 'user_manager/404.html', {'error_code': error_code})
+def error(request, prev_page, error_code):
+    context = {
+        'prev_page': prev_page,
+        'error_code': error_code,
+    }
+    return render(request, 'user_manager/404.html', context)
 
 def user_auth(request):
     if request.user.is_authenticated:
@@ -700,7 +718,7 @@ def user_auth(request):
     
 def export(request, grade):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     
     current_user = LMS_User.objects.get(user=request.user)
 
@@ -798,19 +816,19 @@ def export(request, grade):
         workbook.save(doc_location)
         return FileResponse(open(doc_location, 'rb'))
     else:
-        return redirect('error', "Войдите в систему как зам по ВСиРШ")
+        return redirect('error', prev_page='home', error_code="Войдите в систему как зам по ВСиРШ")
     
 
 def honors(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if student_exist(IIN):
         student = Student.objects.get(IIN=IIN)
         if student.status != "Акт":
             messages.error(request, "Данный студент не является активным")
             return redirect('card_student', IIN=IIN)
     else:
-        return redirect('error', error_code='Ученика с таким ИИН нет в системе')
+        return redirect('error', prev_page='home', error_code='Ученика с таким ИИН нет в системе')
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         if request.method == "POST":
@@ -847,11 +865,11 @@ def honors(request, IIN):
     
 def delete_honor(request, id):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if honor_exist(id):
         honor = Honor.objects.get(pk=id)
     else:
-        return redirect('error', error_code='Ученика с таким ИИН нет в системе')
+        return redirect('error', prev_page='home', error_code='Honor with that id does not exist')
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         if request.method == "POST":
@@ -866,11 +884,11 @@ def delete_honor(request, id):
     
 def edit_honor(request, id):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if honor_exist(id):
         honor = Honor.objects.get(pk=id)
     else:
-        return redirect('error', error_code='Такого достижения нет в системе')
+        return redirect('error', prev_page='home', error_code='Такого достижения нет в системе')
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         if request.method == "POST":
@@ -890,18 +908,18 @@ def edit_honor(request, id):
             messages.success(request, "Изменения успешно сохранены")
             return redirect('honors', IIN=IIN)
         else:
-            return redirect('error', error_code='Non Post is not required for this url')
+            return redirect('error', prev_page='home', error_code='Non Post is not required for this url')
     else:
         messages.success(request, "Только зам по ВСиРШ можем менять карточку студента")
         return redirect('home')
     
 def join_doc(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if student_exist(IIN):
         student = Student.objects.get(IIN=IIN)
     else:
-        return redirect('error', error_code='Ученика с таким ИИН нет в системе')
+        return redirect('error', prev_page='home', error_code='Ученика с таким ИИН нет в системе')
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         fill_join(IIN)
@@ -928,11 +946,11 @@ def join_doc(request, IIN):
     
 def leave_doc(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if student_exist(IIN):
         student = Student.objects.get(IIN=IIN)
     else:
-        return redirect('error', error_code='Ученика с таким ИИН нет в системе')
+        return redirect('error', prev_page='home', error_code='Ученика с таким ИИН нет в системе')
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         fill_leave(IIN)
@@ -959,12 +977,12 @@ def leave_doc(request, IIN):
     
 def fill_contract(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if (contract_exist(IIN)):
         student = Student.objects.get(IIN=IIN)
         contract = Contract.objects.get(student=student)
     else:
-        return redirect('error', error_code='Договора ученика нет в системе')
+        return redirect('error', prev_page='home', error_code='Договора ученика нет в системе')
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         fill_doc(IIN)
@@ -991,11 +1009,11 @@ def fill_contract(request, IIN):
     
 def spravka(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if (student_exist(IIN)):
         student = Student.objects.get(IIN=IIN)
     else:
-        return redirect('error', error_code="Ученика с таким ИИН нет в системе")
+        return redirect('error', prev_page='home', error_code="Ученика с таким ИИН нет в системе")
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
         date = datetime.today()
@@ -1108,8 +1126,6 @@ def wa_exists(request, phone):
     except json.JSONDecodeError:
         return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
 
-
-
 def migrate():
     students = Student.objects.all()
     for student in students:
@@ -1133,7 +1149,7 @@ def migrate():
 
 def archive(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if student_exist(IIN):
         student = Student.objects.get(IIN=IIN)
     else:
@@ -1164,7 +1180,7 @@ def archive(request, IIN):
 #Return student back from archive
 def arch_back(request, IIN):
     if (not user_auth(request)):
-        return redirect('logout')
+        return redirect('logout_user', 'home')
     if student_exist(IIN):
         student = Student.objects.get(IIN=IIN)
     else:
@@ -1185,4 +1201,63 @@ def arch_back(request, IIN):
     else:
         messages.error(request, "Only ВнСв can add new students")
         return redirect('home')
+    
+def templ(request):
+    context = {
+        'Last_Name': "Долмагамбетов",
+        'First_Name': "Карен",
+        "Patronim": "Талгатович",
+        "birthdate": "08/06/2001",
+        "grade": "7",
+        "lang": "орыс",
+        "prev_school": "Назарбаев Интеллектуальная Школа",
+        "today": "31/09/2025"
+    }
+    return render(request, 'user_manager/Талон.html', context)
 
+def first_grade(request):
+    candidates = list(Candidate.objects.all())
+    candidates_list = []
+    for candidate in candidates:
+        candidate_entry = {
+            "pk": candidate.pk,
+            "full_name": f"{candidate.student.Last_Name} {candidate.student.First_Name} {candidate.student.Patronim}",
+            "status": candidate.status,
+            "letter": candidate.letter
+        }
+        candidates_list.append(candidate_entry)
+    
+    candidates_json = json.dumps(candidates_list)
+
+    context = {
+        'candidates': candidates_json,   
+    }
+    return render(request, 'user_manager/1_grade.html', context)
+
+def change_candidate(request, pk):
+    try:
+        candidate = Candidate.objects.get(pk=pk)
+        data = json.loads(request.body)  # Parse JSON data
+        boxID = int(data.get('boxID'))
+        
+        if (boxID<6):
+            let_a = candidate.letter
+            options = ['?', 'А', 'Ә', 'Б', 'В']
+            candidate.letter = options[boxID-1]
+            change = Change(candidate=candidate,
+                            date_time=datetime.now(), 
+                            change_type='let', 
+                            let_a=let_a, 
+                            let_b=options[boxID-1])
+        else:
+            candidate.status = not candidate.status
+            change = Change(candidate=candidate,
+                            date_time=datetime.now(), 
+                            change_type='sta', 
+                            changed_status = candidate.status)
+
+        candidate.save()
+        change.save()
+        return JsonResponse({'status': 'success', 'message': 'Successfully updated'}, status=200)
+    except Candidate.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Candidate with such id does not exist'}, status=500)

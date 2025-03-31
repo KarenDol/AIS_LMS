@@ -1,0 +1,67 @@
+{% extends 'HR/index.html' %}
+{% block content %}
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'HR/css/position.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+    <link rel="icon" href="{% static 'HR/favicon.png' %}">
+    <title>Новая вакансия</title>
+</head>
+
+<body>
+    <form id="mainForm" method="POST" action="{% url 'new_position' %}" novalidate enctype="multipart/form-data">
+        {% csrf_token %}
+    <div class="container">
+        <div class="position">
+            <div class="position-title" id="title"></div>
+            <div class="salary">
+                <div class="salary-label" id="salary"></div>
+            </div>
+            <div class="experince">
+                <div class="salary-label" id="experience"></div>   
+            </div>
+        </div>
+        <div class="line"></div>
+
+        <div class="block">
+            <div class="title">
+                <h2>Описание</h2>
+            </div>
+            <div class="text">
+                <div class="editor" id="desc-editor"></div>
+            </div>
+            <input id="desc-input" name="description" type="hidden">
+        </div>
+        <div class="line"></div>
+
+        <div class="block">
+            <div class="title">
+                <h2>Требования</h2>
+            </div>
+            <div class="text">
+                <div class="editor" id="req-editor"></div>
+            </div>
+            <input  id="req-input" name="requirements" type="hidden">
+        </div>
+        <div class="line"></div>
+
+        <div class="button-group">
+            <button id="button_back">Назад</button>
+            <button id="button_apply">Откликнуться</button>
+        </div>
+    </div>
+</form>
+</body>
+<script src="{% static 'HR/js/position.js' %}"></script>
+<script>
+    if ('{{ position|default:"null"|escapejs }}') {
+        position = JSON.parse('{{ position|default:"null"|escapejs }}');
+    }
+</script>
+<!-- Include the Quill library -->
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+{% endblock content %}

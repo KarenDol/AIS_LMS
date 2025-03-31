@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.timezone import now
 
 # Create your models here.
 class Applicant(models.Model):
@@ -40,4 +41,27 @@ class Interview(models.Model):
     comment = models.CharField(max_length=300, null=True) #Comments regarding the interview
     salary = models.IntegerField(null=True) #На какую зп договорились
     decision = models.BooleanField(null=True) #Приняли или в архив
+    status = models.CharField(max_length=4, choices=[
+        ('wait', 'Отложено'), 
+        ('neg', 'Отказано'), 
+        ('pos', 'Принят'), 
+    ], null=True)
     conditions = models.CharField(max_length=300, null=True) #Job conditions
+
+class Position(models.Model):
+    title = models.CharField(max_length=100)
+    salary_status = models.BooleanField()
+    salary = models.IntegerField(null=True)
+    experience = models.CharField(max_length=15, choices=[
+        ('exp1', 'Без опыта'), 
+        ('exp2', '1-2 года'), 
+        ('exp3', '3-5 лет'),
+        ('exp4', 'Более 5 лет'), 
+    ])
+    description = models.JSONField()  #To store Delta object as JSON
+    requirements = models.JSONField()  #To store Delta object as JSON
+    date = models.DateField(default=now) #Date of publication
+    status = models.CharField(max_length=15, choices=[
+        ('act', 'Активный'), 
+        ('arc', 'Архив'), 
+    ], default='act')

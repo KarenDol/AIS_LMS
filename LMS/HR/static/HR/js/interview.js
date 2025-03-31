@@ -1,15 +1,48 @@
 document.addEventListener('DOMContentLoaded', function () {
-
     const form = document.getElementById('mainForm');
-    const selectedPosition = document.getElementById('selectedPosition');
-    const selectMenu = document.querySelector('.select-menu');
     const interviewers = document.getElementById('interviewers');
     const comment = document.getElementById('comment');
+    const wait = document.getElementById('wait');
     const neg = document.getElementById('neg');
     const pos = document.getElementById('pos');
     const salCond = document.getElementById('salCond');
     const salary = document.getElementById('salary');
     const conditions = document.getElementById('conditions');
+    const button_cancel = document.getElementById('button_cancel');
+    const buttons_edit = document.getElementById('buttons_edit');
+    const button_back = document.getElementById('button_back');
+
+    if (interview.status){
+        interviewers.value = interview.interviewers;
+        interviewers.disabled = true;
+        comment.value = interview.comment;
+        comment.disabled = true;
+        if (interview.status !== 'wait'){
+            wait.disabled = true;
+            neg.disabled = true;
+            pos.disabled = true;
+
+            if (interview.status === 'pos') {
+                salCond.classList.remove('hidden');
+                salCond.classList.add('visible');
+
+                salary.value = interview.salary;
+                salary.value =  salary.value.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                salary.disabled = true;
+                conditions.value = interview.conditions;
+                conditions.disabled = true;
+
+                pos.checked = true;
+            }
+            else{
+                neg.checked = true;
+            }
+
+            //Switch button groups' displays
+            buttons_edit.style.display = "none";
+            button_back.style.display = "block";
+        }
+    }
 
     form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -44,11 +77,6 @@ document.addEventListener('DOMContentLoaded', function () {
         //To ensure that conditions and salary fields will not cause any problems
         validateField(conditions, true, '');
         validateField(salary, true, '');
-
-        // Ensure class selection is valid, if the field is "Другое"
-        if (!validateClassSelection()) {
-            isValid = false;
-        }    
 
         //If positive descision, validate conditions and salary fields
         if (pos.checked) {
@@ -88,104 +116,31 @@ document.addEventListener('DOMContentLoaded', function () {
         icon.className = 'icon fas fa-check-circle';
     }
 
-    const optionMenu = document.querySelector(".select-menu"),
-    selectBtn = optionMenu.querySelector(".select-btn"),
-    options = optionMenu.querySelectorAll(".option"),
-    sBtn_text = optionMenu.querySelector(".sBtn-text");
-
-    selectBtn.addEventListener("click", () => {
-        if (optionMenu.classList.contains("active")) {
-            optionMenu.classList.remove("active");
-            let optionsContainer = optionMenu.querySelector(".options");
-            optionsContainer.animate([
-                { opacity: 1, visibility: "visible" },
-                { opacity: 0, visibility: "hidden" }
-            ], {
-                duration: 150,
-                fill: "forwards"
-            });
-        } else {
-            optionMenu.classList.add("active");
-            let optionsContainer = optionMenu.querySelector(".options");
-            optionsContainer.animate([
-                { opacity: 0, visibility: "hidden" },
-                { opacity: 1, visibility: "visible" }
-            ], {
-                duration: 150,
-                fill: "forwards"
-            });
-        }
-    });
-
-    options.forEach(option => {
-        option.addEventListener("click", () => {
-            let selectedOption = option.querySelector(".option-text").innerText;
-            sBtn_text.innerText = selectedOption;
-            selectedPosition.value = selectedOption;
-            if (selectedPosition.value === 'Другое'){
-                selectedPosition.type = 'text'; //Unhidden the input
-                selectedPosition.value = '';
-                selectedPosition.style.width = '70%';
-                selectMenu.style.width = '30%';
-            }
-            else{
-                // Revalidate class selection after updating the value
-                selectedPosition.type = 'hidden'; //Unhidden the input
-                selectedPosition.placeholder = 'Ex.: Тренер по йоге...';
-                selectedPosition.style.width = '70%';
-                selectMenu.style.width = '100%';
-                validateClassSelection();
-            }
-            
-            let optionsContainer = optionMenu.querySelector(".options");
-            optionsContainer.animate([
-                { opacity: 1, visibility: "visible" },
-                { opacity: 0, visibility: "hidden" }
-            ], {
-                duration: 100,
-                fill: "forwards"
-            });
-
-            optionMenu.classList.remove("active");
-        })
-    });
-
-    function validateClassSelection() {
-        if (selectedPosition.value.trim() === '') {
-            selectMenu.classList.add('error');
-            selectMenu.classList.remove('success');
-            if (sBtn_text.innerText==='Другое'){
-                selectedPosition.classList.add('error');
-                selectedPosition.classList.remove('success');
-                selectedPosition.style.borderColor = '#e74d3cb0';
-                selectedPosition.placeholder = 'Уточните позицию';
-            }
-            return false;
-        } else {
-            selectMenu.classList.add('success');
-            selectMenu.classList.remove('error');
-            if (sBtn_text.innerText==='Другое'){
-                selectedPosition.classList.add('success');
-                selectedPosition.classList.remove('error');
-                selectedPosition.style.borderColor = '#28bb65e3';
-            }
-            return true; 
-        }
-    }
-
     pos.addEventListener('change', () => {
         if (pos.checked) {
+            alert('Важно: Кандидат получит сообщение в WhatsApp с результатом интервью');
             salCond.classList.remove('hidden');
             salCond.classList.add('visible');
-            console.log("Appear");
         }
     });
 
     neg.addEventListener('change', () => {
         if (neg.checked) {
+            alert('Важно: Кандидат получит сообщение в WhatsApp с результатом интервью');
             salCond.classList.remove('visible');
             salCond.classList.add('hidden');
-            console.log("Disappear");
         }
     });
+
+    wait.addEventListener('change', () => {
+        if (wait.checked) {
+            salCond.classList.remove('visible');
+            salCond.classList.add('hidden');
+        }
+    });
+
+    button_cancel.addEventListener('click', (event) => {
+        event.preventDefault();
+        window.location.href = `/hr/applicant_card/${iin}`;
+    })
 });

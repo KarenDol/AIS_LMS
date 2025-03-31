@@ -1,0 +1,33 @@
+{% extends 'HR/index.html' %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вакансии</title>
+    <link rel="stylesheet" href="{% static 'HR/css/jobs.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}">
+</head>
+<body>
+    <div class="content">
+        <div class="card-container" id="container"></div>
+        <div class="location">
+            <div class="address">
+                <p class="primary">Адрес школы:</p>
+                <p class="secondary">ул. Ораза-Татеулы 13А</p>
+            </div>
+            <div class="map-container">
+                <script type="text/javascript" charset="utf-8" async 
+                    src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3Ac879c4eeb2bf563f6894f1193df0e1d4c1f57f3b07f826e83bb8dd968fe93a1f&amp;width=100%&amp;height=250&amp;lang=ru_RU&amp;scroll=true">
+                </script>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'HR/js/jobs.js' %}"></script>
+    <script>
+        var positions = JSON.parse('{{ positions|escapejs }}');
+    </script>
+</body>
+</html>
+{% endblock content %}

@@ -28,24 +28,8 @@
             </div>
 
             <div class="form-control">
-                <label for="select-btn">Позиция</label>
-                    <div class="select-container">
-                        <div class="select-menu">
-                            <div class="select-btn">
-                                <span class="sBtn-text">{{ position }}</span>
-                                <i class="fa-solid fa-chevron-down"></i>
-                            </div>
-                            <ul class="options">
-                                {% for option in Positions %}
-                                <li class="option">
-                                    <span class="option-text">{{ option }}</span>
-                                </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        <input type="hidden" name="position" id="selectedPosition" maxlength="20" value="{{ position }}" placeholder = 'Ex.: Тренер по йоге...'>
-                        <!-- <i class="icon"></i> -->
-                    </div>
+                <label>Позиция</label>
+                <input type="text" value="{{ position }}" disabled>
             </div>
 
             <div class="form-control">
@@ -61,14 +45,18 @@
             </div>
 
             <div class="form-control">
-                <label for="decision">Решение</label>
+                <label for="status">Решение</label>
                 <div class="radio-options">
                     <div class="radio-option">
-                        <input type="radio" id="neg" name="decision" value="False" checked>
+                        <input type="radio" id="wait" name="status" value="wait" checked>
+                        <label for="wait">Рассмотрение</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="neg" name="status" value="neg">
                         <label for="neg">Отказано</label>
                     </div>
                     <div class="radio-option">
-                        <input type="radio" id="pos" name="decision" value="True">
+                        <input type="radio" id="pos" name="status" value="pos">
                         <label for="pos">Принят</label>
                     </div>
                 </div>
@@ -88,11 +76,19 @@
                     <i class="icon"></i>
                 </div>
             </div>
+            
+            <div class="button-group" id="buttons_edit">
+                <button id="button_cancel">Назад</button>
+                <button id="button_save">Отправить</button>
+            </div>
 
-            <button type="submit">Отправить</button>
+            <button id="button_back" onclick="event.preventDefault(); window.location.href='/hr/applicant_card/{{iin}}'">Назад</button>
         </form>
     </div>
-
+    <script>
+        interview = JSON.parse('{{ interview|default:"null"|escapejs }}');
+        const iin = "{{iin}}";
+    </script>
     <script src="{% static 'HR/js/interview.js' %}"></script>
     <script src="https://unpkg.com/imask"></script>
 </body>

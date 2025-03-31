@@ -1,0 +1,28 @@
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'user_manager/css/Талон.css' %}">
+    <title>Родитель</title>
+</head>
+
+<body>
+    <table border="1">
+        <tr>
+            <td><img class="logo" src="{% static 'user_manager/AIS_Horizontal.png' %}"></td>
+            <td>
+                <h3><strong>Оқушының мектепке келуі туралы анықтама</strong></h3>
+                <p>Тегі <u>{{ Last_Name }}</u></p>
+                <p>Аты <u>{{ First_Name }}</u></p>
+                <p>Әкесінің Аты <u>{{ Patronim }}</u></p>
+                <p>Туған Күні <u>{{ birthdate }}</u></p>
+                <p>Оқу Тілі <u>{{ lang }}</u></p>
+                <p>Қайдан Келді <u>{{ prev_school }}</u></p>
+                <p>Қайда Келді <u>“Aqbobek International School”</u></p>
+                <p>Мектеп Директоры <u>Тулеушов Г. С. {{ today }}</u></p>
+            </td>
+        </tr>
+    </table>
+</body>

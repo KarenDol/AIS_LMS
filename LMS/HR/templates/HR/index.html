@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 {% load static %}
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'HR/css/index.css' %}">
-    <link rel="icon" href="{% static 'HR/favicon.png' %}">
+    <link rel="stylesheet" href="{% static 'user_manager/css/index.css' %}">
+    <link rel="icon" href="{% static 'user_manager/favicon.png' %}">
 </head>
 <body>
     <header>
-            <div class="AIS">
-                <img src="{% static 'HR/whitelogo.png' %}">
-                <div class="AIS-Text">
-                    <p><a href="{% url 'home' %}"><b>AQBOBEK INTERNATIONAL SCHOOL</b></a></p>
-                    <p>Learning Management System</p>
-                </div>
+        <div class="AIS">
+            <img src="{% static 'user_manager/whitelogo.png' %}">
+            <div class="AIS-Text">
+                <p><a href="{% url 'hr_home' %}"><b>AQBOBEK INTERNATIONAL SCHOOL</b></a></p>
+                <p>Learning Management System</p>
             </div>
-            <div class="Person">
-                <p id="name">{{ name }}</p>
-                <a href="{% url 'user_settings' %}">
-                    <img id="picture">
-                </a>
-            </div>
+        </div>
+        <div class="Person">
+            <p id="name">{{ name }}</p>
+            <a href="{% url 'user_settings' prev_page='home' %}">
+                <img id="picture">
+            </a>
+        </div>
     </header>
     <script>
         fetch('{% url "get_user_info" %}')
@@ -33,6 +33,38 @@
             document.getElementById('picture').src = '/api/serve_static/' + data.picture;
         })
         .catch(error => console.error('Error fetching user info:', error));
+    </script>
+    <div class="message-container"></div>
+    <script>
+        // Function to show a message
+        function showMessage(type, text) {
+            const container = document.querySelector('.message-container');
+            
+            // Create message element
+            const message = document.createElement('div');
+            message.classList.add('message', `message-${type}`);
+            message.innerHTML = `
+                <span>${text}</span>
+                <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+            `;
+    
+            // Append message to container
+            container.appendChild(message);
+    
+            // Auto-remove the message after 4 seconds
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 4000);
+        }
+    
+        // Load messages from Django and display them
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if messages %}
+                {% for message in messages %}
+                    showMessage('{{ message.tags }}', '{{ message|escapejs }}');
+                {% endfor %}
+            {% endif %}
+        });
     </script>
     {% block content %}
     {% endblock %}

@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'HR',
 ]
 
+CORS_ALLOWED_ORIGINS = ['http://localhost:5173/']
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -127,7 +129,8 @@ USE_TZ = False
 
 # STATIC_ROOT = '/home/ubuntu/LMS/staticfiles'
 STATIC_ROOT = '/Users/Lil_himick/Desktop/Developer/LMS/staticfiles'
-STATIC_URL = "static/"
+STATIC_URL = 'static/'
+PROJECT_ROOT = '/Users/Lil_himick/Desktop/Developer/LMS/staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

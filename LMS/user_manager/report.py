@@ -42,7 +42,7 @@ def report(request):
         text += f"Количество принятых в школу - {act}: \n"
         for student in act_array:
             text += student
-        text += f"Количество выбывших - {lid}: \n"
+        text += f"Количество выбывших - {arc}: \n"
         for student in arc_array:
             text += student
         text += f"Итого в школе обучается - {total} учеников"

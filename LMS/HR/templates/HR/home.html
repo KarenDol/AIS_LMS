@@ -16,20 +16,7 @@
 
     <main>
         <section class="table__header">
-            <p style="font-weight: bold;">Позиция</p>
-             <div class="select-menu" >
-                <div class="select-btn">
-                    <span class="sBtn-text">Все позиции</span>
-                    <i class="fa-solid fa-chevron-down"></i>
-                </div>
-                <ul class="options">
-                    {% for option in positions %}
-                        <li class="option">
-                            <span class="option-text">{{ option }}</span>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            <p style="font-weight: bold;">Кандидаты</p>
 
             <input type="hidden" name="grade" id="selectedClassInput">
             <div class="input-group">
@@ -37,9 +24,13 @@
                 <img src="{% static 'HR/search.png' %}" alt="" class="search-icon">
             </div>
 
-            <a class="register_student" href="{% url 'apply' %}">
-                <img class="register_student" src="{% static 'HR/New Student Icon.png' %}">
-            </a>
+            <div class="jobs">
+                <!-- src="{% static 'user_manager/Export.png' %}" -->
+                <a href="/hr/jobs"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24">
+                    <path fill="#59007A" d="M12 8H4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h1v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h3l5 4V4zm9.5 4c0 1.71-.96 3.26-2.5 4V8c1.53.75 2.5 2.3 2.5 4"/>
+                </svg></a>
+                <span class="tooltiptext">Платформа Вакансий</span>
+            </div>
         </section>
         <section class="table__body">
             <table>
@@ -63,36 +54,5 @@
         const interviews = JSON.parse('{{ interviews|escapejs }}');
     </script>
     <script src="{% static 'HR/js/home.js' %}"></script>
-    <script>
-        // Function to show a message
-        function showMessage(type, text) {
-            const container = document.querySelector('.message-container');
-            
-            // Create message element
-            const message = document.createElement('div');
-            message.classList.add('message', `message-${type}`);
-            message.innerHTML = `
-                <span>${text}</span>
-                <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
-            `;
-    
-            // Append message to container
-            container.appendChild(message);
-    
-            // Auto-remove the message after 4 seconds
-            setTimeout(() => {
-                message.style.display = 'none';
-            }, 4000);
-        }
-    
-        // Load messages from Django and display them
-        document.addEventListener('DOMContentLoaded', function() {
-            {% if messages %}
-                {% for message in messages %}
-                    showMessage('{{ message.tags }}', '{{ message|escapejs }}');
-                {% endfor %}
-            {% endif %}
-        });
-    </script>
 </body>
 {% endblock content %}

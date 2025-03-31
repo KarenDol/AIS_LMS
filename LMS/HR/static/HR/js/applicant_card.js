@@ -1,51 +1,130 @@
 document.addEventListener('DOMContentLoaded', function () {
-
     const interview = document.getElementById('interview');
     const popup = document.getElementById('pop-up');
     const container = document.getElementById('container');
-    
-    interview.addEventListener('click', () => {
-        event.preventDefault();
-        popup.style.display = 'block';
-        container.classList.add('blur');
-    });
+    const iin = document.getElementById('iin');
+    const salary = document.getElementById('salary');
+    const reject = document.getElementById('reject'); //archive button
+    const lastname = document.getElementById('lastname');
+    const firstname = document.getElementById('firstname');
+    const patronim = document.getElementById('patronim');
+    const phone = document.getElementById('phone');
+    const position = document.getElementById('position');
+    const ru = document.getElementById("ru");
+    const kk = document.getElementById("kk");
+
+    //button logic related to the status
+    if (applicant.status === 'Акт'){
+        console.log("Акт");
+        reject.textContent = '🗂️ Отправить в Архив';
+        reject.classList = 'reject-button';
+
+        reject.addEventListener('click', () => {
+            fetch(`/hr/card_review/${iin_value}/`, {
+                method: 'POST',
+                headers: {
+                  'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  decision: 1, //Code_1: Акт -> Арх
+                }) // Convert data to JSON string
+              })
+            .then(response => {
+                if (response.ok) {
+                    alert('Статус кандидата успешно изменен!');
+                } else {
+                    // Handle cases where the response is not OK
+                    return response.text().then(text => {
+                        throw new Error(text);
+                    });
+                }
+                })
+                .catch(error => console.error('Error:', error));
+            })
+
+        interview.textContent = '📅 Назначить Интервью';
+        interview.classList = 'approve-button';
+        
+        interview.addEventListener('click', () => {
+            event.preventDefault();
+            popup.style.display = 'block';
+            container.classList.add('blur');
+        });
+    }
+    else if (applicant.status === 'Инт' || applicant.status === 'При'){
+        console.log("Инт");
+        reject.textContent = '🗂️ Отправить в Архив';
+        reject.classList = 'disabled';
+
+        //Reject button isn't available
+        reject.addEventListener('click', () => {})
+
+        interview.textContent = '📅 Карточка интервью';
+        interview.classList = 'approve-button';
+
+        interview.addEventListener('click', (event) => {
+            event.preventDefault();
+            window.open(`/hr/report_int/${applicant.iin}`, '_blank');
+        });
+    }
+    // Арх or Отк
+    else { 
+        console.log("Арх");
+        reject.textContent = '🗂️ Вернуть из Архива';
+        reject.classList = 'approve-button';
+
+        reject.addEventListener('click', () => {
+            fetch(`/hr/card_review/${iin_value}/`, {
+                method: 'POST',
+                headers: {
+                  'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  decision: 5, //Code_1: Арх -> Акт
+                }) // Convert data to JSON string
+              })
+            .then(response => {
+                if (response.ok) {
+                    alert('Статус кандидата успешно изменен!');
+                } else {
+                    // Handle cases where the response is not OK
+                    return response.text().then(text => {
+                        throw new Error(text);
+                    });
+                }
+                })
+                .catch(error => console.error('Error:', error));
+        })
+
+        //Interview button isn't available
+        interview.textContent = '📅 Карточка Интервью';
+        interview.classList = 'approve-button';
+
+        interview.addEventListener('click', (event) => {
+            event.preventDefault();
+            window.open(`/hr/report_int/${applicant.iin}`, '_blank');
+        });
+    }
+
+    //Fill the inputs with the values
+    function fill_form(){
+        lastname.value = applicant.last_name;
+        firstname.value = applicant.first_name;
+        patronim.value = applicant.patronim;
+        iin.value = applicant.iin;
+        phone.value = applicant.phone;
+        salary.value = applicant.exp_salary;
+        position.value = applicant.position;
+        if (position.lang === "Рус") {ru.checked = true;} else {kk.checked = true;}
+    }
+
+    fill_form();
 
     //SALARY AND IIN MASK
-    const salary = document.getElementById('salary');
-    const formattedSalary = salary.value.replace(/\B(?=(\d{3})+(?!\d))/g, ' '); // Add spaces as thousand separators
-    salary.value = formattedSalary;
-
-    const iin = document.getElementById('iin');
-    const formattedIIN = iin.value.replace(/\B(?=(\d{6})+(?!\d))/g, ' '); // Add spaces as thousand separators
-    iin.value = formattedIIN;
-
-    //ARCHIVE BUTTON
-    console.log(iin_value);
-    const reject = document.getElementById('reject');
-    reject.addEventListener('click', () => {
-        fetch(`/hr/card_review/${iin_value}/`, {
-            method: 'POST',
-            headers: {
-              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              decision: false,
-            }) // Convert data to JSON string
-          })
-        .then(response => {
-            if (response.ok) {
-                // Redirect to home after a successful response
-                window.location.href = '/hr/';
-            } else {
-                // Handle cases where the response is not OK
-                return response.text().then(text => {
-                    throw new Error(text);
-                });
-            }
-            })
-            .catch(error => console.error('Error:', error));
-        })
+    salary.value = salary.value.replace(/\B(?=(\d{3})+(?!\d))/g, ' '); // Add spaces as thousand separators
+    iin.value = iin.value.replace(/\B(?=(\d{6})+(?!\d))/g, ' '); // Add spaces as thousand separators
 
     //SET THE LIMITS FOR DATA
     const today = new Date();
@@ -70,7 +149,6 @@ document.addEventListener('DOMContentLoaded', function () {
             date.style.borderColor = '#29b864dc';
         }
     });
-
 
     //TIME OPTIONS
     const selectedTimeInput = document.getElementById('selectedTimeInput');
@@ -140,8 +218,46 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    //SUBMISSION OF THE FORM
+    //Check pop-up inputs
+    function checkInputs() {
+        let isValid = true;
+
+        //Ensure date is inserted
+        if (dateInput.value===''){
+            dateInput.style.borderColor = '#e74d3cb0';
+            isValid = false;
+        }
+        else{
+            dateInput.style.borderColor = '#29b864dc';
+        }
+        
+        // Ensure class selection is valid
+        if (validateClassSelection()) {
+            selectBtn.style.borderColor = '#29b864dc';
+        }    
+        else{
+            selectBtn.style.borderColor = '#e74d3cb0';
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    //POP-UP BUTTONS
+    const cancel = document.getElementById('cancel');
     const ok = document.getElementById('ok');
+
+    cancel.addEventListener('click', () => {
+        popup.style.display = 'none';
+        container.classList.remove('blur');
+        dateInput.value = '';
+        dateInput.style.borderColor = '#ddd';
+        selectedTimeInput.value = '';
+        sBtn_text.innerText = 'Выберите время';
+        selectMenu.classList.remove('error');
+        selectMenu.classList.remove('success');
+        selectMenu.classList.remove('active');
+    });
 
     ok.addEventListener('click', () => {
         if (checkInputs()){
@@ -152,9 +268,9 @@ document.addEventListener('DOMContentLoaded', function () {
                   'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                  decision: true,
+                  decision: 2,//Code_2: Акт -> Инт
                 }) // Convert data to JSON string
-              })
+            })
             .then(response => {
                 if (!response.ok){
                     // Handle cases where the response is not OK
@@ -189,43 +305,4 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error:', error));
         }
     })
-
-    function checkInputs() {
-        let isValid = true;
-
-        //Ensure date is inserted
-        if (dateInput.value===''){
-            dateInput.style.borderColor = '#e74d3cb0';
-            isValid = false;
-        }
-        else{
-            dateInput.style.borderColor = '#29b864dc';
-        }
-        
-        // Ensure class selection is valid
-        if (validateClassSelection()) {
-            selectBtn.style.borderColor = '#29b864dc';
-        }    
-        else{
-            selectBtn.style.borderColor = '#e74d3cb0';
-            isValid = false;
-        }
-
-        return isValid;
-    }
-
-    //POP-UP BUTTONS
-    const cancel = document.getElementById('cancel');
-
-    cancel.addEventListener('click', () => {
-        popup.style.display = 'none';
-        container.classList.remove('blur');
-        dateInput.value = '';
-        dateInput.style.borderColor = '#ddd';
-        selectedTimeInput.value = '';
-        sBtn_text.innerText = 'Выберите время';
-        selectMenu.classList.remove('error');
-        selectMenu.classList.remove('success');
-        selectMenu.classList.remove('active');
-    });
 });

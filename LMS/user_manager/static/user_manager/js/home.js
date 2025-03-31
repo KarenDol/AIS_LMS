@@ -119,6 +119,17 @@ function populateSelectMenu(){
         optionsContainer.appendChild(li);
     }
 
+    //Add "1 классы"
+    {
+        const li = document.createElement('li');
+        li.classList.add('option');
+        const span = document.createElement('span');
+        span.classList.add('option-text');
+        span.textContent = 'Первые классы';
+        li.appendChild(span);
+        optionsContainer.appendChild(li);
+    }
+
     //Add "Архив"
     {
         const li = document.createElement('li');
@@ -183,6 +194,9 @@ function populateTable() {
             }
         });
         exp.style.display = "none";
+    }
+    else if (gradeSelection=='Первые классы') {
+        window.location.href="/1_grade/";
     }
     else{
         // Use a regex to extract the grade number and letter

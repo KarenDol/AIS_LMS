@@ -8,3 +8,6 @@ admin.site.register(LMS_User)
 admin.site.register(Honor)
 admin.site.register(List_Of_Students)
 admin.site.register(Document)
+
+admin.site.register(Candidate)
+admin.site.register(Change)

@@ -32,7 +32,7 @@
 
           <h2>Добро пожаловать!</h2>
           <p>Введите свои данные, чтобы войти в систему</p>
-          <form method="POST" action="{% url 'login_user' %}">
+          <form method="POST" action="{% url 'login_user' prev_page=prev_page %}">
             {% csrf_token %}
           <div class="input-container">
             <div class="form-group">
@@ -60,6 +60,11 @@
           <div class="or-divider"></div>
       </div>
     </section>
+    <script>
+      if (window.location.pathname.startsWith('/login/')) {
+        window.history.replaceState(null, null, '/login/');
+      }
+    </script>
     <script src="{% static 'user_manager/js/toggle.js' %}" defer></script>
   </body>
 </html>

@@ -62,7 +62,6 @@ def fill_join(IIN):
     docs_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'join' + IIN + '.docx')
     document.save(docs_location)
 
-
 def fill_leave(IIN):
     student = Student.objects.get(IIN=IIN)
     template_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'Открепительный талон.docx')

@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-
     const form = document.getElementById('mainForm');
     const lastname = document.getElementById('lastname');
     const firstname = document.getElementById('firstname');
@@ -17,18 +16,17 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', function (e) {
         e.preventDefault();
         if (checkInputs()) {
+            iin.value = iin.value.replace(/\s/g, ''); // Remove the whitespace before submitting
             form.submit();
         }
     });
 
     lastname.addEventListener('input', () => {
         lastname.value = lastname.value.replace(/[^a-zA-Zа-яА-ЯёЁәңғүұқөһӘҢҒҮҰҚӨҺ-]/g, '');
-        validateField(lastname, lastname.value.trim() !== '', 'Заполните фамилию ученика');
     });
 
     firstname.addEventListener('input', () => {
         firstname.value = firstname.value.replace(/[^a-zA-Zа-яА-ЯёЁәңғүұқөһӘҢҒҮҰҚӨҺ-]/g, '');
-        validateField(firstname, firstname.value.trim() !== '', 'Заполните имя ученика');
     });
 
     patronim.addEventListener('input', () => {
@@ -38,17 +36,11 @@ document.addEventListener('DOMContentLoaded', function () {
     iin.addEventListener('input', () => {
         iin.value = iin.value.replace(/[^0-9]/g, '');
         iin.value = iin.value.replace(/\B(?=(\d{6})+(?!\d))/g, ' '); // Add spaces for better visibility
-        validateIIN(iin);
     });
 
     salary.addEventListener('input', () => {
         salary.value = salary.value.replace(/[^0-9]/g, '');
         salary.value =  salary.value.replace(/\B(?=(\d{3})+(?!\d))/g, ' '); // Add spaces as thousand separators
-        validateField(salary, salary.value.trim() !== '', 'Введите желаемую заработную плату');
-    });
-
-    phone.addEventListener('input', () => {
-        validateField(phone, isPhone(phone.value.trim()), 'Неверный номер телефона');
     });
 
     function checkInputs() {
@@ -57,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
         validateField(firstname, firstname.value.trim() !== '', 'Это поле не может быть пустым');
         validateField(patronim, true, ''); //Allow no patronim
         validateField(salary, salary.value.trim() !== '', 'Это поле не может быть пустым');
-        validateIIN(iin);
+        validateField(iin, iin.value.trim().length == 13, 'Это поле не может быть пустым')
         validateField(phone, isPhone(phone.value.trim()), 'Неверный номер телефона');
         
         // Ensure class selection is valid
@@ -140,22 +132,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function showModal() {
-        const modal = document.getElementById('successModal');
-        modal.style.display = 'block';
-
-        const closeBtn = document.querySelector('.close-button');
-        closeBtn.onclick = function () {
-            modal.style.display = 'none';
-        };
-
-        window.onclick = function (event) {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        };
-    }
-
     var maskOptions = {
         mask: '+7 (000) 000-00-00',
         lazy: false
@@ -221,15 +197,6 @@ document.addEventListener('DOMContentLoaded', function () {
             optionMenu.classList.remove("active");
         })
     });
-
-    function validateIIN(input) {
-        const iinValue = input.value.trim();
-        if (iinValue.length === 12) {
-            setSuccess(input);
-        } else {
-            setError(input, 'Заполните 12 символов ИИН');
-        }
-    }
 
     function validateClassSelection() {
         if (selectedPosition.value.trim() === '') {

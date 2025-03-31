@@ -1,0 +1,101 @@
+{% extends 'user_manager/index.html' %}
+{% block content %}
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'user_manager/css/1_grade.css' %}">
+    <title>1ые классы</title>
+    <link rel="icon" href="{% static 'user_manager/favicon.png' %}">
+</head>
+<body>
+    <main id="main">
+        {% csrf_token %}
+        <div class="table-section">
+            <table border="2">
+                <colgroup>
+                    <col style="width: 40px">
+                    <col style="width: 300px">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ФИО | Лиды</th>
+                </tr>
+                </thead>
+                <tbody id="table_1"></tbody>
+            </table>
+            
+            <table border="2">
+                <colgroup>
+                    <col style="width: 40px">
+                    <col style="width: 300px">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ФИО | 1А класс</th>
+                </tr>
+                </thead>
+                <tbody id="table_2"></tbody>
+            </table>
+            
+            <table border="2">
+                <colgroup>
+                    <col style="width: 40px">
+                    <col style="width: 300px">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ФИО | 1Ә класс</th>
+                </tr>
+                </thead>
+                <tbody id="table_3"></tbody>
+            </table>
+
+            <table border="2">
+                <colgroup>
+                    <col style="width: 40px">
+                    <col style="width: 300px">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ФИО | 1Б класс</th>
+                </tr>
+                </thead>
+                <tbody id="table_4"></tbody>
+            </table>
+
+            <table border="2">
+                <colgroup>
+                    <col style="width: 40px">
+                    <col style="width: 300px">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ФИО | 1В класс</th>
+                </tr>
+                </thead>
+                <tbody id="table_5"></tbody>
+            </table>
+            <div class="pop-up" id="pop_up">
+                <div class="box" id="box_1" data-id="1">?</div>
+                <div class="box" id="box_2" data-id="2">A</div>
+                <div class="box" id="box_3" data-id="3">Ә</div>
+                <div class="box" id="box_4" data-id="4">Б</div>
+                <div class="box" id="box_5" data-id="5">В</div>
+                <div class="box" id="box_6" data-id="6">+</div>
+            </div>
+        </div>
+    </main>
+    <script>
+        const candidates = JSON.parse('{{ candidates|default:"null"|escapejs }}');
+        console.log(candidates);
+    </script>
+    <script src="{% static 'user_manager/js/1_grade.js' %}"></script>
+</body>
+{% endblock content %}
