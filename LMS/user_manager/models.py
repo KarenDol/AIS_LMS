@@ -41,7 +41,10 @@ class Student(models.Model):
     Patronim = models.CharField(max_length=40, null=True)
     grade_num = models.IntegerField(null=True)
     grade_let = models.CharField(max_length=1, null=True)
-    lang = models.CharField(max_length=3, null=True)
+    lang = models.CharField(max_length=3, null=True, choices=[
+        ('Рус', 'Русский'),
+        ('Каз', 'Казахский')
+    ])
     phone = models.CharField(max_length=20, null=True)
     prev_school = models.CharField(max_length=50, null=True)
     nationality = models.CharField(max_length=20, null=True)
@@ -52,6 +55,13 @@ class Student(models.Model):
 
     status = models.CharField(max_length=30, choices=student_status, default='Лид')
     date = models.DateField(null=True) #Date of the last status update
+    balance = models.IntegerField(null=True)
+
+    #School + Lyceum DB Merge
+    school = models.CharField(max_length=10, choices=[
+        ('sch', 'school'),
+        ('lyc', 'lyceum'),
+    ], default='sch')
 
 
 class Honor(models.Model):

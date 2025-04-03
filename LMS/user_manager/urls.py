@@ -64,5 +64,8 @@ urlpatterns = [
     path('join_fee/<IIN>/', views.join_fee, name='join_fee'),
     path("wa/", views.wa, name='wa'),
     path("wa_exists/<phone>/", views.wa_exists, name='wa_exists'),
-    path("templ/", views.templ, name="templ")
+    path("templ/", views.templ, name="templ"),
+
+    #Coin
+    path('coin/', views.coin, name='coin'),
 ]

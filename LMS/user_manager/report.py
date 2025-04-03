@@ -47,7 +47,7 @@ def report(request):
             text += student
         text += f"Итого в школе обучается - {total} учеников"
 
-        phones = ['77711688687']
+        phones = ['77711688687', '77015665811', '77028272562', '77784556597', '77075240534']
         url = "	https://7103.api.greenapi.com/waInstance7103163711/sendMessage/677efe89a87e474f93b6ca379ea32a364bf6be6020414505bd"
 
         for phone in phones:

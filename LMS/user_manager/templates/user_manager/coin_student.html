@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIS Coin</title>
+  <link rel="stylesheet" href="{% static 'user_manager/css/coin_student.css' %}">
+  <link rel="icon" href="{% static 'user_manager/favicon.png' %}">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="dashboard-grid">
+      <!-- Student Balance Card -->
+      <div class="card balance-card">
+        <div class="card-header">
+          <h2 class="card-title">Your Balance</h2>
+          <p class="card-description">AIS coin</p>
+        </div>
+        <div class="card-content">
+          <div class="student-info">
+            <div class="avatar" id="student-avatar">
+              <img src="https://via.placeholder.com/64" alt="Student Avatar">
+              <div class="avatar-fallback" id="student-initials"></div>
+            </div>
+            <div class="student-details">
+              <p class="student-name" id="student-name"></p>
+              <p class="student-balance" id="student-balance"></p>
+              <p class="student-rank" id="student-rank"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leaderboard Card -->
+      <div class="card leaderboard-card">
+        <div class="card-header">
+          <h2 class="card-title">Leaderboard</h2>
+          <p class="card-description">Top 10 students</p>
+        </div>
+        <div class="card-content">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Student</th>
+                <th>Balance</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+              <!-- Leaderboard rows will be inserted here by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    var student = JSON.parse('{{ student|escapejs }}');
+  </script>
+  <script src="{% static 'user_manager/js/coin_student.js' %}"></script>
+</body>
+</html>

@@ -24,21 +24,26 @@ import re
 # Create your views here.
 def home(request):
     if (not user_auth(request)):
-        return redirect('logout_user', 'home')
-    
-    students = list(Student.objects.all()
-                    .order_by('Last_Name', 'First_Name', 'Patronim')
-                    .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'phone', 'status', 'grade_num', 'grade_let'))
-    students_json = json.dumps(students)
-    Grades_Letters_json = json.dumps(Grades_Letters)
+        return redirect('coin')
+        # return redirect('logout_user', 'home')
+    try:
+        current_user = LMS_User.objects.get(user=request.user)
+        if current_user.user_type == 'ВнСв':
+            students = list(Student.objects.all()
+                            .order_by('Last_Name', 'First_Name', 'Patronim')
+                            .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'phone', 'status', 'grade_num', 'grade_let'))
+            students_json = json.dumps(students)
+            Grades_Letters_json = json.dumps(Grades_Letters)
 
-    #Populating context
-    context = {
-        'Grades_Letters': Grades_Letters_json, 
-        'students': students_json,
-    }
+            #Populating context
+            context = {
+                'Grades_Letters': Grades_Letters_json, 
+                'students': students_json,
+            }
 
-    return render(request, 'user_manager/home.html', context)
+            return render(request, 'user_manager/home.html', context)
+    except LMS_User.DoesNotExist:
+        return redirect('coin')
 
 #Check if student exists or not    
 def student_exist(IIN):
@@ -207,6 +212,9 @@ def accept_student(request, IIN):
             student.grade_let = grade_let
             student.status = "Акт"
             student.date = date
+
+            #AIS_coin
+            student.balance = 0
 
             student.save() #Accept the student permanently
             messages.success(request, "Ученик принят в школу")
@@ -1261,3 +1269,21 @@ def change_candidate(request, pk):
         return JsonResponse({'status': 'success', 'message': 'Successfully updated'}, status=200)
     except Candidate.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Candidate with such id does not exist'}, status=500)
+    
+def coin(request):
+    # if (not user_auth(request)):
+    #     return redirect('logout_user', 'home')
+    try:
+        student = Student.objects.get(user=request.user)
+
+        student_dict = model_to_dict(student)
+        print(student)
+        student_json = json.dumps(student_dict, default=str)
+        context = {
+            'student': student_json,
+        }
+
+        return render(request, 'user_manager/coin_student.html', context)
+    
+    except Student.DoesNotExist:
+        return render(request, 'user_manager/coin_student.html')
