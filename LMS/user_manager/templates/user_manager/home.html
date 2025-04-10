@@ -12,6 +12,7 @@
 </head>
 
 <body>
+    {% csrf_token %}
     <main id="students_table">
         <section class="table__header">
             <p style="font-weight: bold;">Класс</p>
@@ -30,6 +31,10 @@
             </div>
 
             <div class="action-buttons">
+                <div class="export">
+                    <img class="register_student" id="sch_lyc" src="{% static 'user_manager/Lyc.png' %}">
+                    <span class="tooltiptext" id="sch_lyc_tooltip">В лицей</span>
+                </div>
                 <div class="whatsapp">
                     <img class="whatsapp" id="whatsapp" src="{% static 'user_manager/WhatsApp.webp' %}">
                     <span class="tooltiptext">Ватсап рассылка</span>
@@ -84,6 +89,9 @@
     <script>
         var students = JSON.parse('{{ students|escapejs }}');
         var Grades_Letters = JSON.parse('{{ Grades_Letters|escapejs }}');
+        var school = "{{ school }}";
+        const lycImg = "{% static 'user_manager/Lyc.png' %}";
+        const schImg = "{% static 'user_manager/Sch.png' %}";
     </script>
     <script src="{% static 'user_manager/js/home.js' %}"></script>
 </body>

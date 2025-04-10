@@ -7,6 +7,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const desc_input = document.getElementById('desc-input');
     const req_input = document.getElementById('req-input');
 
+    const button_cancel = document.getElementById('button_cancel');
+    button_cancel.addEventListener('click', (event) => {
+        event.preventDefault();
+        window.location.href = '/hr/jobs';
+    })
 
     checkbox.addEventListener('change', () => {
         if (checkbox.checked) {

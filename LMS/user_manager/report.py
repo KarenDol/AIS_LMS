@@ -12,7 +12,7 @@ def report(request):
         # Get only the date
         date = today.date()
 
-        students = Student.objects.all()
+        students = Student.objects.filet(school='sch')
         total = 0 #counter of total number of active students in school
         act = 0 #counter of students accepted today
         act_array = []

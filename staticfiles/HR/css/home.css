@@ -1,10 +1,10 @@
 
 * {
-    margin: 0 !important;;
-    padding: 0 !important;
+    margin: 0;
+    padding: 0;
 
-    box-sizing: border-box !important;
-    font-family: sans-serif !important;
+    box-sizing: border-box;
+    font-family: sans-serif;
 }
 @media print {
  .table, .table__body {
@@ -14,26 +14,27 @@
  }
 }
 body {
-    background: url(/static/HR/background_9.jpg) center / cover !important;
-    justify-content: center !important;
-    align-items: center !important;
+    background: url(/static/user_manager/background_22.jpg) center / cover;
+    justify-content: center;
+    align-items: center;
 }
 
 main {
-    width: 82vw !important;
-    height: 80vh !important;
-    background-color: #fff5 !important;
-    justify-content: center !important;
-    align-items: center !important;
-    margin: 0 auto !important;
-    margin-top: 20px !important;
-    margin-bottom: 20px !important;
-    backdrop-filter: blur(7px) !important;
-    box-shadow: 0 .4rem .8rem #0005 !important;
-    border-radius: .8rem !important;
+    width: 82vw;
+    height: 80vh;
+    background-color: #fff5;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    backdrop-filter: blur(7px);
+    box-shadow: 0 .4rem .8rem #0005;
+    border-radius: .8rem;
 
 
-    overflow-y: auto !important;
+    overflow-y: auto;
 }
 
 .table__header {
@@ -326,12 +327,6 @@ a.register_student {
     transform: translateY(-50%);
 }
 
-img.register_student{
-  height: 40px;
-  width: auto;
-  border-radius: 50%;
-}
-
 td p{
     padding: .4rem 0;
     border-radius: 2rem;
@@ -429,4 +424,46 @@ p.int:hover .tooltiptext{
     color: #fff;
     font-size: 16px;
     cursor: pointer;
+}
+
+/* tooltip styles */
+.tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+  
+    /* Position the tooltip */
+    left: 50%;    /* Center align */
+    transform: translateX(-50%); /* Correct centering */
+    position: absolute;
+    top: 125%;
+    z-index: 1000;
+
+    /* Fade-in effect */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.jobs{
+    background-color: #FFFFFF;
+    border-radius: 50%;
+    position: absolute;
+    right: 6%;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+}
+
+.jobs svg{
+    position: relative; /* Ensures tooltip positions relative to this */
+    cursor: pointer;
+}
+
+.jobs:hover .tooltiptext{
+    visibility: visible;
+    opacity: 1;
 }

@@ -99,10 +99,13 @@ document.addEventListener('DOMContentLoaded', function () {
         })
 
         //Interview button isn't available
-        interview.textContent = '📅 Назначить интервью';
-        interview.classList = 'disabled';
+        interview.textContent = '📅 Карточка Интервью';
+        interview.classList = 'approve-button';
 
-        interview.addEventListener('click', () => {});
+        interview.addEventListener('click', (event) => {
+            event.preventDefault();
+            window.open(`/hr/report_int/${applicant.iin}`, '_blank');
+        });
     }
 
     //Fill the inputs with the values

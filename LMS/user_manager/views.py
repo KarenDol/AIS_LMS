@@ -24,26 +24,23 @@ import re
 # Create your views here.
 def home(request):
     if (not user_auth(request)):
-        return redirect('coin')
-        # return redirect('logout_user', 'home')
-    try:
-        current_user = LMS_User.objects.get(user=request.user)
-        if current_user.user_type == 'ВнСв':
-            students = list(Student.objects.all()
-                            .order_by('Last_Name', 'First_Name', 'Patronim')
-                            .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'phone', 'status', 'grade_num', 'grade_let'))
-            students_json = json.dumps(students)
-            Grades_Letters_json = json.dumps(Grades_Letters)
+        return redirect('logout_user', 'home')
+    current_user = LMS_User.objects.get(user=request.user)
+    if current_user.user_type == 'ВнСв':
+        students = list(Student.objects.filter(school=request.session['school'])
+                        .order_by('Last_Name', 'First_Name', 'Patronim')
+                        .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'phone', 'status', 'grade_num', 'grade_let'))
+        students_json = json.dumps(students)
+        Grades_Letters_json = json.dumps(Grades_Letters)
 
-            #Populating context
-            context = {
-                'Grades_Letters': Grades_Letters_json, 
-                'students': students_json,
-            }
+        #Populating context
+        context = {
+            'Grades_Letters': Grades_Letters_json, 
+            'students': students_json,
+            'school': request.session['school'],
+        }
 
-            return render(request, 'user_manager/home.html', context)
-    except LMS_User.DoesNotExist:
-        return redirect('coin')
+        return render(request, 'user_manager/home.html', context)
 
 #Check if student exists or not    
 def student_exist(IIN):
@@ -103,6 +100,7 @@ def get_user_info(request):
     user_info = {
         'name': current_user.name,  
         'picture': current_user.picture,
+        'school': request.session['school']
     }
     return JsonResponse(user_info)
 
@@ -131,7 +129,12 @@ def login_user(request, prev_page):
                     request.session.set_expiry(1209600)  # 2 weeks in seconds
                 else:
                     request.session.set_expiry(0)
-                return redirect(prev_page)
+                try: 
+                    current_user = LMS_User.objects.get(user=request.user)
+                    request.session['school'] = 'sch'
+                    return redirect(prev_page)
+                except LMS_User.DoesNotExist:
+                    return redirect(prev_page)
             else:
                 messages.error(request, "Login failed. Please check your username and password.")
                 return redirect('login_user', prev_page)
@@ -163,6 +166,7 @@ def register_student(request):
             phone = request.POST['phone']
             comment = request.POST['comment']
             date = datetime.today() #date of visit
+            school = request.session['school']
 
             #Check if student already exists
             if student_exist(IIN):
@@ -176,12 +180,13 @@ def register_student(request):
                 new_user.save()
 
             new_student = Student(user=new_user, Last_Name=lastname, First_Name=firstname, Patronim=patronim, phone=phone,
-                            IIN=IIN, prev_school=prev_school, grade_num=grade_num, lang=lang, comment=comment, date=date)
+                            IIN=IIN, prev_school=prev_school, grade_num=grade_num, lang=lang, comment=comment, date=date,
+                            school=school)
             new_student.save()
 
             if grade_num == '1':
                 candidate = Candidate(student=new_student, letter='?', status=False)
-            candidate.save()
+                candidate.save()
 
             messages.success(request, "Новый ученик добавлен в систему")
             return redirect('home')
@@ -1287,3 +1292,16 @@ def coin(request):
     
     except Student.DoesNotExist:
         return render(request, 'user_manager/coin_student.html')
+    
+def change_school(request):
+    if (not user_auth(request)):
+        return JsonResponse({'status': 'error', 'message': 'Login first'}, status=500)
+    
+    if request.session['school'] == 'sch':
+        request.session['school'] = 'lyc'
+        messages.success(request, "Вы поменяли школу, теперь вы находитесь в Aqbobek Lyceum")
+    else:
+        request.session['school'] = 'sch'
+        messages.success(request, "Вы поменяли школу, теперь вы находитесь в Aqbobek International School")
+    
+    return JsonResponse({'status': 'success', 'message': 'Successfully updated'}, status=200)

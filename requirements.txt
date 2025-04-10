@@ -1,2 +1,0 @@
-pymysql == 1.1.1
-docxtpl == 0.18.0

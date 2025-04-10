@@ -12,9 +12,9 @@
     <div class="page">
         <header tabindex="0"> 
             <div class="AIS">
-                <img src="{% static 'user_manager/whitelogo.png' %}">
+                <img id="logo">
                 <div class="AIS-Text">
-                    <p><a href="{% url 'home' %}"><b>AQBOBEK INTERNATIONAL SCHOOL</b></a></p>
+                    <p><a href="{% url 'home' %}"><b id="school">AQBOBEK INTERNATIONAL SCHOOL</b></a></p>
                     <p>Learning Management System</p>
                 </div>
             </div>
@@ -47,6 +47,14 @@
             // Update the HTML with the fetched data
             document.getElementById('name').textContent = data.name;
             document.getElementById('picture').src = '/api/serve_static/' + data.picture;
+            if (data.school == 'sch'){
+                document.getElementById('school').textContent = 'AQBOBEK INTERNATIONAL SCHOOL';
+                document.getElementById('logo').src="{% static 'user_manager/whitelogo.png' %}";
+
+            } else {
+                document.getElementById('school').textContent = 'AQBOBEK LYCEUM';
+                document.getElementById('logo').src="{% static 'user_manager/Logo_Lyc.png' %}";
+            }
         })
         .catch(error => console.error('Error fetching user info:', error));
     </script>

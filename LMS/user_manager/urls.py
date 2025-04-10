@@ -47,6 +47,7 @@ urlpatterns = [
     re_path(r'^api/serve_static/(?P<filename>.+)$', views.serve_static, name='serve_static'),
     path('export/<grade>/', views.export, name='export'),
     path('bot', report.report, name='report'),
+    path('change_school', views.change_school, name='change_school'),
 
     #Fill documents
     path('sign_doc/<IIN>/', views.sign_doc, name='sign_doc'),

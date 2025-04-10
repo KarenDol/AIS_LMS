@@ -125,6 +125,21 @@ button:hover{
     border-color: #59007A;
 }
 
+#button_cancel{
+    background-color: #ffffff;
+    color: #59007A;
+    border: solid 2px;
+    border-color: #59007A;
+}
+
+#button_back{
+    background-color: #ffffff;
+    color: #59007A;
+    border: solid 2px;
+    border-color: #59007A;
+    display: none;
+}
+
 .form-control .icon{
     position: absolute;
     right: 10px;

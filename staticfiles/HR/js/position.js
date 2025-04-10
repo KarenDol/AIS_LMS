@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const salary = document.getElementById('salary');
     const experience = document.getElementById('experience');
     const button_back = document.getElementById('button_back');
+    const button_apply = document.getElementById('button_apply');
 
     title.innerHTML = `<p>${position.title}</p>`;
 
@@ -37,6 +38,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     button_back.addEventListener('click',  () => {
         event.preventDefault();
-        window.location.href = `/hr/vacancy/`;
+        window.location.href = `/hr/jobs/`;
+    })
+
+    button_apply.addEventListener('click',  () => {
+        event.preventDefault();
+        window.location.href = `/hr/apply/${position.id}`;
     })
 })
