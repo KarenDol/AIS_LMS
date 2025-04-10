@@ -58,7 +58,7 @@
                 <input type="text" name="grade" id="grade" hidden>
             </div>
 
-            <div class="form-control">
+            <div class="form-control" id="lang_choice">
                 <label for="lang">Язык Обучения</label>
                 <div class="radio-options">
                     <div class="radio-option">
@@ -103,6 +103,7 @@
         if ('{{ student|default:"null"|escapejs }}') {
             student = JSON.parse('{{ student|default:"null"|escapejs }}');
         }
+        school = "{{school}}";
     </script>  
     <script src="{% static 'user_manager/js/temp_student.js' %}"></script>
     <script src="https://unpkg.com/imask"></script>

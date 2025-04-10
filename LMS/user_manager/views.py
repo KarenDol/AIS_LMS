@@ -27,11 +27,17 @@ def home(request):
         return redirect('logout_user', 'home')
     current_user = LMS_User.objects.get(user=request.user)
     if current_user.user_type == 'ВнСв':
+        if (request.session['school'] == None):
+            request.session['school'] = 'sch'
         students = list(Student.objects.filter(school=request.session['school'])
                         .order_by('Last_Name', 'First_Name', 'Patronim')
                         .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'phone', 'status', 'grade_num', 'grade_let'))
         students_json = json.dumps(students)
-        Grades_Letters_json = json.dumps(Grades_Letters)
+
+        if (request.session['school']=='sch'):
+            Grades_Letters_json = json.dumps(Grades_Letters)
+        else:
+            Grades_Letters_json = json.dumps(Grades_Letters_Lyc)
 
         #Populating context
         context = {
@@ -161,7 +167,10 @@ def register_student(request):
             patronim = request.POST['patronim']
             IIN = request.POST['IIN']
             grade_num = request.POST['grade']
-            lang = request.POST['lang']
+            if request.session['school']=='sch':
+                lang = request.POST['lang']
+            else:
+                lang = "Каз"
             prev_school = request.POST['prev_school']                
             phone = request.POST['phone']
             comment = request.POST['comment']
@@ -193,6 +202,7 @@ def register_student(request):
         else:
             context = {
                 'student': json.dumps(None), #Send empty student for JS 
+                'school': request.session['school'],
             }
             return render(request, 'user_manager/temp_student.html', context)
     else:
@@ -228,7 +238,10 @@ def accept_student(request, IIN):
             student.status = "Int" #Neccessary fro js
             student_dict = model_to_dict(student)  # Convert the Student object to a dictionary
             student_json = json.dumps(student_dict, default=str)  # Using default=str for unsupported types)
-            Letters = Grades_Letters[student.grade_num]
+            if (request.session['school']=='sch'):
+                Letters = Grades_Letters[student.grade_num]
+            else:
+                Letters = Grades_Letters_Lyc[student.grade_num]
             Letters_json = json.dumps(Letters) # Serialize it to JSON
             context = {
                 'Letters': Letters_json,
@@ -255,7 +268,10 @@ def temp_card_std(request, IIN):
             firstname = request.POST['firstname']
             patronim = request.POST['patronim']
             grade_num = request.POST['grade']
-            lang = request.POST['lang']
+            if request.session['school']=='sch':
+                lang = request.POST['lang']
+            else:
+                lang = "Каз"
             prev_school = request.POST['prev_school']                
             phone = request.POST['phone']
             comment = request.POST['comment']
@@ -275,8 +291,12 @@ def temp_card_std(request, IIN):
         else:
             student_dict = model_to_dict(student)  # Convert the Student object to a dictionary
             student_json = json.dumps(student_dict, default=str)  # Using default=str for unsupported types)
+            if request.session['school'] == 'sch':
+                Grades = Grades_Letters[student.grade_num]
+            else:
+                Grades = Grades_Letters_Lyc[student.grade_num]
             context = {
-                'Grades': Grades_Letters[student.grade_num],
+                'Grades': Grades,
                 'student': student_json,
             }
             return render(request, 'user_manager/temp_student.html', context)

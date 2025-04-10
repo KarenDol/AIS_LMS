@@ -122,21 +122,41 @@ document.addEventListener('DOMContentLoaded', function() {
             optionsContainer.appendChild(li);
         }
 
-        // Iterate through each grade from 0 to 11
-        for (let grade = 0; grade <= 11; grade++) {
-            const letters = Grades_Letters[grade];
-            // For each letter in the grade, create a list item
-            letters.forEach(letter => {
-                const li = document.createElement('li');
-                li.classList.add('option');
+        if (school === 'sch'){
+            // Iterate through each grade from 0 to 11
+            for (let grade = 0; grade <= 11; grade++) {
+                const letters = Grades_Letters[grade];
+                // For each letter in the grade, create a list item
+                letters.forEach(letter => {
+                    const li = document.createElement('li');
+                    li.classList.add('option');
 
-                const span = document.createElement('span');
-                span.classList.add('option-text');
-                span.textContent = `${grade}${letter} класс`;
+                    const span = document.createElement('span');
+                    span.classList.add('option-text');
+                    span.textContent = `${grade}${letter} класс`;
 
-                li.appendChild(span);
-                optionsContainer.appendChild(li);
-            });
+                    li.appendChild(span);
+                    optionsContainer.appendChild(li);
+                });
+            }
+        }
+        else{
+            //Lyceum: Grades 7-11
+            for (let grade = 7; grade <= 11; grade++) {
+                const letters = Grades_Letters[grade];
+                // For each letter in the grade, create a list item
+                letters.forEach(letter => {
+                    const li = document.createElement('li');
+                    li.classList.add('option');
+
+                    const span = document.createElement('span');
+                    span.classList.add('option-text');
+                    span.textContent = `${grade}${letter} класс`;
+
+                    li.appendChild(span);
+                    optionsContainer.appendChild(li);
+                });
+            }
         }
 
         //Add "Лид"
@@ -150,15 +170,17 @@ document.addEventListener('DOMContentLoaded', function() {
             optionsContainer.appendChild(li);
         }
 
-        //Add "1 классы"
-        {
-            const li = document.createElement('li');
-            li.classList.add('option');
-            const span = document.createElement('span');
-            span.classList.add('option-text');
-            span.textContent = 'Первые классы';
-            li.appendChild(span);
-            optionsContainer.appendChild(li);
+        if (school === 'sch'){
+            //Add "1 классы" for School
+            {
+                const li = document.createElement('li');
+                li.classList.add('option');
+                const span = document.createElement('span');
+                span.classList.add('option-text');
+                span.textContent = 'Первые классы';
+                li.appendChild(span);
+                optionsContainer.appendChild(li);
+            }
         }
 
         //Add "Архив"
