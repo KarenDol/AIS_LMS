@@ -122,21 +122,41 @@ document.addEventListener('DOMContentLoaded', function() {
             optionsContainer.appendChild(li);
         }
 
-        // Iterate through each grade from 0 to 11
-        for (let grade = 0; grade <= 11; grade++) {
-            const letters = Grades_Letters[grade];
-            // For each letter in the grade, create a list item
-            letters.forEach(letter => {
-                const li = document.createElement('li');
-                li.classList.add('option');
+        if (school === 'sch'){
+            // Iterate through each grade from 0 to 11
+            for (let grade = 0; grade <= 11; grade++) {
+                const letters = Grades_Letters[grade];
+                // For each letter in the grade, create a list item
+                letters.forEach(letter => {
+                    const li = document.createElement('li');
+                    li.classList.add('option');
 
-                const span = document.createElement('span');
-                span.classList.add('option-text');
-                span.textContent = `${grade}${letter} класс`;
+                    const span = document.createElement('span');
+                    span.classList.add('option-text');
+                    span.textContent = `${grade}${letter} класс`;
 
-                li.appendChild(span);
-                optionsContainer.appendChild(li);
-            });
+                    li.appendChild(span);
+                    optionsContainer.appendChild(li);
+                });
+            }
+        }
+        else{
+            //Lyceum: Grades 7-11
+            for (let grade = 7; grade <= 11; grade++) {
+                const letters = Grades_Letters[grade];
+                // For each letter in the grade, create a list item
+                letters.forEach(letter => {
+                    const li = document.createElement('li');
+                    li.classList.add('option');
+
+                    const span = document.createElement('span');
+                    span.classList.add('option-text');
+                    span.textContent = `${grade}${letter} класс`;
+
+                    li.appendChild(span);
+                    optionsContainer.appendChild(li);
+                });
+            }
         }
 
         //Add "Лид"
@@ -150,15 +170,17 @@ document.addEventListener('DOMContentLoaded', function() {
             optionsContainer.appendChild(li);
         }
 
-        //Add "1 классы"
-        {
-            const li = document.createElement('li');
-            li.classList.add('option');
-            const span = document.createElement('span');
-            span.classList.add('option-text');
-            span.textContent = 'Первые классы';
-            li.appendChild(span);
-            optionsContainer.appendChild(li);
+        if (school === 'sch'){
+            //Add "1 классы" for School
+            {
+                const li = document.createElement('li');
+                li.classList.add('option');
+                const span = document.createElement('span');
+                span.classList.add('option-text');
+                span.textContent = 'Первые классы';
+                li.appendChild(span);
+                optionsContainer.appendChild(li);
+            }
         }
 
         //Add "Архив"
@@ -358,22 +380,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
-    
+
     send.addEventListener('click', () => {
-        popup.style.display = 'block';
-        main.style.filter = 'blur(5px)';
-        cancel.disabled = true;
-        send.disabled = true;
-    })
-
-    button_cancel.addEventListener('click', () => {
-        popup.style.display = 'none';
-        main.style.filter = 'blur(0px)';
-        cancel.disabled = false;
-        send.disabled = false;
-    })
-
-    button_send.addEventListener('click', () => {
         // Get all checkboxes in the table
         const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
         
@@ -394,16 +402,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Get the content of the contenteditable div
-        const waText = document.getElementById('editor').innerText.trim();
-
-        /// If no students are selected or wa_text is empty, show an alert and exit
-        if (checkedStudents.length === 0 || !waText) {
-            alert('Выберите учеников и введите текст рассылки!');
-            return;
-        }
-        // Send the data to the server
-        fetch('/wa/', {
+        // Save checked students in request.session
+        fetch('/get_numbers/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -411,20 +411,11 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify({ 
                 checkedStudents: checkedStudents,
-                wa_text: waText
             })
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error('Произошла ошибка!');
-            }
         })
         .then(data => {
             // Handle the server's response
-            console.log('Server response:', data);
-            alert('Данные успешно отправлены!');
+            window.location.href = "/whatsapp";
         })
         .catch(error => {
             // Handle errors
@@ -432,41 +423,4 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Произошла ошибка!');
         });
     })
-
-
-    //Editor logic
-    const tags = ["@Родитель", "@Ученик", "@Оплата"];
-
-    function highlightContent() {
-    const instance = new Mark(editor);
-
-    // Save cursor position
-    const selection = window.getSelection();
-    const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
-
-    // Unmark previous highlights
-    instance.unmark({
-        done: () => {
-        // Highlight new tags
-        instance.mark(tags, {
-            element: "span",
-            className: "highlight",
-            accuracy: "exactly",
-            caseSensitive: true
-        });
-
-        // Restore cursor position
-        if (range) {
-            selection.removeAllRanges();
-            selection.addRange(range);
-        }
-        },
-    });
-    }
-
-    // Listen for input events on the contenteditable div
-    editor.addEventListener("input", highlightContent);
-
-    // Initial highlight on page load
-    highlightContent();
 });

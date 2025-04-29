@@ -21,6 +21,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const buttons_edit = document.getElementById('buttons_edit');
     const button_cancel = document.getElementById('button_cancel'); //Cancel edit
 
+    const lang_choice = document.getElementById('lang_choice');
+    if (school === 'lyc'){
+        lang_choice.style.display = 'none';
+    }
     //Check if the student is in the system
     if (student){
         //Archive logic 
@@ -308,20 +312,38 @@ document.addEventListener('DOMContentLoaded', function () {
         // Clear any existing content (optional)
         optionsContainer.innerHTML = '';
 
-        // Loop from 0 to 11 and create li elements
-        for (let i = 0; i <= 11; i++) {
-            // Create the li element and set its class
-            const li = document.createElement('li');
-            li.classList.add('option');
+        if (school==='sch'){
+            // Loop from 0 to 11 and create li elements
+            for (let i = 0; i <= 11; i++) {
+                // Create the li element and set its class
+                const li = document.createElement('li');
+                li.classList.add('option');
 
-            // Create the span element and set the text
-            const span = document.createElement('span');
-            span.classList.add('option-text');
-            span.textContent = `${i} класс`;
+                // Create the span element and set the text
+                const span = document.createElement('span');
+                span.classList.add('option-text');
+                span.textContent = `${i} класс`;
 
-            // Append the span to the li, and the li to the ul
-            li.appendChild(span);
-            optionsContainer.appendChild(li);
+                // Append the span to the li, and the li to the ul
+                li.appendChild(span);
+                optionsContainer.appendChild(li);
+            }
+        } else {
+            // Lyceum: 7-11 grades
+            for (let i = 7; i <= 11; i++) {
+                // Create the li element and set its class
+                const li = document.createElement('li');
+                li.classList.add('option');
+
+                // Create the span element and set the text
+                const span = document.createElement('span');
+                span.classList.add('option-text');
+                span.textContent = `${i} класс`;
+
+                // Append the span to the li, and the li to the ul
+                li.appendChild(span);
+                optionsContainer.appendChild(li);
+            }
         }
     }
 

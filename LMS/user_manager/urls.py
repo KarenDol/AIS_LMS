@@ -23,6 +23,7 @@ urlpatterns = [
     path("logout/<prev_page>", views.logout_user, name='logout_user'),
     path('user_settings/<prev_page>', views.user_settings, name='user_settings'),
     path('404/<prev_page>/<error_code>/', views.error, name='error'),
+    path('change_school', views.change_school, name='change_school'),
 
     #Student
     path('register_student/', views.register_student, name='register_student'),
@@ -47,7 +48,6 @@ urlpatterns = [
     re_path(r'^api/serve_static/(?P<filename>.+)$', views.serve_static, name='serve_static'),
     path('export/<grade>/', views.export, name='export'),
     path('bot', report.report, name='report'),
-    path('change_school', views.change_school, name='change_school'),
 
     #Fill documents
     path('sign_doc/<IIN>/', views.sign_doc, name='sign_doc'),
@@ -63,9 +63,13 @@ urlpatterns = [
     
     #Others
     path('join_fee/<IIN>/', views.join_fee, name='join_fee'),
-    path("wa/", views.wa, name='wa'),
-    path("wa_exists/<phone>/", views.wa_exists, name='wa_exists'),
+    # path("wa/", views.wa, name='wa'),
     path("templ/", views.templ, name="templ"),
+    path("whatsapp/", views.whatsapp, name="whatsapp"),
+
+    #WhatsApp
+    path("wa_exists/<phone>/", views.wa_exists, name='wa_exists'),
+    path("get_numbers/", views.get_numbers, name='get_numbers'),
 
     #Coin
     path('coin/', views.coin, name='coin'),

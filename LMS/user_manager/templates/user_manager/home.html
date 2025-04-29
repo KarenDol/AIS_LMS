@@ -8,7 +8,6 @@
     <title>Главная</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="{% static 'user_manager/css/home.css' %}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js"></script>
 </head>
 
 <body>
@@ -73,19 +72,6 @@
             </table>
         </section>
     </main>
-    <div class="pop-up" id="pop-up">
-        {% csrf_token %}
-        <p class="header">Введите текст рассылки</p>
-        <div class="marquee">
-            <div class="marquee-text">Сделайте рассылку более персональной: @Родитель - Имя Отчество родителя, @Ученик - Фамилия Имя ученика, @Оплата - Ежемесячная оплата</div>
-        </div>
-        <div id="editor" class="editor" contenteditable="true">
-        </div>
-        <div class="button-group">
-            <button id="button_cancel">Отменить</button>
-            <button id="button_send">Отправить</button>
-        </div>
-    </div>
     <script>
         var students = JSON.parse('{{ students|escapejs }}');
         var Grades_Letters = JSON.parse('{{ Grades_Letters|escapejs }}');
