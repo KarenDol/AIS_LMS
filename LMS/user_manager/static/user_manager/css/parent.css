@@ -7,7 +7,7 @@
 }
 
 body{
-    background: url(/static/user_manager/bg.jpg) no-repeat center/cover;
+    background-color: #dcdcdc;
     align-items: center;
     justify-content: center;
 }
@@ -18,7 +18,7 @@ body{
     gap: 45px;
     background-color: #fff;
     width: 100%;
-    max-width: 1060px;
+    max-width: 960px;
     padding: 45px;
     border-radius: 10px;
     box-shadow: 10px 10px 30px rgba(255, 255, 255, 0.1);

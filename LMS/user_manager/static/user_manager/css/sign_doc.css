@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
 body {
-    background: url(/static/background_10.jpg) no-repeat center/cover;
+    background: url(/static/user_manager/background_10.jpg) no-repeat center/cover;
     justify-content: center;
     align-items: flex-start;
     height: 100vh;
@@ -16,6 +16,12 @@ body {
 *{
     font-family: 'Montserrat', sans-serif;
 }
+main{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
 .logo-container {
     position: absolute; 
     left: 50%;
@@ -23,18 +29,19 @@ body {
     transform: translate(-50%, -50%);
     z-index: 1000;
     animation: slideIn 1.5s ease forwards;
-  }
+}
   
-  .logo-image {
+.logo-image {
     width: 125px;
     height: auto;
-  }
+}
+
 .container {
     text-align: center;
     width: 100%;
     max-width: 500px;
     min-height: 435px;
-    margin-top: 120px;
+    margin-top: 40px;
     background-color: #FBBC58;
     border-radius: 16px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 1);
@@ -48,7 +55,6 @@ body {
     font-size: 1.7rem;
     text-transform: uppercase;
     color: #F7F8E2;
-    margin: 0px;
     margin-bottom: 8px;
 }
 .header-section p{
@@ -61,7 +67,8 @@ body {
     min-height: 250px;
     border: 1px dashed var(--primary);
     background-color: linear-gradient(180deg, #141414, #0e0e0e);
-    margin: 5px 35px 35px 35px;
+    padding: 10px;
+    margin: 10px;
     border-radius: 12px;
     position: relative;
 }
@@ -136,8 +143,8 @@ body {
 .list-section{
     display: none;
     text-align: left;
-    margin: 0px 35px;
-    padding-bottom: 20px;
+    /* margin: 0px 35px; */
+    /* padding-bottom: 20px; */
 }
 .list-section .list-title{
     font-size: 0.95rem;
@@ -223,7 +230,6 @@ body {
     display: none;
 }
 button{
-    margin-top: 20px;
     width: 100%;
     border: none;
     padding: 10px;

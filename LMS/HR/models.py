@@ -24,16 +24,6 @@ class Applicant(models.Model):
     ],  default='Акт')
     appl_date = models.DateField() #Date of the application
 
-class HR_User(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=150)
-    picture = models.CharField(max_length=150, default='Avatar.png') #user_picture
-    user_type = models.CharField(max_length=50, choices=[
-        ('HR', 'HR Manager'),
-    ])
-    phone = models.CharField(max_length=20, null=True)
-    email = models.CharField(max_length=100, null=True)
-
 class Interview(models.Model):
     applicant = models.OneToOneField(Applicant, on_delete=models.CASCADE)
     date_time = models.DateTimeField()

@@ -12,33 +12,29 @@ import os
 import json
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.http import FileResponse, Http404, JsonResponse, HttpResponseBadRequest
+from django.http import FileResponse, Http404, JsonResponse, HttpResponseBadRequest, HttpResponse
 from datetime import datetime
+from .decorators import role_required
 
 # Create your views here.
+@role_required(USER_TYPE_HR)
 def home(request):
-    if (not user_auth(request)):
-        return redirect('logout_user', prev_page='hr_home')
-    current_user = HR_User.objects.get(user=request.user)
-    if current_user.user_type == 'HR':
-        applicants = list(Applicant.objects.all()
-                          .order_by('-appl_date') # Order by appl_date in descending order
-                          .values('last_name', 'first_name', 'patronim', 'position', 'iin', 'status'))
-        # Create a dictionary where the key is the applicant's iin and the value is the date_time
-        interviews = {
-            interview['applicant__iin']: interview['date_time'].strftime('%d of %b, %H:%M') 
-            for interview in Interview.objects.values('applicant__iin', 'date_time')
-        }
-        applicants_json = json.dumps(applicants)
-        interviews_json = json.dumps(interviews)
-        context = {
-            'applicants': applicants_json,
-            'interviews': interviews_json,
-            'page': 'home', #Necessary for the index
-        }
-        return render(request, 'HR/home.html', context)
-    else:
-        return redirect('logout_user', prev_page='hr_home')
+    applicants = list(Applicant.objects.all()
+                        .order_by('-appl_date') # Order by appl_date in descending order
+                        .values('last_name', 'first_name', 'patronim', 'position', 'iin', 'status'))
+    # Create a dictionary where the key is the applicant's iin and the value is the date_time
+    interviews = {
+        interview['applicant__iin']: interview['date_time'].strftime('%d of %b, %H:%M') 
+        for interview in Interview.objects.values('applicant__iin', 'date_time')
+    }
+    applicants_json = json.dumps(applicants)
+    interviews_json = json.dumps(interviews)
+    context = {
+        'applicants': applicants_json,
+        'interviews': interviews_json,
+        'page': 'home', #Necessary for the index
+    }
+    return render(request, 'HR/home.html', context)
 
 def apply(request, pos_id):
     if request.method == "POST":
@@ -56,8 +52,10 @@ def apply(request, pos_id):
         exp_salary = request.POST['salary'].replace(' ', '')
         appl_date = datetime.today()
         #Check if applicant already exists
-        if applicant_exist(iin):
-            return redirect('error', prev_page='hr_home', error_code='Кажется вы уже подали заявку, ждите нашего ответа')
+        applicant = get_applicant(iin)
+        if isinstance(applicant, Applicant):
+            messages.error(request, 'Кажется вы уже подали заявку, ждите нашего ответа')
+            return redirect('jobs')
         
         #Create an applicant
         applicant = Applicant(last_name = lastname, first_name = firstname, patronim = patronim,
@@ -77,17 +75,21 @@ def apply(request, pos_id):
         return redirect('hr_home')
     else:
         if (pos_id == 0):
-            context = {
-                'Positions': Positions,
-            }
-            return render(request, 'HR/apply.html', context)
+            title = None   
         else:
-            position = Position.objects.get(id=pos_id)
-            context = {
-                'pos_title': position.title,
-                'pos_id': pos_id,
-            }
-            return render(request, 'HR/apply_pos.html', context)
+            position = get_position(pos_id)
+            if isinstance(position, HttpResponse): 
+                messages.error(request, 'Данной позиции нет в системе')
+                return position
+             
+            title = position.title
+
+        context = {
+            'Positions': Positions,
+            'pos_title': title,
+            'pos_id': pos_id
+        }
+        return render(request, 'HR/apply.html', context)
     
 def send_email(iin):
     applicant = Applicant.objects.get(iin=iin)
@@ -116,58 +118,27 @@ def send_email(iin):
     email.send()
     print("Email sent!")
 
-def applicant_exist(iin):
-    try:
-        applicant = Applicant.objects.get(iin=iin)
-        return True
-    except Applicant.DoesNotExist:
-        return False
-
-def interview_exist(iin):
-    if applicant_exist(iin):
-        applicant = Applicant.objects.get(iin=iin)
-        try:
-            interview = Interview.objects.get(applicant=applicant)
-            return True
-        except:
-            return False
-    else:
-        return False
-
 #Fetch all user info
-def user_auth(request):
-    if request.user.is_authenticated:
-        try:
-            current_user = HR_User.objects.get(user=request.user)
-            return True
-        except HR_User.DoesNotExist:
-            messages.error(request, "User is not LMS User")
-            return False
-    else:
-        messages.error(request, "Login to access that page")
-        return False
-    
+@role_required(USER_TYPE_HR)
 def applicant_card(request, iin):
-    if (not user_auth(request)):
-        return redirect('logout_user', prev_page='hr_home')
+    applicant = get_applicant(iin)
 
-    if (not applicant_exist(iin)):
-        return redirect('error', prev_page='hr_home', error_code = "Кандидата с таким ИИН нет в системе")
+    if isinstance(applicant, HttpResponse):
+        messages.error(request, "Кандидата с таким ИИН нет в системе")
+        return applicant
         
-    current_user = HR_User.objects.get(user=request.user)
-    if current_user.user_type == 'HR':
-        applicant = Applicant.objects.get(iin = iin)
-        applicant_dict = model_to_dict(applicant)  
-        applicant_json = json.dumps(applicant_dict, default=str)  # Using default=str for unsupported type
+    applicant_dict = model_to_dict(applicant)  
+    applicant_json = json.dumps(applicant_dict, default=str)  # Using default=str for unsupported type
 
-        context = {
-            'applicant': applicant_json,
-            'iin': iin,
-            'TimeOptions': TimeOptions,
-        }
+    context = {
+        'applicant': applicant_json,
+        'iin': iin,
+        'TimeOptions': TimeOptions,
+    }
 
-        return render(request, 'HR/applicant_card.html', context)
+    return render(request, 'HR/applicant_card.html', context)
     
+@role_required(USER_TYPE_HR)
 def cv(request, iin):
     file_path = os.path.join(settings.STATIC_ROOT, 'cvs', f"{iin}.pdf")
 
@@ -176,118 +147,103 @@ def cv(request, iin):
     else:
         raise Http404("CV not found.")
 
-def appoint_int(request, iin):
-    if (not user_auth(request)):
-        return redirect('logout_user', prev_page='hr_home')
+@role_required(USER_TYPE_HR)
+def appoint_int(request, iin):    
+    applicant = get_applicant(iin)
+
+    if isinstance(applicant, HttpResponse):
+        messages.error(request, "Кандидата с таким ИИН нет в системе")
+        return applicant
+   
+    try:
+        data = json.loads(request.body)
+        date_str = data.get('date')
+        time_str = data.get('time')
+
+        # Convert the `time` string to a `datetime.time` object
+        date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+        time_obj = datetime.strptime(time_str, '%H:%M').time()
+
+        # Combine `date` and `time` into a `datetime` object
+        date_time = datetime.combine(date_obj, time_obj)
+
+        interview = Interview(applicant=applicant, date_time=date_time)
+        interview.save()
+        return JsonResponse({'status': 'success', 'message': 'Decision updated successfully'})
     
-    if applicant_exist(iin):
-        applicant = Applicant.objects.get(iin=iin)
-    else:
-        return redirect('error', prev_page='hr_home', error_code='Ученика с таким ИИН нет в системе')
-    current_user = HR_User.objects.get(user=request.user)
-    if current_user.user_type == 'HR':
-        try:
-            data = json.loads(request.body)
-            date_str = data.get('date')
-            time_str = data.get('time')
+    except json.JSONDecodeError:
+            return HttpResponseBadRequest('Invalid JSON format')
 
-            # Convert the `time` string to a `datetime.time` object
-            date_obj = datetime.strptime(date_str, '%Y-%m-%d')
-            time_obj = datetime.strptime(time_str, '%H:%M').time()
-
-            # Combine `date` and `time` into a `datetime` object
-            date_time = datetime.combine(date_obj, time_obj)
-
-            interview = Interview(applicant=applicant, date_time=date_time)
-            interview.save()
-            return JsonResponse({'status': 'success', 'message': 'Decision updated successfully'})
-        except json.JSONDecodeError:
-                return HttpResponseBadRequest('Invalid JSON format')
-    else:
-        return HttpResponseBadRequest('Login as Зам по ВСиРШ')
-    
+@role_required(USER_TYPE_HR)
 def report_int(request, iin):
-    if (not user_auth(request)):
-        return redirect('logout_user', prev_page='hr_home')
+    interview = get_interview(iin)
+    if isinstance(interview, HttpResponse):
+        messages.error(request, "Что-то пошло не так")
+        return interview
     
-    if interview_exist(iin):
-        applicant = Applicant.objects.get(iin=iin)
-        interview = Interview.objects.get(applicant=applicant)
+    applicant = get_applicant(iin)
+
+    if request.method == "POST":
+        if interview.status == None:
+            interviewers = request.POST['interviewers']
+            comment = request.POST['comment']
+            
+            interview.interviewers = interviewers 
+            interview.comment = comment 
+
+        status = request.POST['status']
+        interview.status = status
+            
+        if (status=='pos'):
+            salary=request.POST['salary'].replace(' ', '')
+            conditions = request.POST['conditions']
+            interview.salary=salary 
+            interview.conditions=conditions
+            applicant.status = "При"
+        elif (status=='neg'):
+            applicant.status = "Отк"
+
+        applicant.save()
+        interview.save()
+        messages.success(request, "Отчет о собеседовании добавлен в систему!")
+        return redirect('hr_home')
     else:
-        return redirect('error', prev_page='hr_home', error_code='Данного интерью нет в системе')
-    
-    current_user = HR_User.objects.get(user=request.user)
-    if current_user.user_type == 'HR':
-        if request.method == "POST":
-            if interview.status == None:
-                interviewers = request.POST['interviewers']
-                comment = request.POST['comment']
-                
+        interview_dict = model_to_dict(interview)
+        interview_json = json.dumps(interview_dict, default=str)
 
-                interview.interviewers = interviewers 
-                interview.comment = comment 
-
-            status = request.POST['status']
-            interview.status = status
-                
-            if (status=='pos'):
-                salary=request.POST['salary'].replace(' ', '')
-                conditions = request.POST['conditions']
-                interview.salary=salary 
-                interview.conditions=conditions
-                applicant.status = "При"
-            elif (status=='neg'):
-                applicant.status = "Отк"
-
-            applicant.save()
-            interview.save()
-            messages.success(request, "Отчет о собеседовании добавлен в систему!")
-            return redirect('hr_home')
-        else:
-            interview_dict = model_to_dict(interview)
-            interview_json = json.dumps(interview_dict, default=str)
-
-            context = {
-                "date_time": interview.date_time.strftime('%d of %b, %H:%M'),
-                'applicant_name': f"{applicant.last_name} {applicant.first_name} {applicant.patronim}",
-                "position": applicant.position,
-                'iin': iin,
-                "interview": interview_json,
-            }
-            return render(request, 'HR/interview.html', context)
-    else:
-        return redirect('error', prev_page='hr_home', error_code='Войдите в систему как HR')
-
+        context = {
+            "date_time": interview.date_time.strftime('%d of %b, %H:%M'),
+            'applicant_name': f"{applicant.last_name} {applicant.first_name} {applicant.patronim}",
+            "position": applicant.position,
+            'iin': iin,
+            "interview": interview_json,
+        }
+        return render(request, 'HR/interview.html', context)
 
 #Changing Applicant status: 
 # 1) Акт -> Арх, 2) Акт -> Инт, 3) Арх/Отк -> Акт
+@role_required(USER_TYPE_HR)
 def card_review(request, iin):
-    if (not user_auth(request)):
-        return redirect('logout_user', prev_page='hr_home')
-    
-    if applicant_exist(iin):
-        applicant = Applicant.objects.get(iin=iin)
-    else:
-        return redirect('error', prev_page='hr_home', error_code='Кандидата с таким ИИН нет в системе')
+    applicant = get_applicant(iin)
 
-    current_user = HR_User.objects.get(user=request.user)
-    if current_user.user_type == 'HR':
-        if request.method == "POST":
-            try:
-                data = json.loads(request.body)
-                decision = data.get('decision') # Use .get() to avoid KeyError
-                if decision==1:
-                    applicant.status = 'Арх'
-                elif decision==2:
-                    applicant.status = 'Инт'
-                else:
-                    applicant.status = 'Акт'
-                applicant.save()
-                return JsonResponse({'status': 'success', 'message': 'Decision updated successfully'})
-            except json.JSONDecodeError:
-                return HttpResponseBadRequest('Invalid JSON format')
-    else:
-        return HttpResponseBadRequest('Login as HR Manager')
+    if isinstance(applicant, HttpResponse):
+        messages.error(request, "Кандидата с таким ИИН нет в системе")
+        return applicant
+
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            decision = data.get('decision') # Use .get() to avoid KeyError
+            if decision==1:
+                applicant.status = 'Арх'
+            elif decision==2:
+                applicant.status = 'Инт'
+            else:
+                applicant.status = 'Акт'
+            applicant.save()
+            return JsonResponse({'status': 'success', 'message': 'Decision updated successfully'})
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest('Invalid JSON format')
 
 def error(request, error_code):
     return render(request, 'HR/404.html', {'error_code': error_code})
@@ -295,14 +251,16 @@ def error(request, error_code):
 def jobs(request):
     positions = list(Position.objects.all()
                     .order_by('date')
-                    .values('id', 'title', 'salary_status', 'salary', 'experience', 'date'))
+                    .values('id', 'title', 'salary_status', 'salary', 'experience', 'date', 'status'))
     positions_json = json.dumps(positions, default=str)
     context = {
         'positions': positions_json,
         'page': 'jobs', #Necessary for the index
+        'user_type': request.session.get('user_type')
     }
     return render(request, 'HR/jobs.html', context)
 
+@role_required(USER_TYPE_HR)
 def new_position(request):
     if request.method == "POST":
         title = request.POST['title']
@@ -320,18 +278,85 @@ def new_position(request):
         position = Position(title=title, salary_status=salary_status, salary=salary,
                             experience=experience, description=description, requirements=requirements)
         position.save()
-        return render(request, 'HR/new_position.html')
+        messages.success(request, "Вакансия успешно опубликована")
+        return redirect('jobs')
     else:
         return render(request, 'HR/new_position.html')
     
-def position(request, id):
-    if (id=='0'):
-        return redirect('new_position')
+def position(request, pos_id):
+    position = get_position(pos_id)
+
+    if isinstance(position, HttpResponse): 
+        messages.error(request, 'Данной позиции нет в системе')
+        return position
+    
+    if request.method == "POST":
+        title = request.POST['title']
+        if request.POST.get('salary_status') == 'on':
+            salary_status = True
+            salary = 0
+        else:
+            salary_status = False
+            salary = int(request.POST.get('salary', '0').replace(' ', ''))
+        experience = request.POST['experience']
+        description = request.POST['description']
+        requirements = request.POST['requirements']
+
+        position.title=title
+        position.salary_status=salary_status
+        position.salary=salary
+        position.experience=experience
+        position.description=description
+        position.requirements=requirements
+
+        position.save()
+
+    position_dict = model_to_dict(position)  
+    position_json = json.dumps(position_dict, default=str)  # Using default=str for unsupported types
+    context = {
+        'user_type': request.session.get('user_type'),
+        'position': position_json,
+        'pos_id': pos_id,
+    }
+    messages.success(request, "Изменения успешно сохранены")
+    return render(request, 'HR/position.html', context)
+
+#Helpers
+def get_position(pos_id):
+    try:
+        return Position.objects.get(pk=pos_id)
+    except Position.DoesNotExist:
+        return redirect('jobs')
+    
+def get_applicant(iin):
+    try:
+        return Applicant.objects.get(iin=iin)
+    except Applicant.DoesNotExist:
+        return redirect('hr_home')
+    
+def get_interview(iin):
+    applicant = get_applicant(iin)
+    if isinstance(applicant, HttpResponse):
+        return applicant
+        
+    try:
+        return Interview.objects.get(applicant=applicant)
+    except:
+        return redirect('hr_home')
+
+@role_required(USER_TYPE_HR)
+def change_status(request, id):
+    position = get_position(id)
+    if isinstance(position, HttpResponse): 
+        messages.error(request, 'Данной позиции нет в системе')
+        return position
+    
+    if (position.status == "act"):
+        position.status = "arc"
     else:
-        position = Position.objects.get(id=id)
-        position_dict = model_to_dict(position)  
-        position_json = json.dumps(position_dict, default=str)  # Using default=str for unsupported types
-        context = {
-            'position': position_json,
-        }
-        return render(request, 'HR/position.html', context)
+        position.status = "act"
+
+    position.save()
+    messages.success(request, "Статус был успешно изменен")
+
+    return redirect('jobs')

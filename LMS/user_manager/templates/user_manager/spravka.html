@@ -1,0 +1,77 @@
+{% extends 'user_manager/index.html' %}
+{% block content %}
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'favicon.png' %}">
+    <title>Справка со школы</title>
+    <link rel="stylesheet" href="{% static 'user_manager/css/spravka.css' %}">
+</head>
+    <main>
+        <div class="container">
+            {% csrf_token %}
+            <div class="card">
+                <div class="card-header">
+                  <h1 class="card-title">Справка со школы</h1>
+                  <p class="card-description">Введите ИИН ученика для получения справки</p>
+                </div>
+                
+                <div class="card-content">
+                  <!-- IIN Form -->
+                  <form id="iin-form" class="form">
+                    <div class="form-group">
+                      <label for="iin">ИИН</label>
+                      <input 
+                        type="text" 
+                        id="iin" 
+                        placeholder="Введите 12-значный ИИН" 
+                        maxlength="13" 
+                        pattern="^\d{6} \d{6}$" 
+                        required
+                      >
+                    </div>
+                    <button type="submit" id="iin-submit" class="button">Продолжить</button>
+                  </form>
+          
+                  <!-- SMS Verification Form -->
+                  <form id="sms-form" class="form hidden">
+                    <div class="form-group">
+                      <label for="sms">SMS код из WhatsApp</label>
+                      <div class="digit-group" data-group-name="digits" data-autosubmit="false" autocomplete="off">
+                        <input type="text" id="digit-1" name="digit-1" data-next="digit-2" />
+                        <input type="text" id="digit-2" name="digit-2" data-next="digit-3" data-previous="digit-1" />
+                        <input type="text" id="digit-3" name="digit-3" data-next="digit-4" data-previous="digit-2" />
+                        <input type="text" id="digit-4" name="digit-4" data-previous="digit-3" />
+                      </div>
+                    </div>
+                    <button type="submit" id="sms-submit" class="button">Подтвердить</button>
+                  </form>
+          
+                  <!-- Download Section -->
+                  <div id="download-section" class="hidden">
+                    <div class="success-message">
+                      <p class="success-title">Доступ подтвержден</p>
+                      <p class="success-description">Теперь вы можете скачать справку</p>
+                    </div>
+                    <button id="download-button" class="button">Скачать справку</button>
+                  </div>
+                </div>
+          
+                <div class="card-footer">
+                  <p>Получите справку со школы самостоятельно</p>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!-- Toast Notification -->
+        <div id="toast" class="toast hidden">
+          <div class="toast-content">
+            <p id="toast-title" class="toast-title"></p>
+            <p id="toast-description" class="toast-description"></p>
+          </div>
+        </div>
+    </main>
+<script src="{% static 'user_manager/js/spravka.js'%}"></script>
+{% endblock %}

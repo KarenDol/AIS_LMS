@@ -7,7 +7,7 @@ from datetime import datetime
 
 def fill_doc(IIN):
     student = Student.objects.get(IIN=IIN)
-    parent = student.parent_1
+    parent = student.parent
     contract = student.contract
     template_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'template.docx')
     document = DocxTemplate(template_location)
@@ -79,15 +79,21 @@ def fill_leave(IIN):
     docs_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'leave' + IIN + '.docx')
     document.save(docs_location)
 
-def fill_spravka(IIN, id):
+def fill_spravka(IIN):
     student = Student.objects.get(IIN=IIN)
     template_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'Справка.docx')
+
+    dd = datetime.today().strftime("%d")
+    mm = datetime.today().strftime("%m")
+    yyyy = datetime.today().strftime("%Y")
+
+    doc_numb = f"{student.pk}_{dd}{mm}-{yyyy[-2:]}" #format - StdID_DDMM-25
     document = DocxTemplate(template_location)
     context = {
-        "doc_id": f"c{id}-25",
-        "dd": datetime.today().strftime("%d"),
-        "mm": month_ru(int(datetime.today().strftime("%m"))),
-        "yyyy": datetime.today().strftime("%Y"),
+        "doc_id": f"e{doc_numb}",
+        "dd": dd,
+        "mm": month_ru(int(mm)),
+        "yyyy": yyyy,
         "student_name": f"{student.Last_Name} {student.First_Name} {student.Patronim}",
         "student_year": "20" + student.IIN[:2],
         "gr_num": student.grade_num,

@@ -86,7 +86,7 @@
         </form>
     </div>
     <script>
-        interview = JSON.parse('{{ interview|default:"null"|escapejs }}');
+        const interview = JSON.parse('{{ interview|escapejs }}');
         const iin = "{{iin}}";
     </script>
     <script src="{% static 'HR/js/interview.js' %}"></script>

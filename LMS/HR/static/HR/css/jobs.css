@@ -169,3 +169,23 @@ p.primary{
     font-weight: 700;
     margin-top: 0px;
 }
+
+label{
+    padding: 7px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+label a{
+    text-decoration: none;
+}
+
+.arc, .arc a{
+    color: #B30120;
+    background-color: #D893A3; 
+}
+
+.act, .act a{
+    color: #016B21;
+    background-color: #85E49D;
+}

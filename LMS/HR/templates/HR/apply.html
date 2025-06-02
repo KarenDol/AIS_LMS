@@ -1,4 +1,4 @@
-{% extends 'HR/index_apply.html' %}
+{% extends 'HR/index.html' %}
 {% block content %}
 {% load static %}
 
@@ -42,7 +42,7 @@
             </div>
 
             <div class="form-control">
-                <label for="phone">Номер Телефона для СМС</label>
+                <label for="phone" id="phone-label">Номер Телефона WhatsApp</label>
                 <input type="tel" id="phone" name="phone" autocomplete="off">
                 <i class="icon"></i>
             </div>
@@ -100,9 +100,17 @@
                 <i class="icon"></i>
             </div>
 
-            <button type="submit">Подать Заявку</button>
+            <div class="button-group">
+                <button id="back">Назад</button>
+                <button type="submit">Подать Заявку</button>
+            </div>
         </form>
     </div>
+    <script>
+        const pos_id = "{{ pos_id }}";
+        const pos_title = "{{ pos_title }}";
+        const Positions = "{{Positions}}";
+    </script>
     <script src="{% static 'HR/js/apply.js' %}"></script>
     <script src="https://unpkg.com/imask"></script>
 </body>

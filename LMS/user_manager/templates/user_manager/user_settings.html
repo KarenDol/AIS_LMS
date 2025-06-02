@@ -34,6 +34,7 @@
                             </div>
                         </div>
                     </div>
+                    <input type="file" id="file-Input" accept="image/*" hidden>
                 </div>
                 <div class="bento-item">
                     <div class="user-details">
@@ -111,7 +112,7 @@
             </div>
 
             <div class="action-buttons">
-                <button type="button" class="btn btn-logout" onclick="window.location.href='{% url 'logout_user' prev_page=prev_page %}';">Выйти</button>
+                <button type="button" class="btn btn-logout" onclick="window.location.href='{% url 'logout_user' prev_page='home' %}';">Выйти</button>
                 <div class="right-buttons">
                     <button type="button" class="btn btn-reset" disabled>Сбросить</button>
                     <button type="submit" class="btn btn-save" disabled>Сохранить</button>
@@ -131,11 +132,11 @@
         }; 
     </script>
     <script src="https://unpkg.com/imask"></script>
-    <script>
+    <!-- <script>
         if (window.location.pathname.startsWith('/user_settings/')) {
           window.history.replaceState(null, null, '/user_settings/');
         }
-      </script>
+      </script> -->
     <script src="{% static 'user_manager/js/user_settings.js' %}"></script>
 </body>
 </html>

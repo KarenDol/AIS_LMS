@@ -19,7 +19,7 @@
         </div>
         <div class="Person">
             <p id="name">{{ name }}</p>
-            <a href="{% url 'user_settings' prev_page='home' %}">
+            <a href="{% url 'user_settings' %}">
                 <img id="picture">
             </a>
         </div>
@@ -30,11 +30,14 @@
         .then(data => {
             // Update the HTML with the fetched data
             document.getElementById('name').textContent = data.name;
-            document.getElementById('picture').src = '/api/serve_static/' + data.picture;
+            if (data.name === "Гость") {
+                document.getElementById('picture').src = "{% static 'user_manager/Avatar.png' %}";
+            } else {
+                document.getElementById('picture').src = '/api/serve_static/' + data.picture;
+            }
             if (data.school == 'sch'){
                 document.getElementById('school').textContent = 'AQBOBEK INTERNATIONAL SCHOOL';
                 document.getElementById('logo').src="{% static 'user_manager/whitelogo.png' %}";
-
             } else {
                 document.getElementById('school').textContent = 'AQBOBEK LYCEUM';
                 document.getElementById('logo').src="{% static 'user_manager/Logo_Lyc.png' %}";

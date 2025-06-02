@@ -19,9 +19,13 @@
         </div>
         <div class="Person">
             <p id="name">{{ name }}</p>
-            <a href="{% url 'user_settings' prev_page='home' %}">
+            {% if name == "Гость" %}
+                <a href="{% url 'user_settings' %}">
+                    <img id="picture">
+                </a>
+            {% else %}
                 <img id="picture">
-            </a>
+            {% endif %}
         </div>
     </header>
     <script>

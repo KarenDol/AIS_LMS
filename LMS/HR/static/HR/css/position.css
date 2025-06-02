@@ -44,6 +44,10 @@ body{
                  "Helvetica Neue", Helvetica, Arial, sans-serif;
     height: 400px;
 }
+#toolbar{
+    display: none; 
+    /* default - hide toolbar  */
+}
 .editor h1{
     font-size: 27px !important;;
 }
@@ -146,6 +150,19 @@ input.salary{
     align-items: center;
     display: flex;
     justify-content: center;
+}
+
+.edit:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.pen{
+    visibility: hidden;
+}
+
+.edit:hover .pen {
+    visibility: visible;
 }
 
 .position-title, .salary, .experince{

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from .const import student_status
+from .const import student_status, USER_TYPE_CHOICES
 
 #Create your models here.
 class Parent(models.Model):
@@ -29,7 +29,6 @@ class Contract(models.Model):
     monthly = models.IntegerField() #Ежемесячная оплата
     join_fee = models.IntegerField() #Вступительные
     join_fee_status = models.BooleanField(default=False) #Оплачено или нет
-    signed_location = models.CharField(max_length=150, null=True) #Location of the signed doc
     status = models.BooleanField(default=False) #Подписано или нет
 
 class Student(models.Model):
@@ -49,22 +48,18 @@ class Student(models.Model):
     prev_school = models.CharField(max_length=50, null=True)
     nationality = models.CharField(max_length=20, null=True)
     comment = models.CharField(max_length=200, null=True) #Serves as a leave reason as well
-    parent_1 = models.ForeignKey(Parent, on_delete=models.CASCADE, null=True, related_name='mom')
-    # parent_2 = models.ForeignKey(Parent, on_delete=models.CASCADE, null=True, related_name='dad')
+    parent = models.ForeignKey(Parent, on_delete=models.CASCADE, null=True, related_name='mom')
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE, null=True)
-
     status = models.CharField(max_length=30, choices=student_status, default='Лид')
     date = models.DateField(null=True) #Date of the last status update
-    balance = models.IntegerField(null=True)
-
+    picture = models.CharField(max_length=20, null=True)
     #School + Lyceum DB Merge
     school = models.CharField(max_length=10, choices=[
         ('sch', 'school'),
         ('lyc', 'lyceum'),
     ], default='sch')
 
-
-class Honor(models.Model):
+class Journal(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     title = models.CharField(max_length=100) #ex. Gold Medal
     date = models.DateField() #01-MM-YYYY, award date
@@ -74,37 +69,14 @@ class LMS_User(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
     picture = models.CharField(max_length=150, default='Avatar.png') #user_picture
-    user_type = models.CharField(max_length=50, choices=[
-        ('Админ', 'Администрация'),
-        ('Бух', 'Бухгалтер'),
-        ('ВнСв', 'Зам по ВСиРШ'),
-        ('Дело', 'Делопроизводитель'),
-        ('Дир', 'Директор'),
-        ('Кур', 'Куратор'),
-    ], default='Админ')
+    user_type = models.CharField(max_length=50, choices=USER_TYPE_CHOICES, default='Админ')
     phone = models.CharField(max_length=20, null=True)
     email = models.CharField(max_length=100, null=True)
 
-class List_Of_Students(models.Model):
-    student = models.OneToOneField(Student, on_delete=models.CASCADE)
-    Last_Name = models.CharField(max_length=40) #Фамилия ученика
-    First_Name = models.CharField(max_length=30) #Имя ученика
-    Class = models.CharField(max_length=30) #Класс ученика
-    Phone = models.CharField(max_length=20) #Номер Родителя
-    Payment = models.IntegerField() #Ежемесячная Оплата
-    Sep = models.IntegerField(default=0) #Оплачено за сентябрь
-    Oct = models.IntegerField(default=0)
-    Nov = models.IntegerField(default=0)
-    Dec = models.IntegerField(default=0)
-    Jan = models.IntegerField(default=0)
-    Mar = models.IntegerField(default=0)
-    Apr = models.IntegerField(default=0)
-    May = models.IntegerField(default=0)
-
-class Document(models.Model):
-    date = models.DateField()
-    receiver = models.CharField(max_length=100) #Куда/кому адресован документ
-    type = models.CharField(max_length = 50) #Что за документ?
+class Grade(models.Model):
+    curator = models.ForeignKey(LMS_User, on_delete=models.CASCADE)
+    grade_num = models.IntegerField(null=True)
+    grade_let = models.CharField(max_length=1, null=True)
 
 class Candidate(models.Model):
     student = models.OneToOneField(Student, on_delete=models.CASCADE, primary_key=True)

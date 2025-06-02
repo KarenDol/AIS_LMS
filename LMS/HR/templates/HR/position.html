@@ -13,17 +13,13 @@
 </head>
 
 <body>
-    <form id="mainForm" method="POST" action="{% url 'new_position' %}" novalidate enctype="multipart/form-data">
+    <form id="mainForm" method="POST" action="{% url 'position' pos_id=pos_id %}" novalidate enctype="multipart/form-data">
         {% csrf_token %}
     <div class="container">
         <div class="position">
             <div class="position-title" id="title"></div>
-            <div class="salary">
-                <div class="salary-label" id="salary"></div>
-            </div>
-            <div class="experince">
-                <div class="salary-label" id="experience"></div>   
-            </div>
+            <div class="salary" id="salary"></div>
+            <div class="experince" id="experience"></div>
         </div>
         <div class="line"></div>
 
@@ -56,12 +52,11 @@
     </div>
 </form>
 </body>
-<script src="{% static 'HR/js/position.js' %}"></script>
-<script>
-    if ('{{ position|default:"null"|escapejs }}') {
-        position = JSON.parse('{{ position|default:"null"|escapejs }}');
-    }
-</script>
 <!-- Include the Quill library -->
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<script>
+    position = JSON.parse('{{ position|escapejs }}');
+    user_type = '{{ user_type|escapejs }}';
+</script>
+<script src="{% static 'HR/js/position.js' %}"></script>
 {% endblock content %}

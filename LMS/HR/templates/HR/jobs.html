@@ -27,6 +27,7 @@
     <script src="{% static 'HR/js/jobs.js' %}"></script>
     <script>
         var positions = JSON.parse('{{ positions|escapejs }}');
+        const user_type = '{{user_type}}';
     </script>
 </body>
 </html>

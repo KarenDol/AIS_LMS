@@ -14,63 +14,61 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, re_path
-from . import views, report
+from . import views, views_student, views_parent, views_contract, views_honors, views_candidate, views_whatsapp, views_documents
 
 urlpatterns = [
     #System pages
     path('', views.home, name='home'),
     path("login/<prev_page>", views.login_user, name='login_user'),
     path("logout/<prev_page>", views.logout_user, name='logout_user'),
-    path('user_settings/<prev_page>', views.user_settings, name='user_settings'),
+    path('user_settings/', views.user_settings, name='user_settings'),
     path('404/<prev_page>/<error_code>/', views.error, name='error'),
     path('change_school', views.change_school, name='change_school'),
 
     #Student
-    path('register_student/', views.register_student, name='register_student'),
-    path('card_student/<IIN>/', views.card_student, name='card_student'),
-    path('temp_card_std/<IIN>/', views.temp_card_std, name='temp_card_std'),
-    path('accept/<IIN>/', views.accept_student, name='accept_student'),
-    path('archive/<IIN>/', views.archive, name='archive'),
-    path('arch_back/<IIN>/', views.arch_back, name='arch_back'),
-    path('1_grade/', views.first_grade, name='1_grade'),
-    path('change_candidate/<pk>/', views.change_candidate, name='change_candidate'),
+    path('register_student/', views_student.register_student, name='register_student'),
+    path('card_student/<IIN>/', views_student.card_student, name='card_student'),
+    path('temp_card_std/<IIN>/',views_student.temp_card_std, name='temp_card_std'),
+    path('accept/<IIN>/', views_student.accept_student, name='accept_student'),
+    path('archive/<IIN>/', views_student.archive, name='archive'),
+    path('arch_back/<IIN>/', views_student.arch_back, name='arch_back'),
+    path('1_grade/', views_candidate.first_grade, name='1_grade'),
+    path('change_candidate/<pk>/', views_candidate.change_candidate, name='change_candidate'),
 
-    #Register
-    path('register_parent/<IIN>/', views.register_parent, name='register_parent'),
-    path('register_contract/<IIN>/', views.register_contract, name='register_contract'),
+    #Parent
+    path('register_parent/<IIN>/', views_parent.register_parent, name='register_parent'),
+    path('card_parent/<IIN>/', views_parent.card_parent, name='card_parent'),
 
-    #Card view
-    path('card_parent/<IIN>/', views.card_parent, name='card_parent'),
-    path('card_contract/<IIN>/', views.card_contract, name='card_contract'),
+    #Contract
+    path('register_contract/<IIN>/', views_contract.register_contract, name='register_contract'),
+    path('card_contract/<IIN>/', views_contract.card_contract, name='card_contract'),
 
     #API urls
     path('api/user-info/', views.get_user_info, name='get_user_info'),
     re_path(r'^api/serve_static/(?P<filename>.+)$', views.serve_static, name='serve_static'),
-    path('export/<grade>/', views.export, name='export'),
-    path('bot', report.report, name='report'),
+    re_path(r'^api/serve_pdf/(?P<filename>.+)$', views.serve_pdf, name='serve_pdf'),
+    path('export/<grade>/', views_documents.export, name='export'),
+    path('student_exists/', views.student_exists, name='student_exists'),
+    path('verify_phone/', views.verify_phone, name='verify_phone'),
 
     #Fill documents
-    path('sign_doc/<IIN>/', views.sign_doc, name='sign_doc'),
-    path('join_doc/<IIN>/', views.join_doc, name='join_doc'),
-    path('leave_doc/<IIN>/', views.leave_doc, name='leave_doc'),
-    path('fill_contract/<IIN>/', views.fill_contract, name='fill_contract'),
-    path('spravka/<IIN>/', views.spravka, name='spravka'),
+    path('join_doc/<IIN>/', views_documents.join_doc, name='join_doc'),
+    path('leave_doc/<IIN>/', views_documents.leave_doc, name='leave_doc'),
+    path('fill_contract/<IIN>/<numb>/', views_documents.fill_contract, name='fill_contract'),
+    path('spravka/', views_documents.spravka, name='spravka'), #Spravka Page
+    path('get_spravka/', views_documents.get_spravka, name='get_spravka'), #Spravka Document
+    path('sign_doc/<IIN>/', views_documents.sign_doc, name='sign_doc'),
 
-    #Honors
-    path("honors/<IIN>/", views.honors, name='honors'),
-    path("delete_honor/<id>/", views.delete_honor, name='delete_honor'),
-    path("edit_honor/<id>/", views.edit_honor, name='edit_honor'),
+    #Journals
+    path("journals/<IIN>/", views_honors.journals, name='journals'),
+    path("delete_journal/<id>/", views_honors.delete_journal, name='delete_journal'),
+    path("edit_journal/<id>/", views_honors.edit_journal, name='edit_journal'),
     
     #Others
-    path('join_fee/<IIN>/', views.join_fee, name='join_fee'),
-    # path("wa/", views.wa, name='wa'),
-    path("templ/", views.templ, name="templ"),
-    path("whatsapp/", views.whatsapp, name="whatsapp"),
+    path('join_fee/<IIN>/', views_contract.join_fee, name='join_fee'),
 
     #WhatsApp
-    path("wa_exists/<phone>/", views.wa_exists, name='wa_exists'),
-    path("get_numbers/", views.get_numbers, name='get_numbers'),
-
-    #Coin
-    path('coin/', views.coin, name='coin'),
+    path("wa_exists/<phone>/", views_whatsapp.wa_exists, name='wa_exists'),
+    path("get_numbers/", views_whatsapp.get_numbers, name='get_numbers'),
+    path("whatsapp/", views_whatsapp.whatsapp, name="whatsapp"),
 ]

@@ -1,0 +1,31 @@
+{% extends 'user_manager/index.html' %}
+{% block content %}
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'user_manager/css/journals.css' %}">
+    <title>Журнал</title>
+    <link rel="icon" href="{% static 'user_manager/favicon.png' %}">
+</head>
+
+<body>
+    <div class="container">
+        <img src="{% static 'user_manager/Journal.png' %}"> 
+        <form id="mainForm" method="POST" action="{% url 'journals' IIN=IIN %}" novalidate>
+            {% csrf_token %}  
+        <h2>Журнал Записей об Ученике</h2>
+        <div class="timeline-container"></div>
+        <div class="button-group" id="buttons_edit">
+            <button id="button_cancel">Отменить</button>
+            <button id="button_save">Сохранить</button>
+        </div>
+    </div>
+    <script>
+        var journals = JSON.parse('{{ journals|escapejs }}');
+        const IIN = "{{IIN}}";
+    </script>
+    <script src="{% static 'user_manager/js/journals.js' %}"></script>
+</body>
+{% endblock content %}

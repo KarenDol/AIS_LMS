@@ -16,9 +16,24 @@ document.addEventListener('DOMContentLoaded', function () {
     optionsContainer = selectMenu.querySelector(".options"),
     sBtn_text = selectMenu.querySelector(".sBtn-text");
     const button_back = document.getElementById('button_back');
+    //Avatar elements
+    const avatarContainer = document.querySelector('.avatar-container');
+    const avatarOverlay = document.querySelector('.avatar-overlay');
+    const avatarImage = document.getElementById('avatar-image');
+    const fileInput = document.getElementById("file-Input");
     //Button group when editing
     const buttons_edit = document.getElementById('buttons_edit');
     const button_cancel = document.getElementById('button_cancel'); //Cancel edit
+
+    //Populate Image
+    if (student.picture) {
+        avatarImage.src = '/api/serve_static/std_pictures/' + student.picture;
+    } else {
+        avatarImage.src = '/api/serve_static/Std_avatar.png';
+    }
+
+    //Edit logic
+    let editable = false;
 
     if (student.status === 'Int'){
         intermediate();
@@ -50,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //Populate grade menu with corresponding letters
     populateSelectMenu_Letters(student.grade_num, letters);
 
-
+    //Edit logic 
     function allow_edit() { //No student => it's register student
         //All inputs are editable
         lastname.disabled = false;
@@ -72,6 +87,14 @@ document.addEventListener('DOMContentLoaded', function () {
             h2.classList.add('edit');
             block_edit();
         });
+
+        //Avatar logic
+        avatarContainer.style.cursor = 'pointer';
+        avatarContainer.addEventListener('mouseenter', () => {
+            avatarOverlay.style.opacity = '1'; //Creates a hover effect
+        });
+        
+        editable = true;
     }
 
     function block_edit(){
@@ -115,6 +138,14 @@ document.addEventListener('DOMContentLoaded', function () {
             h2.classList.remove('edit');
             allow_edit();
         });
+
+        //Avatar logic
+        avatarContainer.style.cursor = 'default';
+        avatarContainer.addEventListener('mouseenter', () => {
+            avatarOverlay.style.opacity = '0'; //Removes hover effect
+        });
+
+        editable = false;
     }
 
     function intermediate(){
@@ -168,6 +199,28 @@ document.addEventListener('DOMContentLoaded', function () {
         iin.value = iin.value.replace(/[^0-9]/g, '');
     });
     phone.addEventListener('input', existsWhatsapp);
+
+    //Avatar logic
+    avatarContainer.addEventListener('click', function() {
+        if (editable){
+            fileInput.click();
+        }
+    });
+
+    avatarContainer.addEventListener('mouseleave', () => {
+        avatarOverlay.style.opacity = '0';
+    });
+
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                avatarImage.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
 
     //Check if WhatsApp exists
     function existsWhatsapp() {

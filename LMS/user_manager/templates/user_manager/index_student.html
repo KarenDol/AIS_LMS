@@ -20,7 +20,7 @@
             </div>
             <div class="Person">
                 <p id="name">{{ name }}</p>
-                <a href="{% url 'user_settings' prev_page='home' %}">
+                <a href="{% url 'user_settings' %}">
                     <img id="picture">
                 </a>
             </div>
@@ -55,6 +55,9 @@
                 document.getElementById('school').textContent = 'AQBOBEK LYCEUM';
                 document.getElementById('logo').src="{% static 'user_manager/Logo_Lyc.png' %}";
             }
+            
+            // Store into cookie
+            document.cookie = `school=${data.school}; path=/; SameSite=Lax`;
         })
         .catch(error => console.error('Error fetching user info:', error));
     </script>

@@ -29,8 +29,9 @@ urlpatterns = [
     #Портал вакансий
     path('jobs/', views.jobs, name='jobs'), 
     path('new_position/', views.new_position, name='new_position'),
-    path('position/<id>/', views.position, name='position'),
+    path('position/<pos_id>/', views.position, name='position'),
 
-    #serve static api
+    #others
     path("cv/<iin>/", views.cv, name='cv'),
+    path("change_status/<id>/", views.change_status, name="change_status"),
 ]
