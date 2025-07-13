@@ -141,8 +141,8 @@ def login_user(request, prev_page):
                 try: 
                     current_user = LMS_User.objects.get(user=request.user)
                     request.session['school'] = 'sch' #By default, the AIS is chosen
-
                     request.session['user_type'] = current_user.user_type
+                    print(request.session['user_type'])
                     if (request.session['user_type'] == 'Кур'):
                         grades = get_curator_grades(current_user)
                         request.session['curator_grades'] = grades

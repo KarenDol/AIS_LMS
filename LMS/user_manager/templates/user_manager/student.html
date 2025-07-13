@@ -58,7 +58,18 @@
                 </div>
     
                 <div class="form-control">
-                    <label for="grade">Класс Обучения</label>
+                    <label for="grade">
+                        Класс Обучения
+                    <div class="checkbox-wrapper-35" id="switch-wrapper">
+                        <input value="private" name="switch" id="switch" type="checkbox" class="switch">
+                        <label for="switch">
+                          <span class="switch-x-text">Выбор</span>
+                          <span class="switch-x-toggletext">
+                            <span class="switch-x-unchecked"><span class="switch-x-hiddenlabel">Unchecked: </span>литера</span>
+                            <span class="switch-x-checked"><span class="switch-x-hiddenlabel">Checked: </span>класса</span>
+                          </span>
+                        </label>
+                    </div></label>
                     <div class="select-menu">
                         <div class="select-btn">
                             <span class="sBtn-text"></span>
@@ -66,7 +77,9 @@
                         </div>
                         <ul class="options"></ul>
                     </div>
-                    <input type="text" name="grade" id="grade" hidden>
+                    <input type="text" id="grade_comb" hidden>
+                    <input type="text" name="grade_num" id="grade_num" hidden>
+                    <input type="text" name="grade_let" id="grade_let" hidden>
                 </div>
             </div>
             <div class="container-half">

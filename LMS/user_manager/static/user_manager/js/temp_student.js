@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const school = getCookie('school');
-    console.log(school);
 
     const lang_choice = document.getElementById('lang_choice');
     if (school === 'lyc'){

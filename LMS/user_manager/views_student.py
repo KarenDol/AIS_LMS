@@ -5,6 +5,7 @@ from .helpers import get_student_or_redirect
 from datetime import datetime
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
@@ -61,7 +62,7 @@ def register_student(request):
 @role_required(USER_TYPE_VNSV)
 def temp_card_std(request, IIN):
     student = get_student_or_redirect(IIN)
-    if isinstance(student, redirect.__class__):  # If redirection is returned
+    if isinstance(student, HttpResponseRedirect):  # If redirection is returned
         return student
 
     if student.status == "Акт":
@@ -103,7 +104,7 @@ def temp_card_std(request, IIN):
 @role_required(USER_TYPE_VNSV)
 def accept_student(request, IIN):
     student = get_student_or_redirect(IIN)
-    if isinstance(student, redirect.__class__):  # If redirection is returned
+    if isinstance(student, HttpResponseRedirect):  # If redirection is returned
         return student
 
     if request.method == "POST":
@@ -124,9 +125,9 @@ def accept_student(request, IIN):
         student_dict = model_to_dict(student)  # Convert the Student object to a dictionary
         student_json = json.dumps(student_dict, default=str)  # Using default=str for unsupported types)
         if (request.session['school']=='sch'):
-            Letters = Grades_Letters[student.grade_num]
+            Letters = Grades_Letters
         else:
-            Letters = Grades_Letters_Lyc[student.grade_num]
+            Letters = Grades_Letters_Lyc
         Letters_json = json.dumps(Letters) # Serialize it to JSON
         context = {
             'Letters': Letters_json,
@@ -137,7 +138,7 @@ def accept_student(request, IIN):
 @role_required(USER_TYPE_VNSV, USER_TYPE_CURATOR)
 def card_student(request, IIN):
     student = get_student_or_redirect(IIN)
-    if isinstance(student, redirect.__class__): 
+    if isinstance(student, HttpResponseRedirect):
         return student
     
     if student.status != "Акт":
@@ -155,7 +156,8 @@ def card_student(request, IIN):
         lastname = request.POST['lastname']
         firstname = request.POST['firstname']
         patronim = request.POST['patronim']
-        grade_let = request.POST['grade']
+        grade_num = request.POST['grade_num']
+        grade_let = request.POST['grade_let']
         nationality = request.POST['nationality']
         prev_school = request.POST['prev_school']                
         phone = request.POST['phone']
@@ -166,6 +168,7 @@ def card_student(request, IIN):
         student.Patronim = patronim
         student.phone = phone
         student.prev_school = prev_school
+        student.grade_num = grade_num
         student.grade_let = grade_let
         student.nationality = nationality
         student.comment = comment
@@ -196,9 +199,10 @@ def card_student(request, IIN):
         student_json = json.dumps(student_dict, default=str)  # Using default=str for unsupported type
 
         if (request.session['school']=='sch'):
-            Letters = Grades_Letters[student.grade_num]
+            Letters = Grades_Letters
         else:
-            Letters = Grades_Letters_Lyc[student.grade_num]
+            Letters = Grades_Letters_Lyc
+
         Letters_json = json.dumps(Letters) # Serialize it to JSON
 
         context = {
@@ -210,7 +214,7 @@ def card_student(request, IIN):
 @role_required(USER_TYPE_VNSV)
 def archive(request, IIN):
     student = get_student_or_redirect(IIN)
-    if isinstance(student, redirect.__class__): 
+    if isinstance(student, HttpResponseRedirect):
         return student
     
     if request.method == 'POST':
@@ -230,11 +234,34 @@ def archive(request, IIN):
         }
         return render(request, 'user_manager/temp_student.html', context)
     
+@role_required(USER_TYPE_VNSV)
+def std_change_school(request, IIN):
+    student = get_student_or_redirect(IIN)
+    if isinstance(student, HttpResponseRedirect):
+        return student
+    
+    if request.session['school'] == 'sch':
+        #Only 7+ grade students can switch to lyceum
+        if student.grade_num > 6:
+            request.session['school'] = 'lyc'
+            student.school = 'lyc'
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Only students in grade 7 or higher can join the lyceum.'}, status=400)
+    else:
+        request.session['school'] = 'sch'
+        student.school = 'sch'
+    
+    #Обнулить литтер при переходе
+    student.grade_let = None
+    student.save()
+    
+    return JsonResponse({'status': 'success', 'message': 'Successfully updated'}, status=200)
+    
 #Return student back from archive
 @role_required(USER_TYPE_VNSV)
 def arch_back(request, IIN):
     student = get_student_or_redirect(IIN)
-    if isinstance(student, redirect.__class__): 
+    if isinstance(student, HttpResponseRedirect):
         return student
     
     if student.contract:

@@ -30,6 +30,7 @@ urlpatterns = [
     path('card_student/<IIN>/', views_student.card_student, name='card_student'),
     path('temp_card_std/<IIN>/',views_student.temp_card_std, name='temp_card_std'),
     path('accept/<IIN>/', views_student.accept_student, name='accept_student'),
+    path('std_change_school/<IIN>/', views_student.std_change_school, name='std_change_school'),
     path('archive/<IIN>/', views_student.archive, name='archive'),
     path('arch_back/<IIN>/', views_student.arch_back, name='arch_back'),
     path('1_grade/', views_candidate.first_grade, name='1_grade'),

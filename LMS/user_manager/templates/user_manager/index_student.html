@@ -55,6 +55,7 @@
                 document.getElementById('school').textContent = 'AQBOBEK LYCEUM';
                 document.getElementById('logo').src="{% static 'user_manager/Logo_Lyc.png' %}";
             }
+            console.log(data.school);
             
             // Store into cookie
             document.cookie = `school=${data.school}; path=/; SameSite=Lax`;

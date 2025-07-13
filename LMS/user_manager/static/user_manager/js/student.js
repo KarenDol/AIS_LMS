@@ -6,7 +6,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const nationality = document.getElementById('nationality');
     const prev_school = document.getElementById('prev_school');
     const iin = document.getElementById('iin');
-    const grade = document.getElementById('grade');
+    const grade_num = document.getElementById('grade_num');
+    grade_num.value = student.grade_num;
+    const grade_let = document.getElementById('grade_let'); 
+    grade_let.value = student.grade_let;
+    const grade_comb = document.getElementById('grade_comb'); 
+    grade_comb.value = `${student.grade_num}${student.grade_let} класс`;
     const phone = document.getElementById('phone');
     const phoneLabel = document.getElementById('phone-label');
     const message = document.getElementById('message');
@@ -24,6 +29,21 @@ document.addEventListener('DOMContentLoaded', function () {
     //Button group when editing
     const buttons_edit = document.getElementById('buttons_edit');
     const button_cancel = document.getElementById('button_cancel'); //Cancel edit
+
+    //Get the school info
+    const school = student.school;
+
+    const switchWrapper = document.getElementById('switch-wrapper');
+    const switchElement = document.getElementById('switch');
+    switchElement.addEventListener('change', () => {
+        if (switchElement.checked) {
+            //Выбор класса is chosen
+            populateSelectMenu_Grades();
+        } else {
+            //Выбор литера is chosen
+            populateSelectMenu_Letters(grade_num.value);
+        }
+    })
 
     //Populate Image
     if (student.picture) {
@@ -50,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function () {
         block_edit();
         sBtn_text.textContent = `${student.grade_num}${student.grade_let} класс`;
         form.action = `/card_student/${student.IIN}/`;
-        console.log(student.leave_date);
 
         //Update Комментарий with date of visit
         if (student.date) {
@@ -63,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //Ensures that if patronim is null, the input is clear
     patronim.placeholder = '';
     //Populate grade menu with corresponding letters
-    populateSelectMenu_Letters(student.grade_num, letters);
+    populateSelectMenu_Letters(grade_num.value);
 
     //Edit logic 
     function allow_edit() { //No student => it's register student
@@ -93,6 +112,9 @@ document.addEventListener('DOMContentLoaded', function () {
         avatarContainer.addEventListener('mouseenter', () => {
             avatarOverlay.style.opacity = '1'; //Creates a hover effect
         });
+
+        //Show the change class options
+        switchWrapper.style.display = 'block';
         
         editable = true;
     }
@@ -102,7 +124,6 @@ document.addEventListener('DOMContentLoaded', function () {
         lastname.value = student.Last_Name;
         firstname.value = student.First_Name;
         patronim.value = student.Patronim;
-        grade.value = student.grade_num + student.grade_let + ' класс';
         phone.value = student.phone;
         nationality.value = student.nationality;
         prev_school.value = student.prev_school;
@@ -145,6 +166,9 @@ document.addEventListener('DOMContentLoaded', function () {
             avatarOverlay.style.opacity = '0'; //Removes hover effect
         });
 
+        //Hide change class options
+        switchWrapper.style.display = 'none';
+
         editable = false;
     }
 
@@ -153,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
         lastname.value = student.Last_Name;
         firstname.value = student.First_Name;
         patronim.value = student.Patronim;
-        grade.value = student.grade_num + ' класс';
+        grade_num.value = `${student.grade_num}${student.grade_let} класс`;
         prev_school.value = student.prev_school;
         message.value = student.comment;
         iin.value = student.IIN;
@@ -264,13 +288,6 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         if (checkInputs()) {
             //Format the grade
-            // Use a regex to extract the letter
-            console.log(grade.val);
-            const match = grade.value.match(/^(\d+)([A-Za-zА-Яа-яӘәҒғҚқҢңӨөҰұҮүҺһІі])\s+класс$/);
-            const selected_letter = match[2];
-            grade.value = selected_letter;
-            console.log(grade.value);
-
             form.submit();
         }
     });
@@ -344,12 +361,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     //class selection menu logic
-    function populateSelectMenu_Letters(grade, letters){
+    function populateSelectMenu_Letters(grade){
         // Clear any existing content (optional)
         optionsContainer.innerHTML = '';
 
         // Iterate over each letter and create a list item
-        for (let letter of letters) {
+        letters_list = letters[grade];
+        for (let letter of letters_list) {
             const li = document.createElement('li');
             li.classList.add('option');
 
@@ -360,6 +378,51 @@ document.addEventListener('DOMContentLoaded', function () {
             li.appendChild(span);
             optionsContainer.appendChild(li);
         }
+
+        handleSelection(); //Add eventListeners to options
+    }
+
+    function populateSelectMenu_Grades(){
+        // Clear any existing content (optional)
+        optionsContainer.innerHTML = '';
+
+        console.log(school);
+
+        if (school==='sch'){
+            // Loop from 0 to 11 and create li elements
+            for (let i = 0; i <= 11; i++) {
+                // Create the li element and set its class
+                const li = document.createElement('li');
+                li.classList.add('option');
+
+                // Create the span element and set the text
+                const span = document.createElement('span');
+                span.classList.add('option-text');
+                span.textContent = `${i} класс`;
+
+                // Append the span to the li, and the li to the ul
+                li.appendChild(span);
+                optionsContainer.appendChild(li);
+            }
+        } else {
+            // Lyceum: 7-11 grades
+            for (let i = 7; i <= 11; i++) {
+                // Create the li element and set its class
+                const li = document.createElement('li');
+                li.classList.add('option');
+
+                // Create the span element and set the text
+                const span = document.createElement('span');
+                span.classList.add('option-text');
+                span.textContent = `${i} класс`;
+
+                // Append the span to the li, and the li to the ul
+                li.appendChild(span);
+                optionsContainer.appendChild(li);
+            }
+        }
+
+        handleSelection(); //Add eventListeners to options
     }
 
     selectBtn.addEventListener("click", () => {
@@ -386,49 +449,61 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    const options = selectMenu.querySelectorAll(".option");
-    options.forEach(option => {
-        option.addEventListener("click", () => {
-            const selectedOption = option.querySelector(".option-text").innerText;
-            sBtn_text.innerText = selectedOption;
-            grade.value = selectedOption;
-    
-            validateClassSelection();
-    
-            let optionsContainer = selectMenu.querySelector(".options");
-            optionsContainer.animate([
-                { opacity: 1, visibility: "visible" },
-                { opacity: 0, visibility: "hidden" }
-            ], {
-                duration: 100,
-                fill: "forwards"
+    function handleSelection () {
+        const options = selectMenu.querySelectorAll(".option");
+        options.forEach(option => {
+            option.addEventListener("click", () => {
+                const selectedOption = option.querySelector(".option-text").innerText;
+                sBtn_text.innerText = selectedOption;
+        
+                let optionsContainer = selectMenu.querySelector(".options");
+                optionsContainer.animate([
+                    { opacity: 1, visibility: "visible" },
+                    { opacity: 0, visibility: "hidden" }
+                ], {
+                    duration: 100,
+                    fill: "forwards"
+                });
+
+                if (switchElement.checked) {
+                    //If the new grade was selected, null the letter value
+                    const digits = selectedOption.match(/\d+/); 
+                    const number = digits ? parseInt(digits[0], 10) : null;
+                    grade_num.value = number;
+                    grade_let.value = null;
+                } else {
+                    // Use a regex to extract the letter
+                    const match = selectedOption.match(/^(\d+)([A-Za-zА-Яа-яӘәҒғҚқҢңӨөҰұҮүҺһІі])\s+класс$/);
+                    const selected_letter = match[2];
+                    grade_let.value = selected_letter;
+                }
+                selectMenu.classList.remove("active");
             });
-    
-            selectMenu.classList.remove("active");
         });
-    });
+    }
 
     function validateClassSelection() {
-        if (grade.value.trim() === '') {
+        if (grade_let.value === null) {
             selectMenu.classList.add('error');
             selectMenu.classList.remove('success');
-            return false;  // Return false if invalid
+            alert('Выберите литер ученика');
+            return false;  
         } else {
             selectMenu.classList.add('success');
             selectMenu.classList.remove('error');
-            return true;  // Return true if valid
+            return true;
         }
     }
 
     function disable_grade(){
-        grade.hidden = false;
-        grade.disabled = true;
+        grade_comb.hidden = false;
+        grade_comb.disabled = true;
         selectMenu.style.display = "none";
     }
 
     function enable_grade(){
-        grade.hidden = true;
-        grade.disabled = false;
+        grade_comb.hidden = true;
+        grade_comb.disabled = false;
         selectMenu.style.display = "block";
     }
 });
