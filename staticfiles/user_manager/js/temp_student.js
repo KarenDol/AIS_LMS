@@ -20,11 +20,23 @@ document.addEventListener('DOMContentLoaded', function () {
     //Button group when editing
     const buttons_edit = document.getElementById('buttons_edit');
     const button_cancel = document.getElementById('button_cancel'); //Cancel edit
+    
+    //Get the school info
+    function getCookie(name) {
+        let matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([.$?*|{}()\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+    const school = getCookie('school');
 
     const lang_choice = document.getElementById('lang_choice');
     if (school === 'lyc'){
         lang_choice.style.display = 'none';
     }
+
+
     //Check if the student is in the system
     if (student){
         //Archive logic 

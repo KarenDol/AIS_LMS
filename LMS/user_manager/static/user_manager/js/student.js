@@ -177,7 +177,6 @@ document.addEventListener('DOMContentLoaded', function () {
         lastname.value = student.Last_Name;
         firstname.value = student.First_Name;
         patronim.value = student.Patronim;
-        grade_num.value = `${student.grade_num}${student.grade_let} класс`;
         prev_school.value = student.prev_school;
         message.value = student.comment;
         iin.value = student.IIN;
@@ -386,8 +385,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Clear any existing content (optional)
         optionsContainer.innerHTML = '';
 
-        console.log(school);
-
         if (school==='sch'){
             // Loop from 0 to 11 and create li elements
             for (let i = 0; i <= 11; i++) {
@@ -483,7 +480,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function validateClassSelection() {
-        if (grade_let.value === null) {
+        if (grade_let.value === '') {
             selectMenu.classList.add('error');
             selectMenu.classList.remove('success');
             alert('Выберите литер ученика');

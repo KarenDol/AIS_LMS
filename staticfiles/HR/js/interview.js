@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const buttons_edit = document.getElementById('buttons_edit');
     const button_back = document.getElementById('button_back');
 
+    console.log(interview);
+
     if (interview.status){
         interviewers.value = interview.interviewers;
         interviewers.disabled = true;
@@ -42,6 +44,9 @@ document.addEventListener('DOMContentLoaded', function () {
             buttons_edit.style.display = "none";
             button_back.style.display = "block";
         }
+    } else {
+        buttons_edit.style.display = "flex";
+        button_back.style.display = "none";
     }
 
     form.addEventListener('submit', function (e) {

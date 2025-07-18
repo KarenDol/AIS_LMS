@@ -102,6 +102,7 @@ input:focus {
     transform: translateY(-50%);
     left: 10px;
 }
+
 button{
     width: 100%;
     border: none;
@@ -118,26 +119,18 @@ button:hover{
     background-color: #FF9C2E;
 }
 
+.button-group {
+    display: none;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
 #back{
     background-color: #ffffff;
     color: #59007A;
     border: solid 2px;
     border-color: #59007A;
-}
-
-#button_cancel{
-    background-color: #ffffff;
-    color: #59007A;
-    border: solid 2px;
-    border-color: #59007A;
-}
-
-#button_back{
-    background-color: #ffffff;
-    color: #59007A;
-    border: solid 2px;
-    border-color: #59007A;
-    display: none;
 }
 
 .form-control .icon{

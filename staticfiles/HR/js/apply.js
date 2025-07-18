@@ -10,8 +10,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const file_name = document.getElementById('file_name');
     const selectMenu = document.querySelector('.select-menu');
     const phone = document.getElementById('phone');
-    const interview = document.getElementById('interview');
-    const popup = document.querySelector('pop-up');
+    const phoneLabel = document.getElementById('phone-label');
+    const btn_back = document.getElementById('back');
+
+    //Disable position choice, if the id!=0
+    if (pos_id !== "0"){
+        selectedPosition.type = "text";
+        selectedPosition.value = pos_title;
+        selectedPosition.disabled = true;
+        selectMenu.style.display = "none";
+    }
 
     form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -43,6 +51,8 @@ document.addEventListener('DOMContentLoaded', function () {
         salary.value =  salary.value.replace(/\B(?=(\d{3})+(?!\d))/g, ' '); // Add spaces as thousand separators
     });
 
+    phone.addEventListener('input', existsWhatsapp);
+
     function checkInputs() {
         let isValid = true;
         validateField(lastname, lastname.value.trim() !== '', 'Это поле не может быть пустым');
@@ -51,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
         validateField(salary, salary.value.trim() !== '', 'Это поле не может быть пустым');
         validateField(iin, iin.value.trim().length == 13, 'Это поле не может быть пустым')
         validateField(phone, isPhone(phone.value.trim()), 'Неверный номер телефона');
+
         
         // Ensure class selection is valid
         if (!validateClassSelection()) {
@@ -182,7 +193,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             else{
                 // Revalidate class selection after updating the value
-                validateClassSelection();
+                selectedPosition.type = 'hidden';
+                selectMenu.style.width = '100%';
             }
             
             let optionsContainer = optionMenu.querySelector(".options");
@@ -220,4 +232,37 @@ document.addEventListener('DOMContentLoaded', function () {
             return true; 
         }
     }
+
+    function existsWhatsapp() {
+        if (isPhone(phone.value)) {
+            fetch(`/wa_exists/${phone.value}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.existsWhatsapp) {
+                    phoneLabel.innerText = "Номер Телефона | WhatsApp доступен";
+                } else {
+                    phoneLabel.innerText = "Номер Телефона | WhatsApp не доступен";
+                }
+            })
+            .catch(error => {
+                // Handle errors
+                console.error('Error:', error);
+                alert('Произошла ошибка!');
+            });
+        }
+        else{
+            phoneLabel.innerText = "Номер Телефона";
+        }
+    }
+
+    btn_back.addEventListener("click", (event) => {
+        event.preventDefault();
+        window.location.href = "/hr/jobs";
+    })
 });

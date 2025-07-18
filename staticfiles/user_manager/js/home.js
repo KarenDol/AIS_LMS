@@ -17,27 +17,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const actionButtons = document.querySelector(".action-buttons");
     const cancel = document.getElementById('cancel');
     const send = document.getElementById('send');
-    const popup = document.getElementById('pop-up');
-    const editor = document.getElementById('editor');
-    const button_cancel = document.getElementById('button_cancel');
-    const button_send = document.getElementById('button_send');
 
-    console.log(school);
-
-    var gradeSelection = "Все классы";
-    let counter = 1;
+    let gradeSelection = "Все классы";
+    let wa_mode = false;
 
     populateSelectMenu();
     populateTable();
 
+
     if (selectMenu.classList.contains("active")) {
         selectMenu.classList.remove("active");
+    }
+
+    //Hide action buttons for curator
+    if (user_type === 'Кур'){
+        actionButtons.style.display = "none";
     }
 
     exp.addEventListener("click", () => {
         window.location.href = `/export/${gradeSelection}/`;
     })
 
+    // School changing
     if (school==='sch'){
         sch_lyc.src = lycImg;
         sch_lyc_tooltip.innerText = 'В лицей';
@@ -92,6 +93,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // search logic
     search.addEventListener('input', () => {
+        //Necessary for the match with populate_table
+        table_rows = document.querySelectorAll('tbody tr');
         table_rows.forEach((row, i) => {
             let table_data = row.textContent.toLowerCase(),
             search_data = search.value.toLowerCase();
@@ -111,88 +114,38 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear any existing content (optional)
         optionsContainer.innerHTML = '';
 
-        //Add "Все класссы"
-        {
-            const li = document.createElement('li');
-            li.classList.add('option');
-            const span = document.createElement('span');
-            span.classList.add('option-text');
-            span.textContent = 'Все классы';
-            li.appendChild(span);
-            optionsContainer.appendChild(li);
-        }
+        addSelectMenuOption("Все классы");
 
-        if (school === 'sch'){
-            // Iterate through each grade from 0 to 11
-            for (let grade = 0; grade <= 11; grade++) {
-                const letters = Grades_Letters[grade];
-                // For each letter in the grade, create a list item
-                letters.forEach(letter => {
-                    const li = document.createElement('li');
-                    li.classList.add('option');
+        for (const grade in Grades_Letters) {
+            const letters = Grades_Letters[grade];
+            letters.forEach(letter => {
+                addSelectMenuOption(`${grade}${letter} класс`);
+            });
+        }       
 
-                    const span = document.createElement('span');
-                    span.classList.add('option-text');
-                    span.textContent = `${grade}${letter} класс`;
+        //Additional Options for ВнСв
+        if (user_type === 'ВнСв') {
+            addSelectMenuOption("Лиды");
 
-                    li.appendChild(span);
-                    optionsContainer.appendChild(li);
-                });
+            if (school === 'sch'){
+                addSelectMenuOption("Первые классы");
             }
-        }
-        else{
-            //Lyceum: Grades 7-11
-            for (let grade = 7; grade <= 11; grade++) {
-                const letters = Grades_Letters[grade];
-                // For each letter in the grade, create a list item
-                letters.forEach(letter => {
-                    const li = document.createElement('li');
-                    li.classList.add('option');
 
-                    const span = document.createElement('span');
-                    span.classList.add('option-text');
-                    span.textContent = `${grade}${letter} класс`;
-
-                    li.appendChild(span);
-                    optionsContainer.appendChild(li);
-                });
-            }
+            addSelectMenuOption("Архив");
+            addSelectMenuOption("Выпускники");
         }
 
-        //Add "Лид"
-        {
-            const li = document.createElement('li');
-            li.classList.add('option');
-            const span = document.createElement('span');
-            span.classList.add('option-text');
-            span.textContent = 'Лиды';
-            li.appendChild(span);
-            optionsContainer.appendChild(li);
-        }
+        table_rows = document.querySelectorAll('tbody tr');
+    }
 
-        if (school === 'sch'){
-            //Add "1 классы" for School
-            {
-                const li = document.createElement('li');
-                li.classList.add('option');
-                const span = document.createElement('span');
-                span.classList.add('option-text');
-                span.textContent = 'Первые классы';
-                li.appendChild(span);
-                optionsContainer.appendChild(li);
-            }
-        }
-
-        //Add "Архив"
-        {
-            const li = document.createElement('li');
-            li.classList.add('option');
-            const span = document.createElement('span');
-            span.classList.add('option-text');
-            span.textContent = 'Архив';
-            li.appendChild(span);
-            optionsContainer.appendChild(li);
-        }
+    function addSelectMenuOption(optionText) {
+        const li = document.createElement('li');
+        li.classList.add('option');
+        const span = document.createElement('span');
+        span.classList.add('option-text');
+        span.textContent = optionText;
+        li.appendChild(span);
+        optionsContainer.appendChild(li);
     }
 
     selectBtn.addEventListener("click", () => {
@@ -223,89 +176,55 @@ document.addEventListener('DOMContentLoaded', function() {
     // populate logic
     function populateTable() {
         tableSection.innerHTML = ''; // Clear the table first
-        counter = 1; //Обнулить counter
-        if (gradeSelection=='Все классы'){
-            students.forEach(function(student) {
-                if (student.status === 'Акт'){
-                    addStudent(student);
-                }
-            });
-            exp.style.display = "block";
-        }
-        else if (gradeSelection=='Лиды') {
-            students.forEach(function(student) {
-                if ((student.status === 'Лид')){
-                    addStudent(student);
-                }
-            });
+        exp.style.display = "block"; // Export block is initially available 
+        if (gradeSelection === 'Лиды' || gradeSelection === 'Архив' || gradeSelection === 'Выпускники') {
+            switch (gradeSelection) {
+                case 'Лиды':
+                    targetStatus = 'Лид';
+                    break;
+                case 'Архив':
+                    targetStatus = 'Арх';
+                    break;
+                case 'Выпускники':
+                    targetStatus = 'Вып';
+                    break;
+            }
+            students
+                .filter(student => student.status === targetStatus)
+                .forEach((student, index) => {
+                    addStudent(student, index + 1);
+                });
             exp.style.display = "none";
-        }
-        else if (gradeSelection=='Архив') {
-            students.forEach(function(student) {
-                if ((student.status === 'Арх')){
-                    addStudent(student);
-                }
-            });
-            exp.style.display = "none";
-        }
+        }        
         else if (gradeSelection=='Первые классы') {
             window.location.href="/1_grade/";
         }
-        else{
+        else if (gradeSelection=='Все классы'){
+            students
+            .filter(student => student.status === 'Акт')
+            .forEach((student, index) => {
+                addStudent(student, index+1);
+            });
+        } else {
             // Use a regex to extract the grade number and letter
             const match = gradeSelection.match(/^(\d+)([A-Za-zА-Яа-яӘәҒғҚқҢңӨөҰұҮүҺһІі])\s+класс$/);
             const selected_grade = parseInt(match[1], 10); 
-            const selected_letter = match[2];               
-            students.forEach(function(student) {
-                if ((student.status === 'Акт')){
-                    if ((student.grade_num === selected_grade) && (student.grade_let === selected_letter)){
-                        addStudent(student);
-                    }
-                }
+            const selected_letter = match[2]; 
+            students
+            .filter(student => 
+                student.status === 'Акт' 
+                && student.grade_num === selected_grade 
+                && student.grade_let === selected_letter)
+            .forEach((student, index) => {       
+                addStudent(student, index+1);
             });
-            exp.style.display = "block";
         }
-        table_rows = document.querySelectorAll('tbody tr');
     }
 
-    // populate logic for WhatsApp 
-    function populateTable_wa() {
-        tableSection.innerHTML = ''; // Clear the table first
-        if (gradeSelection=='Все классы'){
-            students.forEach(function(student) {
-                if (student.status === 'Акт'){
-                    addStudent_wa(student);
-                }
-            });
-        }
-        else if (gradeSelection=='Лиды') {
-            students.forEach(function(student) {
-                if ((student.status === 'Лид')){
-                    addStudent_wa(student);
-                }
-            });
-        }
-        else{
-            // Use a regex to extract the grade number and letter
-            const match = gradeSelection.match(/^(\d+)([A-Za-zА-Яа-я])\s+класс$/);
-            const selected_grade = parseInt(match[1], 10); 
-            const selected_letter = match[2];               
-            students.forEach(function(student) {
-                if ((student.status === 'Акт')){
-                    if ((student.grade_num === selected_grade) && (student.grade_let === selected_letter)){
-                        addStudent_wa(student);
-                    }
-                }
-            });
-            exp.style.display = "block";
-        }
-        table_rows = document.querySelectorAll('tbody tr');
-    }
-
-    function addStudent(student) {
+    function addStudent(student, index) {
         var tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${counter}</td>
+            <td>${wa_mode ? '<input type="checkbox">' : index}</td>
             <td>
                 <a href="${student.status === "Лид" || student.status === "Арх" ? "/temp_card_std/" + student.IIN + "/" : "/card_student/" + student.IIN + "/"}">
                     ${student.Last_Name}
@@ -315,20 +234,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <td>${student.Patronim}</td>
             <td>${student.IIN}</td>
             <td>${student.phone}</td>
-        `;
-        tableSection.appendChild(tr);
-        counter++;
-    }
-
-    function addStudent_wa(student){
-        var tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td><input type="checkbox"></td>
-            <td><a href="/card_student/${student.IIN}/">${student.Last_Name}</td>
-            <td>${student.First_Name}</td>
-            <td>${student.Patronim}</td>
-            <td>${student.IIN}</td>
-            <td>${student.temp_phone}</td>
         `;
         tableSection.appendChild(tr);
     }
@@ -342,7 +247,8 @@ document.addEventListener('DOMContentLoaded', function() {
         checked_state = false;
         checked.addEventListener('click', checkedHandler);
 
-        populateTable_wa();
+        wa_mode = true;
+        populateTable();
     })
 
     cancel.addEventListener('click', () => {
@@ -354,6 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
         checked.addEventListener('click', () => {}); 
 
         checked_state  = false;
+        wa_mode = false;
 
         populateTable();
     })

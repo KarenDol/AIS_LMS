@@ -109,10 +109,12 @@ def accept_student(request, IIN):
 
     if request.method == "POST":
         nationality = request.POST['nationality']
-        grade_let = request.POST['grade']
+        grade_num = request.POST['grade_num']
+        grade_let = request.POST['grade_let']
         date = datetime.today()
 
         student.nationality = nationality
+        student.grade_num = grade_num
         student.grade_let = grade_let
         student.status = "Акт"
         student.date = date
@@ -129,6 +131,7 @@ def accept_student(request, IIN):
         else:
             Letters = Grades_Letters_Lyc
         Letters_json = json.dumps(Letters) # Serialize it to JSON
+        print(Letters)
         context = {
             'Letters': Letters_json,
             'student': student_json,

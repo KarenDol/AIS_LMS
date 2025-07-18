@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveButton = document.querySelector('.btn-save');
     const avatarContainer = document.querySelector('.avatar-container');
     const avatarImage = document.getElementById('avatar-image');
+    const fileInput = document.getElementById("file-Input");
     const phoneInput = document.getElementById('phone');
 
     let phoneMask;
@@ -157,13 +158,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('new-password').value = '';
         actionButtons.style.display = 'none';
     });
-
-    // функционал смены аватара
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.id = 'file-input';
-    fileInput.accept = 'image/*';
-    document.body.appendChild(fileInput);
 
     avatarContainer.addEventListener('click', function() {
         fileInput.click();
