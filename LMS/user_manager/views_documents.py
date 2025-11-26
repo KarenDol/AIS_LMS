@@ -28,7 +28,7 @@ def export(request, grade):
                                 'parent__Last_Name', 'parent__First_Name', 'parent__Patronim',
                                 'parent__Phone', 'parent__Address', 'contract__monthly'))
     else:
-        match = re.match(r"(\d+)([A-ZА-Я])", grade)
+        match = re.match(r"(\d+)([A-ZА-ЯӘҒҚҢӨҰҮҺІ])", grade)
         grade_num = match.group(1)  
         grade_let = match.group(2)
         students = list(Student.objects.select_related("parent", "contract")
@@ -198,7 +198,7 @@ def get_spravka(request):
     else:
         raise Http404("User is unauthenticated or phone number is not verified")
 
-@role_required(USER_TYPE_VNSV)
+@role_required(USER_TYPE_VNSV, USER_TYPE_CURATOR)
 def sign_doc(request, IIN):
     student = get_student_or_redirect(IIN)
     if isinstance(student, HttpResponse):
@@ -248,7 +248,7 @@ def sign_doc(request, IIN):
     return render(request, 'user_manager/sign_doc.html', context)
 
 def fill_contract(request, IIN, numb):
-    fill_doc(IIN)
+    fill_doc(IIN, request.session['school'])
     file_path = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'dogovor' + str(numb) + '.docx')
 
     if os.path.exists(file_path):

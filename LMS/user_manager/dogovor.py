@@ -5,11 +5,11 @@ from django.conf import settings
 import os
 from datetime import datetime
 
-def fill_doc(IIN):
+def fill_doc(IIN, school):
     student = Student.objects.get(IIN=IIN)
     parent = student.parent
     contract = student.contract
-    template_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'template.docx')
+    template_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', f"template_{school}.docx")
     document = DocxTemplate(template_location)
     context = {
         'doc_number': contract.numb,

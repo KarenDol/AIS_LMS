@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (student.picture) {
         avatarImage.src = '/api/serve_static/std_pictures/' + student.picture;
     } else {
-        avatarImage.src = '/api/serve_static/Std_avatar.png';
+        avatarImage.src = '/api/serve_static/std_pictures/Std_avatar.png';
     }
 
     //Edit logic

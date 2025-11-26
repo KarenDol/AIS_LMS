@@ -46,7 +46,8 @@ def register_contract(request, IIN):
         }
         return render(request, 'user_manager/contract.html', context)
 
-@role_required(USER_TYPE_VNSV)
+#Curators can also open the card, but they can not edit it
+@role_required(USER_TYPE_VNSV, USER_TYPE_CURATOR)
 def card_contract(request, IIN):
     student = get_student_or_redirect(IIN)
     if isinstance(student, redirect.__class__):
@@ -58,6 +59,11 @@ def card_contract(request, IIN):
     contract = student.contract
     
     if request.method == 'POST':
+        #Only VNSV can edit the contract
+        if not request.session.get('user_type') == USER_TYPE_VNSV:
+            messages.error(request, "Куратор не может менять договор")
+            return redirect('card_contract', IIN=IIN)
+
         sign_date = request.POST['sign_date']
         first_date = request.POST['first_date']
         last_date = request.POST['last_date']

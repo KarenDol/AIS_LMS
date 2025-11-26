@@ -7,6 +7,7 @@ from django.conf import settings
 from django.forms.models import model_to_dict
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 from .models import *
 from .helpers import get_student_or_redirect
 from django.db import IntegrityError
@@ -28,7 +29,6 @@ import random
 @role_required(USER_TYPE_VNSV, USER_TYPE_CURATOR, USER_TYPE_HR)
 def home(request):
     user_type = request.session.get('user_type')
-    print("HERE")
     if user_type == USER_TYPE_VNSV:
         if (request.session['school'] == None):
             request.session['school'] = 'sch'
@@ -54,24 +54,26 @@ def home(request):
     
     elif user_type == USER_TYPE_CURATOR:
         curator_grades = request.session['curator_grades']
-        grade_nums = []
-        grade_lets = []
+
+        #curator can only see status - 'active' students
+        query = Q(status='Акт')
+        grade_filter = Q()
 
         for grade_num in curator_grades:
-            grade_nums.append(grade_num)
-            grade_lets += curator_grades[grade_num]
+            for grade_let in curator_grades[grade_num]:
+                grade_filter |= Q(grade_num=grade_num, grade_let=grade_let)
 
-        students = list(Student.objects.filter(
-                            school=request.session['school'],
-                            grade_num__in=grade_nums,
-                            grade_let__in=grade_lets)
-                        .order_by('Last_Name', 'First_Name', 'Patronim')
-                        .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'phone', 'status', 'grade_num', 'grade_let'))
-        students_json = json.dumps(students)
-
-        Grades_Letters_json = json.dumps(curator_grades)
+        students = list(
+            Student.objects
+                .filter(query & grade_filter)
+                .order_by('Last_Name', 'First_Name', 'Patronim')
+                .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'phone', 'status', 'grade_num', 'grade_let')
+        )
+        students_json = json.dumps(students, ensure_ascii=False)
         
         #Populating context
+        Grades_Letters_json = json.dumps(curator_grades)
+
         context = {
             'Grades_Letters': Grades_Letters_json, 
             'students': students_json,

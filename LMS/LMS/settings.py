@@ -132,8 +132,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-# STATIC_ROOT = '/home/ubuntu/LMS/staticfiles'
-STATIC_ROOT = '/Users/Lil_himick/Desktop/Developer/LMS/staticfiles'
+STATIC_ROOT = '/home/ubuntu/LMS/staticfiles'
+# STATIC_ROOT = '/Users/Lil_himick/Desktop/Developer/LMS/staticfiles'
 STATIC_URL = 'static/'
 PROJECT_ROOT = '/Users/Lil_himick/Desktop/Developer/LMS/staticfiles'
 

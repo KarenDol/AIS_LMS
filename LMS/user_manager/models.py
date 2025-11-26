@@ -75,8 +75,8 @@ class LMS_User(models.Model):
 
 class Grade(models.Model):
     curator = models.ForeignKey(LMS_User, on_delete=models.CASCADE)
-    grade_num = models.IntegerField(null=True)
-    grade_let = models.CharField(max_length=1, null=True)
+    grade_num = models.IntegerField()
+    grade_let = models.CharField(max_length=1)
 
 class Candidate(models.Model):
     student = models.OneToOneField(Student, on_delete=models.CASCADE, primary_key=True)
