@@ -115,14 +115,14 @@ def export(request, grade):
     
 
 @role_required(USER_TYPE_VNSV)
-def join_doc(request, IIN):
-    student = get_student_or_redirect(IIN)
+def join_doc(request, std_id):
+    student = get_student_or_redirect(std_id)
     if isinstance(student, redirect.__class__):  # If redirection is returned
         return student
     
     if request.session.get('user_type') == 'ВнСв':
-        fill_join(IIN)
-        file_path = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'join' + IIN + '.docx')
+        fill_join(std_id)
+        file_path = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'join' + std_id + '.docx')
 
         if os.path.exists(file_path):
             with open(file_path, 'rb') as f:
@@ -144,13 +144,13 @@ def join_doc(request, IIN):
         return redirect('home')
 
 @role_required(USER_TYPE_VNSV)
-def leave_doc(request, IIN):
-    student = get_student_or_redirect(IIN)
+def leave_doc(request, std_id):
+    student = get_student_or_redirect(std_id)
     if isinstance(student, redirect.__class__):
         return student
     
-    fill_leave(IIN)
-    file_path = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'leave' + IIN + '.docx')
+    fill_leave(std_id)
+    file_path = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'leave' + std_id + '.docx')
 
     if os.path.exists(file_path):
         with open(file_path, 'rb') as f:
@@ -199,15 +199,15 @@ def get_spravka(request):
         raise Http404("User is unauthenticated or phone number is not verified")
 
 @role_required(USER_TYPE_VNSV, USER_TYPE_CURATOR)
-def sign_doc(request, IIN):
-    student = get_student_or_redirect(IIN)
+def sign_doc(request, std_id):
+    student = get_student_or_redirect(std_id)
     if isinstance(student, HttpResponse):
         messages.error(request, "Ученика с таким ИИН нет в системе")
         return student
     
     if (student.contract == None):
         messages.error(request, "Договора нет в системе")
-        return redirect('register_contract', IIN=IIN)
+        return redirect('register_contract', std_id=std_id)
     
     contract = student.contract
 
@@ -240,15 +240,15 @@ def sign_doc(request, IIN):
             return JsonResponse({'status': 'error', 'message': 'No file received'})
         
     context = {
-        "IIN": IIN,
+        "std_id": std_id,
         "numb": contract.numb,
         "status": contract.status
     }
 
     return render(request, 'user_manager/sign_doc.html', context)
 
-def fill_contract(request, IIN, numb):
-    fill_doc(IIN, request.session['school'])
+def fill_contract(request, std_id, numb):
+    fill_doc(std_id, request.session['school'])
     file_path = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'dogovor' + str(numb) + '.docx')
 
     if os.path.exists(file_path):

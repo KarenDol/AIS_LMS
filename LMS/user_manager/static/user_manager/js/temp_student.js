@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const firstname = document.getElementById('firstname');
     const patronim = document.getElementById('patronim');
     const prev_school = document.getElementById('prev_school');
-    const iin = document.getElementById('iin');
     const grade = document.getElementById('grade');
     const ru = document.getElementById('ru');
     const kk = document.getElementById('kk');
@@ -42,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
         //Archive logic 
         if (student.status === 'Int_leave'){
             intermediate_leave()
-            form.action = `/archive/${student.IIN}/`;
+            form.action = `/archive/${student.id}/`;
             //Rename Комментарий to Причина выбытия
             message_label = document.getElementById('message_label');
             message_label.innerText = 'Причина Выбытия';
@@ -60,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
         else{
             //by default, edit is blocked
             block_edit();
-            form.action = `/temp_card_std/${student.IIN}/`;
+            form.action = `/temp_card_std/${student.id}/`;
 
             //Ensures that if patronim is null, the input is clear
             patronim.placeholder = '';
@@ -116,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function () {
         phone.value = student.phone;
         prev_school.value = student.prev_school;
         message.value = student.comment;
-        iin.value = student.IIN;
 
         //Disable all the inputs
         lastname.disabled = true;
@@ -125,7 +123,6 @@ document.addEventListener('DOMContentLoaded', function () {
         phone.disabled = true;
         prev_school.disabled = true;
         message.disabled = true;
-        iin.disabled = true; //IIN can't be edited in any circumstances
         disable_grade();
         ru.disabled = true;
         kk.disabled = true;
@@ -158,7 +155,6 @@ document.addEventListener('DOMContentLoaded', function () {
         grade.value = student.grade_num + student.grade_let + ' класс';
         phone.value = student.phone;
         prev_school.value = student.prev_school;
-        iin.value = student.IIN;
 
         //Disable all the inputs
         lastname.disabled = true;
@@ -167,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function () {
         phone.disabled = true;
         prev_school.disabled = true;
         message.disabled = false; //Only message is editable
-        iin.disabled = true; //IIN can't be edited in any circumstances
         ru.disabled = true;
         kk.disabled = true;
         disable_grade();
@@ -198,9 +193,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     patronim.addEventListener('input', () => {
         patronim.value = patronim.value.replace(/[^a-zA-Zа-яА-ЯёЁәіңғүұқөһӘІҢҒҮҰҚӨҺ-]/g, '');
-    });
-    iin.addEventListener('input', () => {
-        iin.value = iin.value.replace(/[^0-9]/g, '');
     });
     phone.addEventListener('input', existsWhatsapp);
 
@@ -251,15 +243,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    function validateIIN(input) {
-        const iinValue = input.value.trim();
-        if (iinValue.length === 12) {
-            setSuccess(input);
-        } else {
-            setError(input, 'Заполните 12 символов ИИН');
-        }
-    }
-
     function isPhone(phone) {
         return /^\+?(\d.*){11,}$/.test(phone);
     }
@@ -300,7 +283,6 @@ document.addEventListener('DOMContentLoaded', function () {
         validateField(firstname, firstname.value.trim() !== '', 'Это поле не может быть пустым');
         validateField(patronim, true, ''); //Allow no patronim
         validateField(prev_school, prev_school.value.trim() !== '', 'Это поле не может быть пустым');
-        validateIIN(iin);
         validateField(phone, isPhone(phone.value.trim()), '');
         validateField(message, message.value.trim() !== '', 'Это поле не может быть пустым');
         

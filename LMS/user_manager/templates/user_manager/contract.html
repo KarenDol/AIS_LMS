@@ -14,7 +14,7 @@
 
     <div class="container">
         <img src="{% static 'user_manager/contract_pic.jpg' %}">
-        <form method="POST" action="{% url 'register_contract' IIN=IIN %}" id="mainForm" novalidate>
+        <form method="POST" action="{% url 'register_contract' std_id=std_id %}" id="mainForm" novalidate>
             {% csrf_token %}
             <h2 class="edit">
                 Карточка Договора
@@ -73,11 +73,11 @@
                 <button id="button_cancel">Отменить</button>
                 <button id="button_save">Сохранить</button>
             </div>
-            <button id="button_back" onclick="event.preventDefault(); window.location.href='/card_student/{{IIN}}'">Назад</button>
+            <button id="button_back" onclick="event.preventDefault(); window.location.href='/card_student/{{std_id}}'">Назад</button>
         </form>
     </div>
     <script>
-        const IIN = "{{ IIN }}";
+        const std_id = "{{ std_id }}";
         let contract = null;
         if ('{{ contract|default:"null"|escapejs }}') {
             contract = JSON.parse('{{ contract|default:"null"|escapejs }}');

@@ -11,8 +11,8 @@ from .views_curator import *
 import json
 
 @role_required(USER_TYPE_VNSV)
-def register_parent(request, IIN):
-    student = get_student_or_redirect(IIN)
+def register_parent(request, std_id):
+    student = get_student_or_redirect(std_id)
     if isinstance(student, redirect.__class__):
         return student
     if student.parent: #If parent already exists
@@ -43,19 +43,19 @@ def register_parent(request, IIN):
         
         student.parent = new_parent
         student.save()
-        return redirect('register_contract', IIN=IIN)            
+        return redirect('register_contract', std_id=std_id)            
     else:
         context = {
-            'IIN': IIN,
+            'std_id': std_id,
         }
         return render(request, 'user_manager/parent.html', context)
    
 @role_required(USER_TYPE_VNSV, USER_TYPE_CURATOR)
-def card_parent(request, IIN):
-    student = get_student_or_redirect(IIN)
+def card_parent(request, std_id):
+    student = get_student_or_redirect(std_id)
     if (student.parent == None):
         messages.error(request, "Родителя нет в системе")
-        return redirect('register_parent', IIN=IIN)
+        return redirect('register_parent', std_id=std_id)
     parent = student.parent
     
     user_type = request.session.get('user_type')
@@ -92,13 +92,13 @@ def card_parent(request, IIN):
         parent.save()
 
         messages.success(request, "Данные родителя изменены")
-        return redirect('card_parent', IIN=IIN)
+        return redirect('card_parent', std_id=std_id)
     else:
         parent_dict = model_to_dict(parent)  # Convert the Parent object to a dictionary
         parent_dict['ID_date'] = parent_dict['ID_date'].isoformat() #serialize date
         parent_json = json.dumps(parent_dict) # Serialize it to JSON
         context = {
             'parent': parent_json,
-            'IIN': IIN,
+            'std_id': std_id,
         }
         return render(request, 'user_manager/parent.html', context)

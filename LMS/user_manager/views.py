@@ -34,7 +34,7 @@ def home(request):
             request.session['school'] = 'sch'
         students = list(Student.objects.filter(school=request.session['school'])
                         .order_by('Last_Name', 'First_Name', 'Patronim')
-                        .values('Last_Name', 'First_Name', 'Patronim', 'IIN', 'phone', 'status', 'grade_num', 'grade_let'))
+                        .values('id', 'Last_Name', 'First_Name', 'Patronim', 'IIN', 'phone', 'status', 'grade_num', 'grade_let'))
         students_json = json.dumps(students)
 
         if (request.session['school']=='sch'):
@@ -46,7 +46,7 @@ def home(request):
         context = {
             'Grades_Letters': Grades_Letters_json, 
             'students': students_json,
-            'user_type': 'ВнСв',
+            'user_type': user_type,
             'school': request.session['school'],
         }
 
@@ -77,7 +77,7 @@ def home(request):
         context = {
             'Grades_Letters': Grades_Letters_json, 
             'students': students_json,
-            'user_type': 'Кур',
+            'user_type': user_type,
             'school': request.session['school'],
         }
 

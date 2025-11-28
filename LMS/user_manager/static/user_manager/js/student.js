@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (student.status === 'Int'){
         intermediate();
         sBtn_text.textContent = `${student.grade_num} класс`;
-        form.action = `/accept/${student.IIN}/`;
+        form.action = `/accept/${student.id}/`;
         //Update Комментарий with date of visit
         message_label = document.getElementById('message_label');
         message_label.innerText = `Комментарий | Консультация: ${student.date}`;
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
         //by default, edit is blocked
         block_edit();
         sBtn_text.textContent = `${student.grade_num}${student.grade_let} класс`;
-        form.action = `/card_student/${student.IIN}/`;
+        form.action = `/card_student/${student.id}/`;
 
         //Update Комментарий with date of visit
         if (student.date) {
@@ -90,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
         lastname.disabled = false;
         firstname.disabled = false;
         patronim.disabled = false;
+        iin.disabled = false;
         phone.disabled = false;
         nationality.disabled = false;
         prev_school.disabled = false;
@@ -179,16 +180,14 @@ document.addEventListener('DOMContentLoaded', function () {
         patronim.value = student.Patronim;
         prev_school.value = student.prev_school;
         message.value = student.comment;
-        iin.value = student.IIN;
         phone.value = student.phone;
 
-        //Disable all the inputs except grade
+        //Disable all the inputs except grade, nationality, IIN
         lastname.disabled = true;
         firstname.disabled = true;
         patronim.disabled = true;
         prev_school.disabled = true;
         message.disabled = true;
-        iin.disabled = true; //IIN can't be edited in any circumstances
         phone.disabled = true;
 
         //Switch button groups' displays

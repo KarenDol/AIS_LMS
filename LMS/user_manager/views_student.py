@@ -1,4 +1,3 @@
-from .models import Student, Candidate
 from .const import *
 from .decorators import role_required
 from .helpers import get_student_or_redirect
@@ -8,6 +7,7 @@ from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.forms.models import model_to_dict
 from .views_curator import *
 import json
@@ -20,7 +20,6 @@ def register_student(request):
         lastname = request.POST['lastname']
         firstname = request.POST['firstname']
         patronim = request.POST['patronim']
-        IIN = request.POST['IIN']
         grade_num = request.POST['grade']
         if request.session['school']=='sch':
             lang = request.POST['lang']
@@ -32,24 +31,10 @@ def register_student(request):
         date = datetime.today() #date of visit
         school = request.session['school']
 
-        #Check if student already exists
-        if Student.objects.filter(IIN=IIN).exists():
-            return redirect("error", error_code="Ученик c таким ИИН уже добавлен в систему")
-
-        new_user = User.objects.filter(username=IIN).first()
-        if not new_user:
-            new_user = User(username=IIN, first_name=firstname)
-            new_user.set_password("AIS@100")
-            new_user.save()
-
-        new_student = Student(user=new_user, Last_Name=lastname, First_Name=firstname, Patronim=patronim, phone=phone,
-                        IIN=IIN, prev_school=prev_school, grade_num=grade_num, lang=lang, comment=comment, date=date,
+        new_student = Student(Last_Name=lastname, First_Name=firstname, Patronim=patronim, phone=phone,
+                        prev_school=prev_school, grade_num=grade_num, lang=lang, comment=comment, date=date,
                         school=school)
         new_student.save()
-
-        if grade_num == '1':
-            candidate = Candidate(student=new_student, letter='?', status=False)
-            candidate.save()
 
         messages.success(request, "Новый ученик добавлен в систему")
         return redirect('home')
@@ -60,13 +45,13 @@ def register_student(request):
         return render(request, 'user_manager/temp_student.html', context)
     
 @role_required(USER_TYPE_VNSV)
-def temp_card_std(request, IIN):
-    student = get_student_or_redirect(IIN)
+def temp_card_std(request, std_id):
+    student = get_student_or_redirect(std_id)
     if isinstance(student, HttpResponseRedirect):  # If redirection is returned
         return student
 
     if student.status == "Акт":
-        return redirect('card_student', IIN=IIN)
+        return redirect('card_student', std_id=std_id)
     
     if request.method == "POST":
         lastname = request.POST['lastname']
@@ -92,7 +77,7 @@ def temp_card_std(request, IIN):
 
         student.save() 
         messages.success(request, "Данные ученика изменены")
-        return redirect('temp_card_std', IIN=IIN)
+        return redirect('temp_card_std', std_id=std_id)
     else:
         student_dict = model_to_dict(student)  # Convert the Student object to a dictionary
         student_json = json.dumps(student_dict, default=str)  # Using default=str for unsupported types)
@@ -102,17 +87,19 @@ def temp_card_std(request, IIN):
         return render(request, 'user_manager/temp_student.html', context)
     
 @role_required(USER_TYPE_VNSV)
-def accept_student(request, IIN):
-    student = get_student_or_redirect(IIN)
+def accept_student(request, std_id):
+    student = get_student_or_redirect(std_id)
     if isinstance(student, HttpResponseRedirect):  # If redirection is returned
         return student
 
     if request.method == "POST":
+        IIN = request.POST['IIN']
         nationality = request.POST['nationality']
         grade_num = request.POST['grade_num']
         grade_let = request.POST['grade_let']
         date = datetime.today()
 
+        student.IIN = IIN 
         student.nationality = nationality
         student.grade_num = grade_num
         student.grade_let = grade_let
@@ -121,7 +108,7 @@ def accept_student(request, IIN):
 
         student.save() #Accept the student permanently
         messages.success(request, "Ученик принят в школу")
-        return redirect('card_student', IIN=IIN)
+        return redirect('card_student', std_id=std_id)
     else:
         student.status = "Int" #Neccessary for js
         student_dict = model_to_dict(student)  # Convert the Student object to a dictionary
@@ -139,13 +126,13 @@ def accept_student(request, IIN):
         return render(request, 'user_manager/student.html', context)
 
 @role_required(USER_TYPE_VNSV, USER_TYPE_CURATOR)
-def card_student(request, IIN):
-    student = get_student_or_redirect(IIN)
+def card_student(request, std_id):
+    student = get_student_or_redirect(std_id)
     if isinstance(student, HttpResponseRedirect):
         return student
     
     if student.status != "Акт":
-        return redirect('temp_card_std', IIN=IIN)
+        return redirect('temp_card_std', id=std_id)
     
     user_type = request.session.get('user_type')
     curator_grades = request.session.get('curator_grades')
@@ -156,6 +143,7 @@ def card_student(request, IIN):
             return redirect('home')
 
     if request.method == "POST":
+        IIN = request.POST['IIN']
         lastname = request.POST['lastname']
         firstname = request.POST['firstname']
         patronim = request.POST['patronim']
@@ -166,6 +154,7 @@ def card_student(request, IIN):
         phone = request.POST['phone']
         comment = request.POST['comment']
 
+        student.IIN = IIN
         student.Last_Name = lastname
         student.First_Name=firstname
         student.Patronim = patronim
@@ -190,13 +179,17 @@ def card_student(request, IIN):
                     os.remove(old_picture)
 
             fs = FileSystemStorage(folder_path)
-            fs.save(f"{IIN}{extension}", uploaded_file)
+            fs.save(f"{std_id}{extension}", uploaded_file)
 
-            student.picture = f"{IIN}{extension}"
-                
-        student.save() 
-        messages.success(request, "Данные ученика изменены")
-        return redirect('card_student', IIN=IIN)
+            student.picture = f"{std_id}{extension}"
+        
+        try:
+            student.save() 
+            messages.success(request, "Данные ученика изменены")
+            return redirect('card_student', std_id=std_id)
+        except IntegrityError:
+            messages.error(request, "Ученик с таким ИИН уже есть в системе")
+            return redirect('card_student', std_id=std_id)
     else:
         student_dict = model_to_dict(student)  # Convert the Student object to a dictionary
         student_json = json.dumps(student_dict, default=str)  # Using default=str for unsupported type
@@ -215,8 +208,8 @@ def card_student(request, IIN):
         return render(request, 'user_manager/student.html', context)
 
 @role_required(USER_TYPE_VNSV)
-def archive(request, IIN):
-    student = get_student_or_redirect(IIN)
+def archive(request, std_id):
+    student = get_student_or_redirect(std_id)
     if isinstance(student, HttpResponseRedirect):
         return student
     
@@ -227,7 +220,7 @@ def archive(request, IIN):
         student.date = datetime.today()
 
         student.save()
-        return redirect('temp_card_std', IIN=IIN)
+        return redirect('temp_card_std', std_id=std_id)
     else:
         student.status = "Int_leave" #Neccessary for js
         student_dict = model_to_dict(student)  # Convert the Student object to a dictionary
@@ -238,8 +231,8 @@ def archive(request, IIN):
         return render(request, 'user_manager/temp_student.html', context)
     
 @role_required(USER_TYPE_VNSV)
-def std_change_school(request, IIN):
-    student = get_student_or_redirect(IIN)
+def std_change_school(request, std_id):
+    student = get_student_or_redirect(std_id)
     if isinstance(student, HttpResponseRedirect):
         return student
     
@@ -262,8 +255,8 @@ def std_change_school(request, IIN):
     
 #Return student back from archive
 @role_required(USER_TYPE_VNSV)
-def arch_back(request, IIN):
-    student = get_student_or_redirect(IIN)
+def arch_back(request, std_id):
+    student = get_student_or_redirect(std_id)
     if isinstance(student, HttpResponseRedirect):
         return student
     
@@ -277,4 +270,4 @@ def arch_back(request, IIN):
     student.comment = None
     student.save()
     messages.success(request, "Статус ученика успешно изменен")
-    return redirect('temp_card_std', IIN=IIN)
+    return redirect('temp_card_std', std_id=std_id)

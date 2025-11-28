@@ -19,6 +19,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const send = document.getElementById('send');
 
     let gradeSelection = "Все классы";
+
+    const saved = localStorage.getItem("selectedGrade");
+    if (saved) {
+        
+    }
+
     let wa_mode = false;
 
     populateSelectMenu();
@@ -85,6 +91,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 fill: "forwards"
             });
             selectMenu.classList.remove("active");
+
+            localStorage.setItem("selectedGrade", selectedOption);
 
             gradeSelection = selectedOption;
             populateTable();
@@ -226,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
         tr.innerHTML = `
             <td>${wa_mode ? '<input type="checkbox">' : index}</td>
             <td>
-                <a href="${student.status === "Лид" || student.status === "Арх" ? "/temp_card_std/" + student.IIN + "/" : "/card_student/" + student.IIN + "/"}">
+                <a href="${student.status === "Лид" || student.status === "Арх" ? "/temp_card_std/" + student.id + "/" : "/card_student/" + student.id + "/"}">
                     ${student.Last_Name}
                 </a>
             </td>

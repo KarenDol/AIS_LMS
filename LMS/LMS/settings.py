@@ -93,17 +93,6 @@ DATABASES = {
     }
 }
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.mysql",
-#         "NAME": "AIS",
-#         "USER": "root",
-#         "PASSWORD": "banana228",
-#         "HOST": "localhost",
-#         "PORT": "3306",
-#     }
-# }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -132,10 +121,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_ROOT = '/home/ubuntu/LMS/staticfiles'
-# STATIC_ROOT = '/Users/Lil_himick/Desktop/Developer/LMS/staticfiles'
+# STATIC_ROOT = '/home/ubuntu/LMS/staticfiles'
+STATIC_ROOT = '/Users/Lil_himick/Desktop/Developer/AIS_LMS/staticfiles'
 STATIC_URL = 'static/'
-PROJECT_ROOT = '/Users/Lil_himick/Desktop/Developer/LMS/staticfiles'
+PROJECT_ROOT = '/Users/Lil_himick/Desktop/Developer/AIS_LMS/staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

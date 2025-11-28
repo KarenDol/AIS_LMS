@@ -17,7 +17,7 @@
                 <div id="doc-section">
                     <div class="doc">
                         <img src="{% static 'user_manager/Arrow.png'%}" alt="file">
-                        <a href="/fill_contract/{{IIN}}/{{numb}}/" download><p><b>Договор_для_подписания.docx</b></p></a>
+                        <a href="/fill_contract/{{std_id}}/{{numb}}/" download><p><b>Договор_для_подписания.docx</b></p></a>
                     </div>
                 </div>
             </div>    
@@ -47,7 +47,7 @@
         const staticUrl = "{% static 'user_manager/PDF File.png' %}";
         const arrowLogo = "{% static 'user_manager/Arrow.png'%}";
         const status = "True" === "{{status}}";
-        const IIN = "{{IIN}}";
+        const std_id = "{{std_id}}";
         const numb = "{{numb}}";
     </script>
 <script src="{% static 'user_manager/js/sign_doc.js'%}"></script>

@@ -5,14 +5,13 @@ from datetime import datetime, date
 class Command(BaseCommand):
     help = 'Make a custom migration'
 
-    def handle(self, *args, **kwargs):     
-        students = Student.objects.filter(school='lyc', status='Акт')        
-        count=0
-        for student in students:
-            contract = student.contract
-            if (contract):
-                if contract.sign_date < date(2024, 12, 12):
-                    contract.sign_date = date(2025, 8, 31)
-                    count+=1
-                    contract.save()
+    def handle(self, *args, **kwargs):  
+        users = User.objects.all()
+
+        count = 0
+        for user in users:
+            if len(user.username) == 12:
+                user.delete()
+                count += 1
+
         print(count)

@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
     //Show the trigger
     nav_trigger.style.display = "flex";
-    const IIN = student.IIN;
+    const std_id = student.id;
     const school = student.school;
     let curr_school;
     let next_school;
@@ -20,34 +20,34 @@ document.addEventListener('DOMContentLoaded', function () {
     if (student.status === "Лид"){
         nav_content.innerHTML = `
         <ul>
-            <li><a href="/accept/${IIN}/">Принять в ${curr_school}</a></li>
+            <li><a href="/accept/${std_id}/">Принять в ${curr_school}</a></li>
             <li id="sch_lyc"><a>Отправить в ${next_school}</a></li>
-            <li><a href="/join_doc/${IIN}/" download="Прикрепительный талон.docx">Прикрепительный талон</a></li>
-            <li><a href="/archive/${IIN}/">Отправить в Архив</a></li>
+            <li><a href="/join_doc/${std_id}/" download="Прикрепительный талон.docx">Прикрепительный талон</a></li>
+            <li><a href="/archive/${std_id}/">Отправить в Архив</a></li>
         </ul>
     `
     }
     else if (student.status === "Арх"){
         nav_content.innerHTML = `
         <ul>
-            <li><a href="/card_parent/${IIN}/">Карточка Родителя</a></li>
-            <li><a href="/card_contract/${IIN}/">Карточка Договора</a></li>
-            <li><a href="/fill_contract/${IIN}/" download="Договор.docx">Договор</a></li>
-            <li><a href="/honors/${IIN}/">Достижения</a></li>
-            <li><a href="/arch_back/${IIN}/">Вернуть их Архива</a></li>
+            <li><a href="/card_parent/${std_id}/">Карточка Родителя</a></li>
+            <li><a href="/card_contract/${std_id}/">Карточка Договора</a></li>
+            <li><a href="/fill_contract/${std_id}/" download="Договор.docx">Договор</a></li>
+            <li><a href="/honors/${std_id}/">Достижения</a></li>
+            <li><a href="/arch_back/${std_id}/">Вернуть их Архива</a></li>
         </ul>
     `
     }
     else{
         nav_content.innerHTML = `
         <ul>
-            <li><a href="/card_parent/${IIN}/">Карточка Родителя</a></li>
-            <li><a href="/card_contract/${IIN}/">Карточка Договора</a></li>
+            <li><a href="/card_parent/${std_id}/">Карточка Родителя</a></li>
+            <li><a href="/card_contract/${std_id}/">Карточка Договора</a></li>
             <li id="sch_lyc"><a>Отправить в ${next_school}</a></li>
-            <li><a href="/leave_doc/${IIN}/" download="Открепительный талон.docx">Открепительный талон</a></li>
-            <li><a href="/sign_doc/${IIN}/">Договор</a></li>
-            <li><a href="/journals/${IIN}/">Журнал</a></li>
-            <li><a href="/archive/${IIN}/">Отправить в Архив</a></li>
+            <li><a href="/leave_doc/${std_id}/" download="Открепительный талон.docx">Открепительный талон</a></li>
+            <li><a href="/sign_doc/${std_id}/">Договор</a></li>
+            <li><a href="/journals/${std_id}/">Журнал</a></li>
+            <li><a href="/archive/${std_id}/">Отправить в Архив</a></li>
         </ul>
     `
     }
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const confirmed = confirm(`Вы хотите перевести ученика в ${next_school}?`);
         if (confirmed) {
             // Proceed with the action
-            fetch(`/std_change_school/${IIN}/`, {
+            fetch(`/std_change_school/${std_id}/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

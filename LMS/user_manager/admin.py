@@ -6,7 +6,4 @@ admin.site.register(Parent)
 admin.site.register(Contract)
 admin.site.register(LMS_User)
 admin.site.register(Grade)
-admin.site.register(Journal)
-
-admin.site.register(Candidate)
-admin.site.register(Change)
+# admin.site.register(Journal)

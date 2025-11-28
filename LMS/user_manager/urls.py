@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, re_path
-from . import views, views_student, views_parent, views_contract, views_honors, views_candidate, views_whatsapp, views_documents
+from . import views, views_student, views_parent, views_contract, views_whatsapp, views_documents, views_honors
 
 urlpatterns = [
     #System pages
@@ -27,22 +27,20 @@ urlpatterns = [
 
     #Student
     path('register_student/', views_student.register_student, name='register_student'),
-    path('card_student/<IIN>/', views_student.card_student, name='card_student'),
-    path('temp_card_std/<IIN>/',views_student.temp_card_std, name='temp_card_std'),
-    path('accept/<IIN>/', views_student.accept_student, name='accept_student'),
-    path('std_change_school/<IIN>/', views_student.std_change_school, name='std_change_school'),
-    path('archive/<IIN>/', views_student.archive, name='archive'),
-    path('arch_back/<IIN>/', views_student.arch_back, name='arch_back'),
-    path('1_grade/', views_candidate.first_grade, name='1_grade'),
-    path('change_candidate/<pk>/', views_candidate.change_candidate, name='change_candidate'),
+    path('card_student/<std_id>/', views_student.card_student, name='card_student'),
+    path('temp_card_std/<std_id>/',views_student.temp_card_std, name='temp_card_std'),
+    path('accept/<std_id>/', views_student.accept_student, name='accept_student'),
+    path('std_change_school/<std_id>/', views_student.std_change_school, name='std_change_school'),
+    path('archive/<std_id>/', views_student.archive, name='archive'),
+    path('arch_back/<std_id>/', views_student.arch_back, name='arch_back'),
 
     #Parent
-    path('register_parent/<IIN>/', views_parent.register_parent, name='register_parent'),
-    path('card_parent/<IIN>/', views_parent.card_parent, name='card_parent'),
+    path('register_parent/<std_id>/', views_parent.register_parent, name='register_parent'),
+    path('card_parent/<std_id>/', views_parent.card_parent, name='card_parent'),
 
     #Contract
-    path('register_contract/<IIN>/', views_contract.register_contract, name='register_contract'),
-    path('card_contract/<IIN>/', views_contract.card_contract, name='card_contract'),
+    path('register_contract/<std_id>/', views_contract.register_contract, name='register_contract'),
+    path('card_contract/<std_id>/', views_contract.card_contract, name='card_contract'),
 
     #API urls
     path('api/user-info/', views.get_user_info, name='get_user_info'),
@@ -53,15 +51,15 @@ urlpatterns = [
     path('verify_phone/', views.verify_phone, name='verify_phone'),
 
     #Fill documents
-    path('join_doc/<IIN>/', views_documents.join_doc, name='join_doc'),
-    path('leave_doc/<IIN>/', views_documents.leave_doc, name='leave_doc'),
-    path('fill_contract/<IIN>/<numb>/', views_documents.fill_contract, name='fill_contract'),
+    path('join_doc/<std_id>/', views_documents.join_doc, name='join_doc'),
+    path('leave_doc/<std_id>/', views_documents.leave_doc, name='leave_doc'),
+    path('fill_contract/<std_id>/<numb>/', views_documents.fill_contract, name='fill_contract'),
     path('spravka/', views_documents.spravka, name='spravka'), #Spravka Page
     path('get_spravka/', views_documents.get_spravka, name='get_spravka'), #Spravka Document
-    path('sign_doc/<IIN>/', views_documents.sign_doc, name='sign_doc'),
+    path('sign_doc/<std_id>/', views_documents.sign_doc, name='sign_doc'),
 
     #Journals
-    path("journals/<IIN>/", views_honors.journals, name='journals'),
+    path("journals/<std_id>/", views_honors.journals, name='journals'),
     path("delete_journal/<id>/", views_honors.delete_journal, name='delete_journal'),
     path("edit_journal/<id>/", views_honors.edit_journal, name='edit_journal'),
     

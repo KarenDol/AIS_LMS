@@ -14,7 +14,7 @@
 <body>
     <div class="container">
         <img src="{% static 'user_manager/parent_pic.jpg' %}">
-        <form method="POST" action="{% url 'register_parent' IIN=IIN %}" id="mainForm" novalidate>
+        <form method="POST" action="{% url 'register_parent' std_id=std_id %}" id="mainForm" novalidate>
             {% csrf_token %}
             <h2 class="edit">
                 Карточка родителя
@@ -87,12 +87,12 @@
                 <button id="button_cancel">Отменить</button>
                 <button id="button_save">Сохранить</button>
             </div>
-            <button id="button_back" onclick="event.preventDefault(); window.location.href='/card_student/{{IIN}}'">Назад</button>
+            <button id="button_back" onclick="event.preventDefault(); window.location.href='/card_student/{{std_id}}'">Назад</button>
         </form>
     </div>
 
     <script>
-        const IIN = "{{ IIN }}";
+        const std_id = "{{ std_id }}";
         let parent = null;
         if ('{{ parent|default:"null"|escapejs }}') {
             parent = JSON.parse('{{ parent|default:"null"|escapejs }}');

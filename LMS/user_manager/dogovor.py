@@ -5,8 +5,9 @@ from django.conf import settings
 import os
 from datetime import datetime
 
-def fill_doc(IIN, school):
-    student = Student.objects.get(IIN=IIN)
+def fill_doc(std_id, school):
+    student = Student.objects.get(id=std_id)
+    IIN = student.IIN
     parent = student.parent
     contract = student.contract
     template_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', f"template_{school}.docx")
@@ -27,7 +28,7 @@ def fill_doc(IIN, school):
         'l_year': contract.last_date.year,
         'birthdate': IIN[4:6] + '/' + IIN[2:4] + '/' + "20" + IIN[:2],
         'grade': student.grade_num,
-        'IIN': student.IIN,
+        'IIN': IIN,
         'parent_name': parent.First_Name + ' ' + parent.Last_Name,
         'child_name': student.First_Name + ' ' + student.Last_Name,
         'total_payment': contract.total,
@@ -44,8 +45,9 @@ def fill_doc(IIN, school):
     docs_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'dogovor' + str(contract.numb) + '.docx')
     document.save(docs_location)
 
-def fill_join(IIN):
-    student = Student.objects.get(IIN=IIN)
+def fill_join(std_id):
+    student = Student.objects.get(id=std_id)
+    IIN = student.IIN
     template_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'Прикрепительный талон.docx')
     document = DocxTemplate(template_location)
     context = {
@@ -62,8 +64,9 @@ def fill_join(IIN):
     docs_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'join' + IIN + '.docx')
     document.save(docs_location)
 
-def fill_leave(IIN):
-    student = Student.objects.get(IIN=IIN)
+def fill_leave(std_id):
+    student = Student.objects.get(id=std_id)
+    IIN = student.IIN
     template_location = os.path.join(settings.STATIC_ROOT, 'user_manager', 'docs', 'Открепительный талон.docx')
     document = DocxTemplate(template_location)
     context = {

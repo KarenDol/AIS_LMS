@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (formData['file']){
             alert("Файл не загружен. Пожалуйста, прикрепите файл");
         } else {
-            fetch(`/sign_doc/${IIN}/`, {
+            fetch(`/sign_doc/${std_id}/`, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': csrfToken // Include CSRF token in the headers

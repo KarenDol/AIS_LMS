@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (parent){ 
         //by default, edit is blocked
         block_edit();
-        form.action = `/card_parent/${IIN}/`;
+        form.action = `/card_parent/${std_id}/`;
 
         existsWhatsapp();
     }
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
         //Click to Back button returns to the student page
         button_cancel.addEventListener("click", (event) => {
             event.preventDefault()
-            window.location.href = `/card_student/${IIN}/`;;
+            window.location.href = `/card_student/${std_id}/`;;
         });
 
         existsWhatsapp();

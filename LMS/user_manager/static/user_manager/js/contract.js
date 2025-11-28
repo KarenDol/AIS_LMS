@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (contract){ 
         //by default, edit is blocked
         block_edit();
-        form.action = `/card_contract/${IIN}/`;
+        form.action = `/card_contract/${std_id}/`;
     }
     else{
         h2.innerText = 'Регистрация Договора';

@@ -33,8 +33,8 @@ class Contract(models.Model):
 
 class Student(models.Model):
     #lid student attributes
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    IIN = models.CharField(max_length=12)
+    id = models.AutoField(primary_key=True)
+    IIN = models.CharField(max_length=12, null=True, unique=True)
     Last_Name = models.CharField(max_length=40)
     First_Name = models.CharField(max_length=30)
     Patronim = models.CharField(max_length=40, null=True)
@@ -77,19 +77,3 @@ class Grade(models.Model):
     curator = models.ForeignKey(LMS_User, on_delete=models.CASCADE)
     grade_num = models.IntegerField()
     grade_let = models.CharField(max_length=1)
-
-class Candidate(models.Model):
-    student = models.OneToOneField(Student, on_delete=models.CASCADE, primary_key=True)
-    letter = models.CharField(max_length=1)
-    status = models.BooleanField()
-
-class Change(models.Model):
-    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
-    date_time = models.DateTimeField()
-    change_type = models.CharField(max_length=6, choices=[
-        ('let', 'letter'),
-        ('sta', 'status')
-    ])
-    let_a = models.CharField(max_length=1, null=True)
-    let_b = models.CharField(max_length=1, null=True)
-    changed_status = models.BooleanField(null=True)
